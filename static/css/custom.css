@@ -1,0 +1,45 @@
+/* Custom styles for Hydrosafe */
+.navbar {
+    margin-bottom: 2rem;
+}
+
+.card {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.list-group-item {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.list-group-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Custom styles to complement Bootstrap theme */
+.display-4 {
+    font-size: 2.5rem;
+    font-weight: 300;
+}
+
+.card-title {
+    color: var(--bs-info);
+    margin-bottom: 1rem;
+}
+
+.lead {
+    font-size: 1.1rem;
+    line-height: 1.6;
+}
+
+.text-muted {
+    font-size: 0.875rem;
+}
+
+/* Dashboard specific styles */
+#metricsChart {
+    min-height: 300px;
+}
+
+/* Documentation styles */

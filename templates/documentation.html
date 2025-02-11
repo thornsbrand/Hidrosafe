@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Documentación{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">Documentación del Sistema</h1>
+
+    <div class="row">
+        <div class="col-md-3">
+            <div class="list-group">
+                <a href="#overview" class="list-group-item list-group-item-action">Descripción General</a>
+                <a href="#installation" class="list-group-item list-group-item-action">Instalación</a>
+                <a href="#usage" class="list-group-item list-group-item-action">Uso del Sistema</a>
+            </div>
+        </div>
+
+        <div class="col-md-9">
+            <section id="overview" class="mb-5">
+                <h2>Descripción General</h2>
+                <p>Hydrosafe es una plataforma integral para el monitoreo y mantenimiento predictivo de sistemas hidráulicos.</p>
+            </section>
+
+            <section id="installation" class="mb-5">
+                <h2>Instalación</h2>
+                <p>Guía paso a paso para la instalación y configuración del sistema.</p>
+            </section>
+
+            <section id="usage" class="mb-5">
+                <h2>Uso del Sistema</h2>
+                <p>Instrucciones detalladas sobre cómo utilizar las diferentes funcionalidades del sistema.</p>
+            </section>
+        </div>
+    </div>
+</div>
+{% endblock %}

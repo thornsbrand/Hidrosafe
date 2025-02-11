@@ -10,12 +10,14 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
-            <a class="navbar-brand" href="{{ url_for('index') }}">Hydrosafe</a>
+            <!-- Enlazando a la ruta 'index' del Blueprint 'main' -->
+            <a class="navbar-brand" href="{{ url_for('main.index') }}">Hydrosafe</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav">
+                    <!-- Enlazando a la ruta 'index' del Blueprint 'main' -->
                     <li class="nav-item">
                         <a class="navbar-brand" href="{{ url_for('main.index') }}">Hydrosafe</a>
                     </li>
@@ -23,6 +25,7 @@
             </div>
         </div>
     </nav>
+    
 
     <main class="container my-4">
         {% block content %}{% endblock %}

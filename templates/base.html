@@ -10,37 +10,33 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
-            <!-- Enlazando a la ruta 'index' del Blueprint 'main' -->
+            <!-- Logo y enlace a Inicio -->
             <a class="navbar-brand" href="{{ url_for('main.index') }}">Hydrosafe</a>
+
+            <!-- Botón de menú para móviles -->
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
+
+            <!-- Menú de navegación -->
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav">
-                    <!-- Enlace a la página de Inicio -->
+                <ul class="navbar-nav me-auto">
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('main.index') }}">Inicio</a>
                     </li>
-                    <!-- Enlace al Dashboard -->
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('main.dashboard') }}">Dashboard</a>
                     </li>
-                    <!-- Enlace a la Documentación -->
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('main.documentation') }}">Documentación</a>
                     </li>
-                    <!-- Enlace al Login -->
-                     <!--
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('auth.login') }}">Iniciar sesión</a>
-                    </li> -->
-                    <!-- Enlace al Registro -->
-                     <!--
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('auth.register') }}">Registrarse</a>
-                    </li> -->
-                    
                 </ul>
+
+                <!-- 🔹 Botones de autenticación alineados a la derecha -->
+                <div class="d-flex">
+                    <a href="{{ url_for('auth.login') }}" class="btn btn-outline-light me-2">Iniciar sesión</a>
+                    <a href="{{ url_for('auth.register') }}" class="btn btn-primary">Registrarse</a>
+                </div>
             </div>
         </div>
     </nav>

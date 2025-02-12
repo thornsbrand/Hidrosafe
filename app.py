@@ -23,10 +23,11 @@ def create_app():
 
     with app.app_context():
         # Import routes after app creation to avoid circular imports
-        from routes import main
+        from routes import main, auth  # Asegúrate de importar auth
 
         # Register blueprints
         app.register_blueprint(main)
+        app.register_blueprint(auth, url_prefix="/auth")  # Registrar el blueprint de autenticación
 
         # Import models and create tables
         import models

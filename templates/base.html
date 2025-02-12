@@ -17,16 +17,32 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav">
-                    <!-- Enlazando a la ruta 'index' del Blueprint 'main' -->
+                    <!-- Enlace a la página de Inicio -->
                     <li class="nav-item">
-                        <a class="navbar-brand" href="{{ url_for('main.index') }}">Hydrosafe</a>
+                        <a class="nav-link" href="{{ url_for('main.index') }}">Inicio</a>
+                    </li>
+                    <!-- Enlace al Dashboard -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('main.dashboard') }}">Dashboard</a>
+                    </li>
+                    <!-- Enlace a la Documentación -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('main.documentation') }}">Documentación</a>
+                    </li>
+                    <!-- Enlace al Login -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('auth.login') }}">Iniciar sesión</a>
+                    </li>
+                    <!-- Enlace al Registro -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('auth.register') }}">Registrarse</a>
                     </li>
                 </ul>
             </div>
         </div>
     </nav>
     
-
+    <!-- Contenido de la página -->
     <main class="container my-4">
         {% block content %}{% endblock %}
     </main>

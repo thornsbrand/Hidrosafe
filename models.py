@@ -1,9 +1,14 @@
-from datetime import datetime
-from app import db
+from firebase_admin import firestore
 
-class SystemData(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    pressure = db.Column(db.Float)
-    flow_rate = db.Column(db.Float)
-    temperature = db.Column(db.Float)
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+db = firestore.client()
+
+# Funciones para interactuar con Firestore
+def add_system_data(data):
+    """Guarda un nuevo documento en la colección 'system_data'."""
+    doc_ref = db.collection("system_data").add(data)
+    return doc_ref[1].id
+
+def get_all_system_data():
+    """Obtiene todos los documentos de la colección 'system_data'."""
+    docs = db.collection("system_data").stream()
+    return [{doc.id: doc.to_dict()} for doc in docs]

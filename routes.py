@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template
-from models import SystemData
+from models import add_system_data, get_all_system_data
 
 # Blueprint principal
 main = Blueprint('main', __name__)
@@ -11,8 +11,7 @@ def index():
 
 @main.route('/dashboard')
 def dashboard():
-    # Simula algunos datos del sistema
-    recent_data = SystemData.query.order_by(SystemData.timestamp.desc()).limit(24).all()
+    recent_data = get_all_system_data()
     return render_template('dashboard.html', data=recent_data)
 
 @main.route('/documentation')

@@ -30,3 +30,18 @@ def login():
 @auth.route('/register')
 def register():
     return render_template('auth/register.html')
+
+@main.route('/test_firestore')
+def test_firestore():
+    try:
+        # Agregar un documento de prueba a Firestore
+        test_data = {"mensaje": "Firestore conectado correctamente en Render"}
+        doc_ref = db.collection("test").add(test_data)
+
+        # Recuperar los documentos de la colección "test"
+        docs = db.collection("test").stream()
+        data = [{doc.id: doc.to_dict()} for doc in docs]
+
+        return jsonify({"status": "success", "data": data}), 200
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500

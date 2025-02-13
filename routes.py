@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, jsonify
 from models import add_system_data, get_all_system_data
-from firebase_admin import firestor, auth
+from firebase_admin import firestore, auth
 
 auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 

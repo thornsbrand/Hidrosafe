@@ -18,9 +18,11 @@ def create_app():
 
     with app.app_context():
         # Importar y registrar blueprints
-        from routes import main, auth
+        from routes import main
+        from auth import auth_bp  # 🔹 Importar correctamente el Blueprint de autenticación
+
         app.register_blueprint(main)
-        app.register_blueprint(auth)
+        app.register_blueprint(auth_bp)  # 🔹 Registrar auth_bp en Flask
 
         return app
 

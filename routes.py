@@ -1,7 +1,8 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, request, jsonify
 from models import add_system_data, get_all_system_data
-from flask import Blueprint, request, jsonify  # <-- Asegurar importación de jsonify
-from firebase_admin import firestore  # <-- Importar Firestore correctamente
+from firebase_admin import firestor, auth
+
+auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 
 # Inicializar Firestore
 db = firestore.client()
@@ -26,14 +27,51 @@ def documentation():
 # Blueprint para autenticación
 auth = Blueprint('auth', __name__, url_prefix='/auth')
 
-# Rutas de autenticación
-@auth.route('/login')
+@auth_bp.route('/login', methods=['GET'])
 def login():
     return render_template('auth/login.html')
 
-@auth.route('/register')
+@auth_bp.route('/login', methods=['POST'])
+def login_post():
+    email = request.form.get("email")
+    password = request.form.get("password")
+
+    if not email or not password:
+        flash("Todos los campos son obligatorios.", "error")
+        return redirect(url_for('auth.login'))
+
+    try:
+        # Aquí Firebase normalmente maneja login desde el frontend,
+        # pero en Flask podemos solo verificar si el usuario existe.
+        user = auth.get_user_by_email(email)
+        flash("Inicio de sesión exitoso.", "success")
+        return redirect(url_for('main.dashboard'))  # Redirigir al Dashboard después del login
+    except Exception as e:
+        flash("Credenciales incorrectas.", "error")
+        return redirect(url_for('auth.login'))
+
+# Mostrar el formulario de registro
+@auth_bp.route('/register', methods=['GET'])
 def register():
     return render_template('auth/register.html')
+
+# Procesar el formulario de registro
+@auth_bp.route('/register', methods=['POST'])
+def register_post():
+    email = request.form.get("email")
+    password = request.form.get("password")
+
+    if not email or not password:
+        flash("Todos los campos son obligatorios.", "error")
+        return redirect(url_for('auth.register'))
+
+    try:
+        user = auth.create_user(email=email, password=password)
+        flash("Registro exitoso. Ahora puedes iniciar sesión.", "success")
+        return redirect(url_for('auth.login'))
+    except Exception as e:
+        flash(f"Error en el registro: {str(e)}", "error")
+        return redirect(url_for('auth.register'))
 
 @main.route('/test_firestore')
 def test_firestore():

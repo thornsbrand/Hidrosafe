@@ -1,5 +1,10 @@
 from flask import Blueprint, render_template
 from models import add_system_data, get_all_system_data
+from flask import Blueprint, request, jsonify  # <-- Asegurar importación de jsonify
+from firebase_admin import firestore  # <-- Importar Firestore correctamente
+
+# Inicializar Firestore
+db = firestore.client()
 
 # Blueprint principal
 main = Blueprint('main', __name__)
@@ -17,7 +22,6 @@ def dashboard():
 @main.route('/documentation')
 def documentation():
     return render_template('documentation.html')
-
 
 # Blueprint para autenticación
 auth = Blueprint('auth', __name__, url_prefix='/auth')

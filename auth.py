@@ -3,7 +3,8 @@ from flask_login import login_user, logout_user, login_required
 from urllib.parse import urlparse
 from app import db
 
-auth_bp = Blueprint('auth', __name__)
+auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
+
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
@@ -24,30 +25,28 @@ def login():
 
     return render_template('auth/login.html')
 
-@auth_bp.route('/register', methods=['GET', 'POST'])
+# Ruta para mostrar el formulario de registro
+@auth_bp.route('/register', methods=['GET'])
 def register():
-    if request.method == 'POST':
-        username = request.form['username']
-        email = request.form['email']
-        password = request.form['password']
-
-        if User.query.filter_by(username=username).first():
-            flash('Username already exists')
-            return redirect(url_for('auth.register'))
-
-        if User.query.filter_by(email=email).first():
-            flash('Email already registered')
-            return redirect(url_for('auth.register'))
-
-        user = User(username=username, email=email)
-        user.set_password(password)
-        db.session.add(user)
-        db.session.commit()
-
-        flash('Registration successful')
-        return redirect(url_for('auth.login'))
-
     return render_template('auth/register.html')
+
+# Ruta para procesar el registro de usuario
+@auth_bp.route('/register', methods=['POST'])
+def register_post():
+    email = request.form.get("email")
+    password = request.form.get("password")
+
+    if not email or not password:
+        flash("Todos los campos son obligatorios.", "error")
+        return redirect(url_for('auth.register'))
+
+    try:
+        user = auth.create_user(email=email, password=password)
+        flash("Registro exitoso. Ahora puedes iniciar sesión.", "success")
+        return redirect(url_for('auth.login'))
+    except Exception as e:
+        flash(f"Error en el registro: {str(e)}", "error")
+        return redirect(url_for('auth.register'))
 
 @auth_bp.route('/logout')
 @login_required

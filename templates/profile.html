@@ -22,8 +22,35 @@
     </form>
 </div>
 
+<!-- 🚀 Agregar Firebase en modo compatibilidad -->
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+
+<script>
+    // 🔹 Configuración de Firebase
+    const firebaseConfig = {
+        apiKey: "AIzaSyADxmST-tVzWPery7a7tYksjeBNKlbYMxk",
+        authDomain: "hydrosafe-b8635.firebaseapp.com",
+        projectId: "hydrosafe-b8635",
+        storageBucket: "hydrosafe-b8635.appspot.com",
+        messagingSenderId: "670282184676",
+        appId: "1:670282184676:web:1cda5088c7cca03e6fb9f1",
+        measurementId: "G-P79J6CG5S8"
+    };
+
+    // 🔹 Inicializar Firebase si aún no está inicializado
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+</script>
+
 <script>
     function updatePassword() {
+        if (typeof firebase === "undefined") {
+            alert("Error: Firebase no está disponible.");
+            return;
+        }
+
         const newPassword = document.getElementById("newPassword").value;
 
         if (!newPassword) {
@@ -32,6 +59,11 @@
         }
 
         const user = firebase.auth().currentUser;
+        if (!user) {
+            alert("Error: No hay un usuario autenticado.");
+            return;
+        }
+
         user.updatePassword(newPassword)
             .then(() => {
                 alert("Contraseña actualizada con éxito.");
@@ -41,5 +73,6 @@
             });
     }
 </script>
+
 
 {% endblock %}

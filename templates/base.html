@@ -51,6 +51,17 @@
                 </div>
             </div>
         </div>
+        {% if current_user.is_authenticated %}
+        <div class="dropdown">
+            <button class="btn btn-outline-light dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                {{ current_user.email }}
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                <li><a class="dropdown-item" href="{{ url_for('main.profile') }}">Perfil</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}">Cerrar sesión</a></li>
+            </ul>
+        </div>
+        {% endif %}
     </nav>
     
     <!-- Contenido de la página -->

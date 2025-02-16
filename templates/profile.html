@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Perfil - Hydrosafe{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Perfil de Usuario</h2>
+    <p>Bienvenido, <strong>{{ user.email }}</strong></p>
+
+    <form>
+        <div class="mb-3">
+            <label class="form-label">Correo Electrónico</label>
+            <input type="email" class="form-control" value="{{ user.email }}" disabled>
+        </div>
+        
+        <div class="mb-3">
+            <label class="form-label">Nueva Contraseña</label>
+            <input type="password" id="newPassword" class="form-control" placeholder="Ingrese nueva contraseña">
+        </div>
+
+        <button type="button" class="btn btn-primary" onclick="updatePassword()">Actualizar Contraseña</button>
+    </form>
+</div>
+
+<script>
+    function updatePassword() {
+        const newPassword = document.getElementById("newPassword").value;
+
+        if (!newPassword) {
+            alert("Ingrese una nueva contraseña.");
+            return;
+        }
+
+        const user = firebase.auth().currentUser;
+        user.updatePassword(newPassword)
+            .then(() => {
+                alert("Contraseña actualizada con éxito.");
+            })
+            .catch((error) => {
+                alert("Error al actualizar la contraseña: " + error.message);
+            });
+    }
+</script>
+
+{% endblock %}

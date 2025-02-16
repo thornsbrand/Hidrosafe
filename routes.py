@@ -19,7 +19,12 @@ def index():
 @login_required
 def dashboard():
     return render_template('dashboard.html')
-    
+
 @main.route('/documentation')
 def documentation():
     return render_template('documentation.html')
+
+@main.route('/profile')
+@login_required
+def profile():
+    return render_template('profile.html', user=current_user)

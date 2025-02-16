@@ -41,6 +41,7 @@
                                 {{ current_user.email }}
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                <li><a class="dropdown-item" href="{{ url_for('main.profile') }}">Perfil</a></li>
                                 <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}">Cerrar sesión</a></li>
                             </ul>
                         </div>
@@ -49,6 +50,7 @@
                         <a href="{{ url_for('auth.register') }}" class="btn btn-primary">Registrarse</a>
                     {% endif %}
                 </div>
+                
             </div>
         </div>
         {% if current_user.is_authenticated %}

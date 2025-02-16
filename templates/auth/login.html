@@ -31,7 +31,6 @@
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
 
 <script>
-    // 🔹 Configuración de Firebase (¡Cambia esto con tu configuración real!)
     const firebaseConfig = {
         apiKey: "AIzaSyADxmST-tVzWPery7a7tYksjeBNKlbYMxk",
         authDomain: "hydrosafe-b8635.firebaseapp.com",
@@ -41,9 +40,11 @@
         appId: "1:670282184676:web:1cda5088c7cca03e6fb9f1",
         measurementId: "G-P79J6CG5S8"
     };
-
+    // Inicializar Firebase
     firebase.initializeApp(firebaseConfig);
+</script>
 
+<script>
     // 🚀 Función para iniciar sesión con Firebase
     function loginUser() {
         const email = document.getElementById("email").value;

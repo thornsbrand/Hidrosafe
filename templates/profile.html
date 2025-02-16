@@ -7,24 +7,45 @@
     <h2>Perfil de Usuario</h2>
     <p>Bienvenido, <strong>{{ user.email }}</strong></p>
 
-    <form>
+    <form id="profileForm">
         <div class="mb-3">
             <label class="form-label">Correo Electrónico</label>
             <input type="email" class="form-control" value="{{ user.email }}" disabled>
         </div>
-        
+
         <div class="mb-3">
-            <label class="form-label">Nueva Contraseña</label>
-            <input type="password" id="newPassword" class="form-control" placeholder="Ingrese nueva contraseña">
+            <label class="form-label">Nombre</label>
+            <input type="text" id="nombre" class="form-control" placeholder="Ingrese su nombre">
         </div>
 
-        <button type="button" class="btn btn-primary" onclick="updatePassword()">Actualizar Contraseña</button>
+        <div class="mb-3">
+            <label class="form-label">Apellidos</label>
+            <input type="text" id="apellidos" class="form-control" placeholder="Ingrese sus apellidos">
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Celular</label>
+            <input type="tel" id="celular" class="form-control" placeholder="Ingrese su número de celular">
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Nombre de la Empresa</label>
+            <input type="text" id="empresa" class="form-control" placeholder="Ingrese el nombre de la empresa">
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Rol en la Empresa</label>
+            <input type="text" id="rol" class="form-control" placeholder="Ingrese su rol en la empresa">
+        </div>
+
+        <button type="button" class="btn btn-primary" onclick="guardarPerfil()">Guardar Cambios</button>
     </form>
 </div>
 
-<!-- 🚀 Agregar Firebase en modo compatibilidad -->
+<!-- 🚀 Agregar Firebase y Firestore -->
 <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
 
 <script>
     // 🔹 Configuración de Firebase
@@ -42,37 +63,63 @@
     if (!firebase.apps.length) {
         firebase.initializeApp(firebaseConfig);
     }
-</script>
+    const db = firebase.firestore();
 
-<script>
-    function updatePassword() {
-        if (typeof firebase === "undefined") {
-            alert("Error: Firebase no está disponible.");
-            return;
-        }
-
-        const newPassword = document.getElementById("newPassword").value;
-
-        if (!newPassword) {
-            alert("Ingrese una nueva contraseña.");
-            return;
-        }
-
+    // 🚀 Función para cargar datos del usuario
+    function cargarPerfil() {
         const user = firebase.auth().currentUser;
         if (!user) {
-            alert("Error: No hay un usuario autenticado.");
+            console.error("Usuario no autenticado");
             return;
         }
 
-        user.updatePassword(newPassword)
+        db.collection("usuarios").doc(user.uid).get().then((doc) => {
+            if (doc.exists) {
+                const data = doc.data();
+                document.getElementById("nombre").value = data.nombre || "";
+                document.getElementById("apellidos").value = data.apellidos || "";
+                document.getElementById("celular").value = data.celular || "";
+                document.getElementById("empresa").value = data.empresa || "";
+                document.getElementById("rol").value = data.rol || "";
+            } else {
+                console.log("No hay datos guardados.");
+            }
+        }).catch((error) => {
+            console.error("Error al obtener perfil:", error);
+        });
+    }
+
+    // 🚀 Función para guardar datos del usuario
+    function guardarPerfil() {
+        const user = firebase.auth().currentUser;
+        if (!user) {
+            alert("Error: No hay usuario autenticado.");
+            return;
+        }
+
+        const perfilData = {
+            nombre: document.getElementById("nombre").value,
+            apellidos: document.getElementById("apellidos").value,
+            celular: document.getElementById("celular").value,
+            empresa: document.getElementById("empresa").value,
+            rol: document.getElementById("rol").value,
+        };
+
+        db.collection("usuarios").doc(user.uid).set(perfilData, { merge: true })
             .then(() => {
-                alert("Contraseña actualizada con éxito.");
+                alert("Perfil actualizado correctamente.");
             })
             .catch((error) => {
-                alert("Error al actualizar la contraseña: " + error.message);
+                alert("Error al actualizar perfil: " + error.message);
             });
     }
-</script>
 
+    // 🔹 Esperar a que el usuario esté autenticado antes de cargar el perfil
+    firebase.auth().onAuthStateChanged((user) => {
+        if (user) {
+            cargarPerfil();
+        }
+    });
+</script>
 
 {% endblock %}

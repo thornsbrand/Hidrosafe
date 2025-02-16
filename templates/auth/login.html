@@ -27,21 +27,29 @@
 </div>
 
 <!-- 🚀 Firebase Authentication -->
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
 
+<!-- 🔹 Configuración e inicialización de Firebase -->
 <script>
-    const firebaseConfig = {
-        apiKey: "AIzaSyADxmST-tVzWPery7a7tYksjeBNKlbYMxk",
-        authDomain: "hydrosafe-b8635.firebaseapp.com",
-        projectId: "hydrosafe-b8635",
-        storageBucket: "hydrosafe-b8635.appspot.com",
-        messagingSenderId: "670282184676",
-        appId: "1:670282184676:web:1cda5088c7cca03e6fb9f1",
-        measurementId: "G-P79J6CG5S8"
-    };
-    // Inicializar Firebase
-    firebase.initializeApp(firebaseConfig);
+    document.addEventListener("DOMContentLoaded", function () {
+        const firebaseConfig = {
+            apiKey: "AIzaSyADxmST-tVzWPery7a7tYksjeBNKlbYMxk",
+            authDomain: "hydrosafe-b8635.firebaseapp.com",
+            projectId: "hydrosafe-b8635",
+            storageBucket: "hydrosafe-b8635.appspot.com",
+            messagingSenderId: "670282184676",
+            appId: "1:670282184676:web:1cda5088c7cca03e6fb9f1",
+            measurementId: "G-P79J6CG5S8"
+        };
+
+        // Esperar a que Firebase cargue antes de inicializar
+        if (typeof firebase !== "undefined") {
+            firebase.initializeApp(firebaseConfig);
+        } else {
+            console.error(" Firebase no se cargó correctamente.");
+        }
+    });
 </script>
 
 <script>

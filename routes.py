@@ -23,29 +23,6 @@ def dashboard():
 def documentation():
     return render_template('documentation.html')
 
-@auth_bp.route('/login', methods=['GET'])
-def login():
-    return render_template('auth/login.html')
-
-@auth_bp.route('/login', methods=['POST'])
-def login_post():
-    email = request.form.get("email")
-    password = request.form.get("password")
-
-    if not email or not password:
-        flash("Todos los campos son obligatorios.", "error")
-        return redirect(url_for('auth.login'))
-
-    try:
-        # Aquí Firebase normalmente maneja login desde el frontend,
-        # pero en Flask podemos solo verificar si el usuario existe.
-        user = auth.get_user_by_email(email)
-        flash("Inicio de sesión exitoso.", "success")
-        return redirect(url_for('main.dashboard'))  # Redirigir al Dashboard después del login
-    except Exception as e:
-        flash("Credenciales incorrectas.", "error")
-        return redirect(url_for('auth.login'))
-
 # Mostrar el formulario de registro
 @auth_bp.route('/register', methods=['GET'])
 def register():

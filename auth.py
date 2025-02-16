@@ -2,9 +2,21 @@ from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_user, logout_user, login_required
 from urllib.parse import urlparse
 from app import db
-from firebase_admin import auth
+import firebase_admin  # 🔹 Importar firebase_admin
+from firebase_admin import credentials, auth  # 🔹 Importar auth para autenticación
 
 auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
+
+# Inicializa Firebase si aún no está inicializado
+if not firebase_admin._apps:
+    firebase_config = os.getenv("FIREBASE_CREDENTIALS")  # Obtiene la credencial desde Render
+
+    if firebase_config:
+        cred_dict = json.loads(firebase_config)  # Convierte la cadena JSON a diccionario
+        cred = credentials.Certificate(cred_dict)  # Crea la credencial de Firebase
+        firebase_admin.initialize_app(cred)  # Inicializa Firebase
+    else:
+        raise ValueError("Error: La variable de entorno FIREBASE_CREDENTIALS no está configurada en Render.")
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
@@ -62,8 +74,12 @@ def register_post():
 
     except auth.EmailAlreadyExistsError:
         flash("Este correo ya está registrado. Intenta iniciar sesión.", "error")
-    except auth.InvalidPasswordError:
+    except ValueError:  # Captura errores de datos inválidos
         flash("La contraseña no cumple con los requisitos de seguridad.", "error")
+    except firebase_admin.auth.EmailAlreadyExistsError:  # Captura si el email ya existe
+        flash("Este correo ya está registrado. Intenta iniciar sesión.", "error")
+    except Exception as e:  # Captura cualquier otro error
+        flash(f"Error en el registro: {str(e)}", "error")
     except Exception as e:
         flash(f"Error en el registro: {str(e)}", "error")
 

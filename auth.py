@@ -7,6 +7,12 @@ from firebase_admin import credentials, auth  # 🔹 Importar auth para autentic
 
 auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 
+# 🔹 Modelo de Usuario para Flask-Login
+class User(UserMixin):
+    def __init__(self, uid, email):
+        self.id = uid
+        self.email = email
+
 # Inicializa Firebase si aún no está inicializado
 if not firebase_admin._apps:
     firebase_config = os.getenv("FIREBASE_CREDENTIALS")  # Obtiene la credencial desde Render

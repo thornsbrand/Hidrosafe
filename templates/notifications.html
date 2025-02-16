@@ -7,6 +7,25 @@
     <h2>Notificaciones</h2>
     <p>Aquí puedes ver las alertas y mensajes importantes.</p>
 
+    <!-- 🚀 Filtros -->
+    <div class="mb-3">
+        <label class="form-label">Filtrar por tipo:</label>
+        <select id="filtroTipo" class="form-select" onchange="cargarNotificaciones()">
+            <option value="todas">Todas</option>
+            <option value="alerta">Alertas de Falla</option>
+            <option value="mantenimiento">Mantenimientos</option>
+            <option value="admin">Mensajes del Administrador</option>
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Ordenar por:</label>
+        <select id="ordenarPor" class="form-select" onchange="cargarNotificaciones()">
+            <option value="desc">Más recientes</option>
+            <option value="asc">Más antiguas</option>
+        </select>
+    </div>
+
     <ul id="notificationList" class="list-group">
         <li class="list-group-item">Cargando notificaciones...</li>
     </ul>
@@ -35,7 +54,7 @@
     }
     const db = firebase.firestore();
 
-    // 🚀 Función para cargar notificaciones desde Firestore
+    // 🚀 Función para cargar notificaciones con filtros y ordenamiento
     function cargarNotificaciones() {
         const user = firebase.auth().currentUser;
         if (!user) {
@@ -43,25 +62,36 @@
             return;
         }
 
+        const filtroTipo = document.getElementById("filtroTipo").value;
+        const ordenarPor = document.getElementById("ordenarPor").value;
         const notificationList = document.getElementById("notificationList");
         notificationList.innerHTML = "<li class='list-group-item'>Cargando notificaciones...</li>";
 
-        db.collection("notificaciones").where("usuario_id", "==", user.uid).orderBy("fecha", "desc")
-            .onSnapshot((querySnapshot) => {
-                notificationList.innerHTML = ""; // Limpiar lista
-                if (querySnapshot.empty) {
-                    notificationList.innerHTML = "<li class='list-group-item'>No tienes notificaciones.</li>";
-                    return;
-                }
+        let query = db.collection("notificaciones").where("usuario_id", "==", user.uid);
 
-                querySnapshot.forEach((doc) => {
-                    const data = doc.data();
-                    const li = document.createElement("li");
-                    li.className = "list-group-item";
-                    li.textContent = `${data.mensaje} (${new Date(data.fecha.seconds * 1000).toLocaleString()})`;
-                    notificationList.appendChild(li);
-                });
+        if (filtroTipo !== "todas") {
+            query = query.where("tipo", "==", filtroTipo);
+        }
+
+        query = query.orderBy("fecha", ordenarPor);
+
+        query.get().then((querySnapshot) => {
+            notificationList.innerHTML = ""; // Limpiar lista
+            if (querySnapshot.empty) {
+                notificationList.innerHTML = "<li class='list-group-item'>No hay notificaciones disponibles.</li>";
+                return;
+            }
+
+            querySnapshot.forEach((doc) => {
+                const data = doc.data();
+                const li = document.createElement("li");
+                li.className = "list-group-item";
+                li.textContent = `${data.mensaje} (${new Date(data.fecha.seconds * 1000).toLocaleString()})`;
+                notificationList.appendChild(li);
             });
+        }).catch((error) => {
+            console.error("Error al obtener notificaciones:", error);
+        });
     }
 
     // 🔹 Esperar a que el usuario esté autenticado antes de cargar las notificaciones

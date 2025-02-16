@@ -2,8 +2,6 @@ from flask import Blueprint, render_template, request, jsonify
 from models import add_system_data, get_all_system_data
 from firebase_admin import firestore, auth
 
-auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
-
 # Inicializar Firestore
 db = firestore.client()
 
@@ -23,9 +21,6 @@ def dashboard():
 @main.route('/documentation')
 def documentation():
     return render_template('documentation.html')
-
-# Blueprint para autenticación
-auth = Blueprint('auth', __name__, url_prefix='/auth')
 
 @auth_bp.route('/login', methods=['GET'])
 def login():
@@ -54,24 +49,6 @@ def login_post():
 @auth_bp.route('/register', methods=['GET'])
 def register():
     return render_template('auth/register.html')
-
-# Procesar el formulario de registro
-@auth_bp.route('/register', methods=['POST'])
-def register_post():
-    email = request.form.get("email")
-    password = request.form.get("password")
-
-    if not email or not password:
-        flash("Todos los campos son obligatorios.", "error")
-        return redirect(url_for('auth.register'))
-
-    try:
-        user = auth.create_user(email=email, password=password)
-        flash("Registro exitoso. Ahora puedes iniciar sesión.", "success")
-        return redirect(url_for('auth.login'))
-    except Exception as e:
-        flash(f"Error en el registro: {str(e)}", "error")
-        return redirect(url_for('auth.register'))
 
 @main.route('/test_firestore')
 def test_firestore():

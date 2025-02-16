@@ -34,10 +34,20 @@
                     </li>
                 </ul>
 
-                <!-- 🔹 Botones de autenticación alineados a la derecha -->
                 <div class="d-flex">
-                    <a href="{{ url_for('auth.login') }}" class="btn btn-outline-light me-2">Iniciar sesión</a>
-                    <a href="{{ url_for('auth.register') }}" class="btn btn-primary">Registrarse</a>
+                    {% if current_user.is_authenticated %}
+                        <div class="dropdown">
+                            <button class="btn btn-outline-light dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                {{ current_user.email }}
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}">Cerrar sesión</a></li>
+                            </ul>
+                        </div>
+                    {% else %}
+                        <a href="{{ url_for('auth.login') }}" class="btn btn-outline-light me-2">Iniciar sesión</a>
+                        <a href="{{ url_for('auth.register') }}" class="btn btn-primary">Registrarse</a>
+                    {% endif %}
                 </div>
             </div>
         </div>

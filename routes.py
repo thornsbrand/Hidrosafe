@@ -28,3 +28,8 @@ def documentation():
 @login_required
 def profile():
     return render_template('profile.html', user=current_user)
+
+@main.route('/notifications')
+@login_required
+def notifications():
+    return render_template('notifications.html', user=current_user)

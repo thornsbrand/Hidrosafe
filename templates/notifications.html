@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}Notificaciones - Hydrosafe{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Notificaciones</h2>
+    <p>Aquí puedes ver las alertas y mensajes importantes.</p>
+
+    <ul id="notificationList" class="list-group">
+        <li class="list-group-item">Cargando notificaciones...</li>
+    </ul>
+</div>
+
+<!-- 🚀 Agregar Firebase y Firestore -->
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+
+<script>
+    // 🔹 Configuración de Firebase
+    const firebaseConfig = {
+        apiKey: "AIzaSyADxmST-tVzWPery7a7tYksjeBNKlbYMxk",
+        authDomain: "hydrosafe-b8635.firebaseapp.com",
+        projectId: "hydrosafe-b8635",
+        storageBucket: "hydrosafe-b8635.appspot.com",
+        messagingSenderId: "670282184676",
+        appId: "1:670282184676:web:1cda5088c7cca03e6fb9f1",
+        measurementId: "G-P79J6CG5S8"
+    };
+
+    // 🔹 Inicializar Firebase si aún no está inicializado
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+    const db = firebase.firestore();
+
+    // 🚀 Función para cargar notificaciones desde Firestore
+    function cargarNotificaciones() {
+        const user = firebase.auth().currentUser;
+        if (!user) {
+            console.error("Usuario no autenticado");
+            return;
+        }
+
+        const notificationList = document.getElementById("notificationList");
+        notificationList.innerHTML = "<li class='list-group-item'>Cargando notificaciones...</li>";
+
+        db.collection("notificaciones").where("usuario_id", "==", user.uid).orderBy("fecha", "desc")
+            .onSnapshot((querySnapshot) => {
+                notificationList.innerHTML = ""; // Limpiar lista
+                if (querySnapshot.empty) {
+                    notificationList.innerHTML = "<li class='list-group-item'>No tienes notificaciones.</li>";
+                    return;
+                }
+
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const li = document.createElement("li");
+                    li.className = "list-group-item";
+                    li.textContent = `${data.mensaje} (${new Date(data.fecha.seconds * 1000).toLocaleString()})`;
+                    notificationList.appendChild(li);
+                });
+            });
+    }
+
+    // 🔹 Esperar a que el usuario esté autenticado antes de cargar las notificaciones
+    firebase.auth().onAuthStateChanged((user) => {
+        if (user) {
+            cargarNotificaciones();
+        }
+    });
+</script>
+
+{% endblock %}

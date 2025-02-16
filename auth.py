@@ -41,12 +41,33 @@ def register_post():
         return redirect(url_for('auth.register'))
 
     try:
+        # Verificar si Firebase está inicializado
+        if not firebase_admin._apps:
+            flash("Error interno: Firebase no está inicializado.", "error")
+            return redirect(url_for('auth.register'))
+
+        # Verificar si el usuario ya existe
+        try:
+            existing_user = auth.get_user_by_email(email)
+            flash("Este correo ya está registrado. Intenta iniciar sesión.", "error")
+            return redirect(url_for('auth.login'))
+        except auth.UserNotFoundError:
+            pass  # Si el usuario no existe, continúa con el registro
+
+        # Crear usuario en Firebase Authentication
         user = auth.create_user(email=email, password=password)
+
         flash("Registro exitoso. Ahora puedes iniciar sesión.", "success")
         return redirect(url_for('auth.login'))
+
+    except auth.EmailAlreadyExistsError:
+        flash("Este correo ya está registrado. Intenta iniciar sesión.", "error")
+    except auth.InvalidPasswordError:
+        flash("La contraseña no cumple con los requisitos de seguridad.", "error")
     except Exception as e:
         flash(f"Error en el registro: {str(e)}", "error")
-        return redirect(url_for('auth.register'))
+
+    return redirect(url_for('auth.register'))
 
 @auth_bp.route('/logout')
 

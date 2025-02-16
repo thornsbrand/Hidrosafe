@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, jsonify
 from models import add_system_data, get_all_system_data
 from firebase_admin import firestore, auth
+from auth import auth_bp  # Asegura que esta línea está presente
 
 # Inicializar Firestore
 db = firestore.client()

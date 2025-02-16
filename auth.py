@@ -18,24 +18,28 @@ if not firebase_admin._apps:
     else:
         raise ValueError("Error: La variable de entorno FIREBASE_CREDENTIALS no está configurada en Render.")
 
-@auth_bp.route('/login', methods=['GET', 'POST'])
+# 🔹 Ruta para mostrar el formulario de login (no necesita cambios)
+@auth_bp.route('/login', methods=['GET'])
 def login():
-    if request.method == 'POST':
-        email = request.form['email']
-        password = request.form['password']
-        user = User.query.filter_by(email=email).first()
-
-        if user is None or not user.check_password(password):
-            flash('Invalid email or password')
-            return redirect(url_for('auth.login'))
-
-        login_user(user)
-        next_page = request.args.get('next')
-        if not next_page or urlparse(next_page).netloc != '':
-            next_page = url_for('main.dashboard')
-        return redirect(next_page)
-
     return render_template('auth/login.html')
+
+# 🔹 Nueva ruta para recibir el token desde el frontend
+@auth_bp.route('/login', methods=['POST'])
+def login_post():
+    try:
+        data = request.json
+        id_token = data.get("idToken")
+
+        if not id_token:
+            return jsonify({"success": False, "error": "Token de autenticación no proporcionado"}), 400
+
+        decoded_token = auth.verify_id_token(id_token)
+        user_uid = decoded_token["uid"]
+
+        return jsonify({"success": True, "uid": user_uid}), 200  # Responde con éxito
+
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 401  # Devuelve error si el token es inválido
 
 # Ruta para mostrar el formulario de registro
 @auth_bp.route('/register', methods=['GET'])

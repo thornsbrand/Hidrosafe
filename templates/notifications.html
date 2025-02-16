@@ -18,14 +18,6 @@
         </select>
     </div>
 
-    <div class="mb-3">
-        <label class="form-label">Ordenar por:</label>
-        <select id="ordenarPor" class="form-select" onchange="cargarNotificaciones()">
-            <option value="desc">Más recientes</option>
-            <option value="asc">Más antiguas</option>
-        </select>
-    </div>
-
     <ul id="notificationList" class="list-group">
         <li class="list-group-item">Cargando notificaciones...</li>
     </ul>
@@ -63,7 +55,6 @@
         }
 
         const filtroTipo = document.getElementById("filtroTipo").value;
-        const ordenarPor = document.getElementById("ordenarPor").value;
         const notificationList = document.getElementById("notificationList");
         notificationList.innerHTML = "<li class='list-group-item'>Cargando notificaciones...</li>";
 
@@ -73,7 +64,7 @@
             query = query.where("tipo", "==", filtroTipo);
         }
 
-        query = query.orderBy("fecha", ordenarPor);
+        query = query.orderBy("fecha", "desc");
 
         query.get().then((querySnapshot) => {
             notificationList.innerHTML = ""; // Limpiar lista

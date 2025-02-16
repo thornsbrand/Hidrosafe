@@ -23,7 +23,6 @@ if not firebase_admin._apps:
 def login():
     return render_template('auth/login.html')
 
-# 🔹 Nueva ruta para recibir el token desde el frontend
 @auth_bp.route('/login', methods=['POST'])
 def login_post():
     try:
@@ -31,15 +30,24 @@ def login_post():
         id_token = data.get("idToken")
 
         if not id_token:
-            return jsonify({"success": False, "error": "Token de autenticación no proporcionado"}), 400
+            return jsonify({"success": False, "error": "Token no proporcionado"}), 400
 
+        # 🔹 Decodificar el token para obtener información del usuario
         decoded_token = auth.verify_id_token(id_token)
         user_uid = decoded_token["uid"]
+        user_email = decoded_token.get("email", "usuario_desconocido")
+
+        # 🔹 Crear un objeto de usuario y autenticarlo en Flask-Login
+        user = User(user_uid, user_email)
+        login_user(user)  # 🔹 Marca al usuario como autenticado en Flask-Login
+
+        print(f"✅ Usuario autenticado: {user.email} (UID: {user.id})")
 
         return jsonify({"success": True, "uid": user_uid}), 200  # Responde con éxito
 
     except Exception as e:
-        return jsonify({"success": False, "error": str(e)}), 401  # Devuelve error si el token es inválido
+        print("❌ Error en la autenticación:", str(e))
+        return jsonify({"success": False, "error": str(e)}), 401  # Devuelve error si hay un problema
 
 # Ruta para mostrar el formulario de registro
 @auth_bp.route('/register', methods=['GET'])
@@ -90,7 +98,6 @@ def register_post():
     return redirect(url_for('auth.register'))
 
 @auth_bp.route('/logout')
-
 @login_required
 def logout():
     logout_user()

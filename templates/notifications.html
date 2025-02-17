@@ -74,12 +74,18 @@
             }
 
             querySnapshot.forEach((doc) => {
-                const data = doc.data();
-                const li = document.createElement("li");
-                li.className = "list-group-item";
-                li.textContent = `${data.mensaje} (${new Date(data.fecha.seconds * 1000).toLocaleString()})`;
-                notificationList.appendChild(li);
-            });
+            const data = doc.data();
+            const fechaCompleta = new Date(data.fecha.seconds * 1000);
+            
+            const fecha = fechaCompleta.toLocaleDateString(); // Solo la fecha (dd/mm/aaaa)
+            const hora = fechaCompleta.toLocaleTimeString(); // Solo la hora (hh:mm:ss AM/PM)
+
+            const li = document.createElement("li");
+            li.className = "list-group-item";
+            li.textContent = `${fecha} - ${hora}: ${data.mensaje}`;
+            
+            notificationList.appendChild(li);
+        });
         }).catch((error) => {
             console.error("Error al obtener notificaciones:", error);
         });

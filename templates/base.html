@@ -24,20 +24,19 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('main.index') }}">Inicio</a>
                     </li>
-                    {% if current_user.is_authenticated %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('main.dashboard') }}">Dashboard</a>
-                    </li>
-                    {% endif %}
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('main.documentation') }}">Documentación</a>
                     </li>
                     {% if current_user.is_authenticated %}
                     <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('main.dashboard') }}">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('main.notifications') }}">Notificaciones</a>
                     </li>
                     {% endif %}
                 </ul>
+                
 
                 <div class="d-flex">
                     {% if current_user.is_authenticated %}

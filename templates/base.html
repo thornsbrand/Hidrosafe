@@ -46,6 +46,9 @@
                                 {{ current_user.email }}
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                {% if current_user.rol == "admin" %}
+                                    <li><a class="dropdown-item" href="{{ url_for('main.admin_panel') }}">Panel Admin</a></li>
+                                {% endif %}
                                 <li><a class="dropdown-item" href="{{ url_for('main.profile') }}">Perfil</a></li>
                                 <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}">Cerrar sesión</a></li>
                             </ul>
@@ -55,6 +58,8 @@
                         <a href="{{ url_for('auth.register') }}" class="btn btn-primary">Registrarse</a>
                     {% endif %}
                 </div>
+                
+
             </div>
         </div>
     </nav>

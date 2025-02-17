@@ -33,3 +33,10 @@ def profile():
 @login_required
 def notifications():
     return render_template('notifications.html', user=current_user)
+
+@main.route('/admin')
+@login_required
+def admin_panel():
+    if current_user.rol != "admin":
+        abort(403)  # 🔹 Acceso prohibido si el usuario no es admin
+    return render_template('admin.html')

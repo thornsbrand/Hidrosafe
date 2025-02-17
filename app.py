@@ -13,11 +13,16 @@ firebase_admin.initialize_app(cred)
 # Instancia de Firestore
 db = firestore.client()
 
-# 🔹 Modelo de Usuario para Flask-Login
+# 🔹 Modelo de Usuario con rol
 class User(UserMixin):
-    def __init__(self, uid, email):
+    def __init__(self, uid, email, rol):
         self.id = uid
         self.email = email
+        self.rol = rol
+
+@app.context_processor
+def inject_user():
+    return dict(current_user=current_user)
 
 def create_app():
     app = Flask(__name__)

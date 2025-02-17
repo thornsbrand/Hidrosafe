@@ -7,11 +7,12 @@ from firebase_admin import credentials, auth  # 🔹 Importar auth para autentic
 
 auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 
-# 🔹 Modelo de Usuario para Flask-Login
+# 🔹 Modelo de Usuario con rol
 class User(UserMixin):
-    def __init__(self, uid, email):
+    def __init__(self, uid, email, rol):
         self.id = uid
         self.email = email
+        self.rol = rol
 
 # Inicializa Firebase si aún no está inicializado
 if not firebase_admin._apps:
@@ -38,22 +39,31 @@ def login_post():
         if not id_token:
             return jsonify({"success": False, "error": "Token no proporcionado"}), 400
 
-        # 🔹 Decodificar el token para obtener información del usuario
+        # 🔹 Verificar token en Firebase
         decoded_token = auth.verify_id_token(id_token)
         user_uid = decoded_token["uid"]
         user_email = decoded_token.get("email", "usuario_desconocido")
 
-        # 🔹 Crear un objeto de usuario y autenticarlo en Flask-Login
-        user = User(user_uid, user_email)
-        login_user(user)  # 🔹 Marca al usuario como autenticado en Flask-Login
+        # 🔹 Obtener el rol desde Firestore
+        user_doc = db.collection("usuarios").document(user_uid).get()
+        if user_doc.exists:
+            user_data = user_doc.to_dict()
+            user_rol = user_data.get("rol", "usuario")  # Si no tiene rol, asignar "usuario"
+        else:
+            user_rol = "usuario"
 
-        print(f"✅ Usuario autenticado: {user.email} (UID: {user.id})")
+        # 🔹 Crear el objeto de usuario con el rol
+        user = User(user_uid, user_email, user_rol)
+        login_user(user)  # Autenticar usuario
 
-        return jsonify({"success": True, "uid": user_uid}), 200  # Responde con éxito
+        print(f"✅ Usuario autenticado: {user.email} (Rol: {user.rol})")
+
+        return jsonify({"success": True, "uid": user_uid, "rol": user.rol}), 200
 
     except Exception as e:
         print("❌ Error en la autenticación:", str(e))
-        return jsonify({"success": False, "error": str(e)}), 401  # Devuelve error si hay un problema
+        return jsonify({"success": False, "error": str(e)}), 401
+
 
 # Ruta para mostrar el formulario de registro
 @auth_bp.route('/register', methods=['GET'])
@@ -71,37 +81,21 @@ def register_post():
         return redirect(url_for('auth.register'))
 
     try:
-        # Verificar si Firebase está inicializado
-        if not firebase_admin._apps:
-            flash("Error interno: Firebase no está inicializado.", "error")
-            return redirect(url_for('auth.register'))
-
-        # Verificar si el usuario ya existe
-        try:
-            existing_user = auth.get_user_by_email(email)
-            flash("Este correo ya está registrado. Intenta iniciar sesión.", "error")
-            return redirect(url_for('auth.login'))
-        except auth.UserNotFoundError:
-            pass  # Si el usuario no existe, continúa con el registro
-
-        # Crear usuario en Firebase Authentication
         user = auth.create_user(email=email, password=password)
+        user_uid = user.uid
+
+        # 🔹 Guardar usuario en Firestore con rol por defecto "usuario"
+        db.collection("usuarios").document(user_uid).set({
+            "email": email,
+            "rol": "usuario"  # Por defecto, todos son usuarios normales
+        })
 
         flash("Registro exitoso. Ahora puedes iniciar sesión.", "success")
         return redirect(url_for('auth.login'))
 
-    except auth.EmailAlreadyExistsError:
-        flash("Este correo ya está registrado. Intenta iniciar sesión.", "error")
-    except ValueError:  # Captura errores de datos inválidos
-        flash("La contraseña no cumple con los requisitos de seguridad.", "error")
-    except firebase_admin.auth.EmailAlreadyExistsError:  # Captura si el email ya existe
-        flash("Este correo ya está registrado. Intenta iniciar sesión.", "error")
-    except Exception as e:  # Captura cualquier otro error
-        flash(f"Error en el registro: {str(e)}", "error")
     except Exception as e:
         flash(f"Error en el registro: {str(e)}", "error")
-
-    return redirect(url_for('auth.register'))
+        return redirect(url_for('auth.register'))
 
 @auth_bp.route('/logout')
 @login_required

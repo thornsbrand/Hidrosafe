@@ -20,10 +20,6 @@ class User(UserMixin):
         self.email = email
         self.rol = rol
 
-@app.context_processor
-def inject_user():
-    return dict(current_user=current_user)
-
 def create_app():
     app = Flask(__name__)
     app.secret_key = os.environ.get("FLASK_SECRET_KEY") or "hydrosafe_secret_key"
@@ -58,6 +54,10 @@ def create_app():
         return app
 
 app = create_app()
+
+@app.context_processor
+def inject_user():
+    return dict(current_user=current_user)
 
 # Ruta de prueba para verificar que Firebase está conectado
 @app.route('/test_firebase')

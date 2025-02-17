@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Panel de Administración</h2>
+    <p class="text-muted">Bienvenido, {{ current_user.email }}. Aquí puedes gestionar la plataforma.</p>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">📌 Administrar Usuarios</h5>
+                    <p class="card-text">Crear, editar y eliminar cuentas de usuarios.</p>
+                    <a href="{{ url_for('admin.manage_users') }}" class="btn btn-primary">Gestionar</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">⚙️ Configuración</h5>
+                    <p class="card-text">Modificar ajustes generales del sistema.</p>
+                    <a href="{{ url_for('admin.settings') }}" class="btn btn-primary">Configurar</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">🛠️ Mantenimientos</h5>
+                    <p class="card-text">Crear y modificar planes de mantenimiento.</p>
+                    <a href="{{ url_for('admin.maintenances') }}" class="btn btn-primary">Administrar</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mt-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">📊 Reportes</h5>
+                    <p class="card-text">Ver estadísticas del sistema.</p>
+                    <a href="{{ url_for('admin.reports') }}" class="btn btn-primary">Ver Reportes</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mt-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">🚨 Alertas</h5>
+                    <p class="card-text">Gestionar notificaciones de fallas y mantenimiento.</p>
+                    <a href="{{ url_for('admin.alerts') }}" class="btn btn-primary">Gestionar</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mt-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">🔑 Permisos</h5>
+                    <p class="card-text">Controlar accesos de usuarios.</p>
+                    <a href="{{ url_for('admin.permissions') }}" class="btn btn-primary">Administrar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

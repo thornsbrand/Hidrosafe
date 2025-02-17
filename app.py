@@ -4,6 +4,9 @@ import firebase_admin
 from firebase_admin import credentials, auth, firestore
 from flask import Flask, request, jsonify
 from flask_login import LoginManager, UserMixin, login_manager, login_user, logout_user, current_user
+from admin import admin_bp
+
+app.register_blueprint(admin_bp)
 
 # Cargar credenciales de Firebase desde la variable de entorno en Render
 firebase_config = json.loads(os.getenv("FIREBASE_CREDENTIALS"))

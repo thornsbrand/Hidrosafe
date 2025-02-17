@@ -32,6 +32,10 @@ def create_app():
     login_manager.init_app(app)
     login_manager.login_view = "auth.login"  # Redirigir a login si no está autenticado
 
+    from routes import main
+    from auth import auth_bp
+    from admin import admin_bp 
+
     # 🔹 Cargar usuario desde Firestore en cada solicitud
     @login_manager.user_loader
     def load_user(user_id):
@@ -53,6 +57,8 @@ def create_app():
 
         app.register_blueprint(main)
         app.register_blueprint(auth_bp)
+        app.register_blueprint(admin_bp)  # 🔹 Ahora Flask puede registrar el blueprint
+
 
         return app
 

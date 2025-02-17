@@ -67,5 +67,19 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     {% block scripts %}{% endblock %}
+
+    <!-- 🚀 Footer -->
+    <footer class="bg-dark text-light text-center py-3 mt-5">
+        <div class="container">
+            <p>© 2025 Hydrosafe - Todos los derechos reservados</p>
+            <p>
+                <a href="{{ url_for('main.index') }}" class="text-light text-decoration-none">Inicio</a> |
+                <a href="{{ url_for('main.documentation') }}" class="text-light text-decoration-none">Documentación</a> |
+                <a href="mailto:soporte@hydrosafe.com" class="text-light text-decoration-none">Soporte</a> |
+                <a href="{{ url_for('main.notifications') }}" class="text-light text-decoration-none">Notificaciones</a>
+            </p>
+        </div>
+    </footer>
+
 </body>
 </html>

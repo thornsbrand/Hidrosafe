@@ -52,9 +52,9 @@ def login_post():
         else:
             user_rol = "usuario"
 
-        # 🔹 Crear el objeto de usuario con el rol
+        # 🔹 Crear el objeto de usuario y autenticarlo en Flask-Login
         user = User(user_uid, user_email, user_rol)
-        login_user(user)  # Autenticar usuario
+        login_user(user)  # ✅ Marca al usuario como autenticado
 
         print(f"✅ Usuario autenticado: {user.email} (Rol: {user.rol})")
 
@@ -63,6 +63,7 @@ def login_post():
     except Exception as e:
         print("❌ Error en la autenticación:", str(e))
         return jsonify({"success": False, "error": str(e)}), 401
+
 
 
 # Ruta para mostrar el formulario de registro

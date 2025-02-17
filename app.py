@@ -29,14 +29,14 @@ def create_app():
     login_manager.init_app(app)
     login_manager.login_view = "auth.login"  # Redirigir a login si no está autenticado
 
-    # 🔹 Función para cargar usuarios desde Firebase Authentication
+    # 🔹 Cargar usuario desde Firestore en cada solicitud
     @login_manager.user_loader
     def load_user(user_id):
-        try:
-            user_record = auth.get_user(user_id)
-            return User(user_record.uid, user_record.email)
-        except Exception:
-            return None
+        user_doc = db.collection("usuarios").document(user_id).get()
+        if user_doc.exists:
+            user_data = user_doc.to_dict()
+            return User(user_id, user_data["email"], user_data.get("rol", "usuario"))
+        return None  # Si el usuario no existe, devolver None
 
     # 🔹 Inyectar `current_user` en todas las plantillas
     @app.context_processor

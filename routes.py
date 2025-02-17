@@ -34,7 +34,7 @@ def profile():
 def notifications():
     return render_template('notifications.html', user=current_user)
 
-@main.route('/admin')
+@main.route('/admin_panel')
 @login_required
 def admin_panel():
     if current_user.rol != "admin":

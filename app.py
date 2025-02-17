@@ -3,10 +3,7 @@ import json
 import firebase_admin
 from firebase_admin import credentials, auth, firestore
 from flask import Flask, request, jsonify
-from flask_login import LoginManager, UserMixin, login_manager, login_user, logout_user, current_user
-from admin import admin_bp
-
-app.register_blueprint(admin_bp)
+from flask_login import LoginManager, UserMixin, login_user, logout_user, current_user
 
 # Cargar credenciales de Firebase desde la variable de entorno en Render
 firebase_config = json.loads(os.getenv("FIREBASE_CREDENTIALS"))
@@ -32,9 +29,14 @@ def create_app():
     login_manager.init_app(app)
     login_manager.login_view = "auth.login"  # Redirigir a login si no está autenticado
 
+    # 🔹 Importar blueprints dentro de la función para evitar errores
     from routes import main
     from auth import auth_bp
     from admin import admin_bp 
+
+    app.register_blueprint(main)
+    app.register_blueprint(auth_bp)
+    app.register_blueprint(admin_bp)  # 🔹 Registrar blueprint del admin
 
     # 🔹 Cargar usuario desde Firestore en cada solicitud
     @login_manager.user_loader
@@ -50,23 +52,10 @@ def create_app():
     def inject_user():
         return dict(current_user=current_user)
 
-    with app.app_context():
-        # Importar y registrar blueprints
-        from routes import main
-        from auth import auth_bp
+    return app  # 🔹 Retornar la app correctamente
 
-        app.register_blueprint(main)
-        app.register_blueprint(auth_bp)
-        app.register_blueprint(admin_bp)  # 🔹 Ahora Flask puede registrar el blueprint
-
-
-        return app
-
+# 🔹 Crear la aplicación después de definir `create_app`
 app = create_app()
-
-@app.context_processor
-def inject_user():
-    return dict(current_user=current_user)
 
 # Ruta de prueba para verificar que Firebase está conectado
 @app.route('/test_firebase')

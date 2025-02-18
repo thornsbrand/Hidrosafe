@@ -24,12 +24,15 @@
         </div>
         <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
     </form>
+
+    <div class="text-center mt-3">
+        <a href="#" onclick="resetPassword()" class="text-primary">¿Olvidaste tu contraseña?</a>
+    </div>
 </div>
 
 <!-- 🚀 Cargar Firebase en modo compatibilidad -->
 <script defer src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
 <script defer src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
-
 
 <!-- 🔹 Configuración e inicialización de Firebase -->
 <script>
@@ -82,6 +85,21 @@
             .catch((error) => {
                 alert("Error en el inicio de sesión: " + error.message);
             });
+    }
+
+    // 🚀 Función para restablecer la contraseña
+    function resetPassword() {
+        var email = prompt("Ingresa tu correo electrónico para restablecer la contraseña:");
+
+        if (email) {
+            firebase.auth().sendPasswordResetEmail(email)
+                .then(() => {
+                    alert("Se ha enviado un correo para restablecer tu contraseña. Revisa tu bandeja de entrada.");
+                })
+                .catch(error => {
+                    alert("Error al enviar el correo: " + error.message);
+                });
+        }
     }
 </script>
 

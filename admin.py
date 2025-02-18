@@ -104,7 +104,9 @@ def alerts():
         "usuario_email": users_dict.get(alert.to_dict().get("usuario_id"), "Usuario No Encontrado")
     } for alert in alerts_ref]
 
-    return render_template('admin_alerts.html', alerts=alerts, users=users_dict)
+    users_list = [{"id": user_id, "email": email} for user_id, email in users_dict.items()]
+    return render_template('admin_alerts.html', alerts=alerts, users=users_list)
+
 
 
 

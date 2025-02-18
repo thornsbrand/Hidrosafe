@@ -45,13 +45,6 @@ def reports():
         abort(403)  # 🔹 Acceso prohibido para usuarios normales
     return render_template('admin_reports.html')
 
-@admin_bp.route('/permissions')
-@login_required
-def permissions():
-    if current_user.rol != "admin":
-        abort(403)  # 🔹 Acceso prohibido para usuarios normales
-    return render_template('admin_permissions.html')
-
 @admin_bp.route('/manage_users/edit/<uid>', methods=['POST'])
 @login_required
 def edit_user(uid):
@@ -106,9 +99,6 @@ def alerts():
 
     users_list = [{"id": user_id, "email": email} for user_id, email in users_dict.items()]
     return render_template('admin_alerts.html', alerts=alerts, users=users_list)
-
-
-
 
 @admin_bp.route('/alerts/create', methods=['POST'])
 @login_required
@@ -170,3 +160,11 @@ def delete_alert(alert_id):
         flash(f"Error al eliminar la alerta: {str(e)}", "error")
 
     return redirect(url_for('admin.alerts'))
+
+@admin_bp.route('/requests')
+@login_required
+def requests():
+    if current_user.rol != "admin":
+        abort(403)  # 🔹 Solo los administradores pueden acceder
+
+    return render_template('admin_requests.html')

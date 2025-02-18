@@ -92,15 +92,20 @@ def alerts():
     if current_user.rol != "admin":
         abort(403)
 
-    # Obtener alertas
-    alerts_ref = db.collection("notificaciones").stream()
-    alerts = [{**alert.to_dict(), "id": alert.id} for alert in alerts_ref]
-
-    # Obtener usuarios para enviar alertas
+    # Obtener lista de usuarios con sus correos
     users_ref = db.collection("usuarios").stream()
-    users = [{**user.to_dict(), "uid": user.id} for user in users_ref]
+    users_dict = {user.id: user.to_dict().get("email", "Usuario Desconocido") for user in users_ref}
 
-    return render_template('admin_alerts.html', alerts=alerts, users=users)
+    # Obtener alertas y asociar el email del usuario destinatario
+    alerts_ref = db.collection("notificaciones").stream()
+    alerts = [{
+        **alert.to_dict(),
+        "id": alert.id,
+        "usuario_email": users_dict.get(alert.to_dict().get("usuario_id"), "Usuario No Encontrado")
+    } for alert in alerts_ref]
+
+    return render_template('admin_alerts.html', alerts=alerts, users=users_dict)
+
 
 
 @admin_bp.route('/alerts/create', methods=['POST'])

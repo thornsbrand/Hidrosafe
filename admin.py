@@ -92,3 +92,81 @@ def delete_user(uid):
         flash(f"Error al eliminar el usuario: {str(e)}", "error")
 
     return redirect(url_for('admin.manage_users'))
+
+@admin_bp.route('/alerts', methods=['GET', 'POST'])
+@login_required
+def alerts():
+    if current_user.rol != "admin":
+        abort(403)
+
+    # Obtener alertas
+    alerts_ref = db.collection("notificaciones").stream()
+    alerts = [{**alert.to_dict(), "id": alert.id} for alert in alerts_ref]
+
+    # Obtener usuarios para enviar alertas
+    users_ref = db.collection("usuarios").stream()
+    users = [{**user.to_dict(), "uid": user.id} for user in users_ref]
+
+    return render_template('admin_alerts.html', alerts=alerts, users=users)
+
+
+@admin_bp.route('/alerts/create', methods=['POST'])
+@login_required
+def create_alert():
+    if current_user.rol != "admin":
+        abort(403)
+
+    message = request.form.get("message")
+    alert_type = request.form.get("alert_type")
+    user_ids = request.form.getlist("users")
+
+    if not message or not alert_type or not user_ids:
+        flash("Todos los campos son obligatorios.", "error")
+        return redirect(url_for('admin.alerts'))
+
+    for user_id in user_ids:
+        db.collection("notificaciones").add({
+            "usuario_id": user_id,
+            "mensaje": message,
+            "tipo": alert_type,
+            "fecha": firestore.SERVER_TIMESTAMP
+        })
+
+    flash("Alerta creada con éxito.", "success")
+    return redirect(url_for('admin.alerts'))
+
+
+@admin_bp.route('/alerts/edit/<alert_id>', methods=['POST'])
+@login_required
+def edit_alert(alert_id):
+    if current_user.rol != "admin":
+        abort(403)
+
+    message = request.form.get("message")
+    alert_type = request.form.get("alert_type")
+
+    try:
+        db.collection("notificaciones").document(alert_id).update({
+            "mensaje": message,
+            "tipo": alert_type
+        })
+        flash("Alerta actualizada con éxito.", "success")
+    except Exception as e:
+        flash(f"Error al actualizar la alerta: {str(e)}", "error")
+
+    return redirect(url_for('admin.alerts'))
+
+
+@admin_bp.route('/alerts/delete/<alert_id>', methods=['POST'])
+@login_required
+def delete_alert(alert_id):
+    if current_user.rol != "admin":
+        abort(403)
+
+    try:
+        db.collection("notificaciones").document(alert_id).delete()
+        flash("Alerta eliminada con éxito.", "success")
+    except Exception as e:
+        flash(f"Error al eliminar la alerta: {str(e)}", "error")
+
+    return redirect(url_for('admin.alerts'))

@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 
 {% block content %}
-
 <div class="container mt-3">
     <a href="{{ url_for('admin.admin_panel') }}" class="btn btn-secondary mb-3">⬅ Volver al Panel de Administración</a>
 </div>
@@ -10,28 +9,93 @@
     <h2>Gestión de Alertas</h2>
     <p>Aquí puedes crear, modificar y eliminar alertas del sistema.</p>
 
+    <!-- Formulario para crear una nueva alerta -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Crear Nueva Alerta</h5>
+            <form method="POST" action="{{ url_for('admin.create_alert') }}">
+                <div class="mb-3">
+                    <label class="form-label">Mensaje</label>
+                    <input type="text" name="message" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Tipo de Alerta</label>
+                    <select name="alert_type" class="form-select" required>
+                        <option value="alerta">Alerta</option>
+                        <option value="mantenimiento">Mantenimiento</option>
+                        <option value="admin">Mensaje del Administrador</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Usuarios Destinatarios</label>
+                    <select name="users" class="form-select" multiple required>
+                        {% for user in users %}
+                            <option value="{{ user.uid }}">{{ user.email }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-success">Crear Alerta</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Lista de alertas con opciones de edición y eliminación -->
     <table class="table">
         <thead>
             <tr>
-                <th>ID</th>
                 <th>Mensaje</th>
+                <th>Tipo</th>
                 <th>Fecha</th>
                 <th>Acciones</th>
             </tr>
         </thead>
         <tbody>
+            {% for alert in alerts %}
             <tr>
-                <td>001</td>
-                <td>Falla en el sistema hidráulico</td>
-                <td>18/02/2025</td>
+                <td>{{ alert.mensaje }}</td>
+                <td>{{ alert.tipo }}</td>
+                <td>{{ alert.fecha.strftime('%d/%m/%Y %H:%M:%S') if alert.fecha else 'N/A' }}</td>
                 <td>
-                    <button class="btn btn-warning btn-sm">Editar</button>
-                    <button class="btn btn-danger btn-sm">Eliminar</button>
+                    <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editAlert{{ alert.id }}">Editar</button>
+                    <form method="POST" action="{{ url_for('admin.delete_alert', alert_id=alert.id) }}" class="d-inline">
+                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Eliminar esta alerta?')">Eliminar</button>
+                    </form>
                 </td>
             </tr>
+
+            <!-- Modal de edición -->
+            <div class="modal fade" id="editAlert{{ alert.id }}" tabindex="-1">
+                <div class="modal-dialog">
+                    <form method="POST" action="{{ url_for('admin.edit_alert', alert_id=alert.id) }}">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Editar Alerta</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    <label class="form-label">Mensaje</label>
+                                    <input type="text" name="message" class="form-control" value="{{ alert.mensaje }}" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Tipo de Alerta</label>
+                                    <select name="alert_type" class="form-select" required>
+                                        <option value="alerta" {% if alert.tipo == 'alerta' %}selected{% endif %}>Alerta</option>
+                                        <option value="mantenimiento" {% if alert.tipo == 'mantenimiento' %}selected{% endif %}>Mantenimiento</option>
+                                        <option value="admin" {% if alert.tipo == 'admin' %}selected{% endif %}>Mensaje del Administrador</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-primary">Guardar cambios</button>
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
         </tbody>
     </table>
-
-    <button class="btn btn-success">Agregar Alerta</button>
 </div>
 {% endblock %}

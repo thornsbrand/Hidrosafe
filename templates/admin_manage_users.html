@@ -1,6 +1,11 @@
 {% extends "base.html" %}
 
 {% block content %}
+
+<div class="container mt-3">
+    <a href="{{ url_for('admin.admin_panel') }}" class="btn btn-secondary mb-3">⬅ Volver al Panel de Administración</a>
+</div>
+
 <div class="container mt-5">
     <h2>Administrar Usuarios</h2>
     <p>Lista de usuarios registrados en el sistema.</p>

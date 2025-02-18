@@ -1,54 +1,64 @@
 document.addEventListener("DOMContentLoaded", function () {
-    function fetchSensorData() {
-        fetch("/api/sensors")
-            .then(response => response.json())
-            .then(data => {
-                Object.keys(data).forEach(sensor => {
-                    const element = document.getElementById(sensor);
-                    if (element) {
-                        element.textContent = `${data[sensor]} ${getUnit(sensor)}`;
-                    }
-                });
-            })
-            .catch(error => console.error("Error al obtener datos de sensores:", error));
-    }
-
-    function fetchSystemStatus() {
-        fetch("/api/system_status")
-            .then(response => response.json())
-            .then(data => {
-                Object.keys(data).forEach(status => {
-                    const element = document.getElementById(status.replace(" ", "_").toLowerCase());
-                    if (element) {
-                        element.textContent = formatStatusValue(status, data[status]);
-                    }
-                });
-            })
-            .catch(error => console.error("Error al obtener estado del sistema:", error));
-    }
-
-    function getUnit(sensor) {
-        const units = {
-            "PS1": "bar", "PS2": "bar", "PS3": "bar", "PS4": "bar", "PS5": "bar", "PS6": "bar",
-            "EPS1": "W", "FS1": "l/min", "FS2": "l/min", "TS1": "°C", "TS2": "°C", "TS3": "°C", "TS4": "°C",
-            "VS1": "mm/s", "CE": "%", "CP": "kW", "SE": "%"
-        };
-        return units[sensor] || "";
-    }
-
-    function formatStatusValue(status, value) {
-        const mappings = {
-            "Cooler": { 3: "Cerca de falla total", 20: "Eficiencia reducida", 100: "Eficiencia total" },
-            "Valve": { 100: "Óptimo", 90: "Retraso pequeño", 80: "Retraso severo", 73: "Cerca de falla total" },
-            "Pump Leakage": { 0: "Sin fugas", 1: "Fuga leve", 2: "Fuga severa" },
-            "Accumulator Pressure": { 130: "Óptimo", 115: "Leve reducción", 100: "Reducción severa", 90: "Cerca de falla" },
-            "Stability": { 0: "Estable", 1: "Condiciones inestables" }
-        };
-        return mappings[status] ? mappings[status][value] || "Desconocido" : value;
-    }
-
-    setInterval(fetchSensorData, 5000); // Actualiza sensores cada 5s
-    setInterval(fetchSystemStatus, 10000); // Actualiza estado cada 10s
-    fetchSensorData();
-    fetchSystemStatus();
+    loadRealTimeData(); // Cargar datos en tiempo real al inicio
 });
+
+function showSection(section) {
+    if (section === 'realTime') {
+        document.getElementById('realTimeSection').style.display = 'block';
+        document.getElementById('historySection').style.display = 'none';
+        loadRealTimeData();
+    } else {
+        document.getElementById('realTimeSection').style.display = 'none';
+        document.getElementById('historySection').style.display = 'block';
+        loadHistoryData();
+    }
+}
+
+function loadRealTimeData() {
+    fetch('/api/sensor_data')
+        .then(response => response.json())
+        .then(data => {
+            const sensorContainer = document.getElementById('sensorData');
+            sensorContainer.innerHTML = '';
+            Object.entries(data.sensors).forEach(([key, value]) => {
+                sensorContainer.innerHTML += `<div class="col-md-4">
+                    <div class="card text-white bg-dark mb-3">
+                        <div class="card-header">${key}</div>
+                        <div class="card-body">
+                            <h5 class="card-title">${value} ${data.units[key] || ''}</h5>
+                        </div>
+                    </div>
+                </div>`;
+            });
+            
+            const systemStatus = document.getElementById('systemStatus');
+            systemStatus.innerHTML = `<ul>
+                <li><strong>Cooler Condition:</strong> ${data.system.cooler}%</li>
+                <li><strong>Valve Condition:</strong> ${data.system.valve}%</li>
+                <li><strong>Pump Leakage:</strong> ${data.system.pump_leakage}</li>
+                <li><strong>Accumulator Pressure:</strong> ${data.system.accumulator} bar</li>
+                <li><strong>Stable:</strong> ${data.system.stable ? 'Sí' : 'No'}</li>
+            </ul>`;
+        })
+        .catch(error => console.error('Error cargando datos en tiempo real:', error));
+}
+
+function loadHistoryData() {
+    fetch('/api/history_data')
+        .then(response => response.json())
+        .then(data => {
+            const historyTable = document.getElementById('historyData');
+            historyTable.innerHTML = '';
+            data.forEach(entry => {
+                historyTable.innerHTML += `<tr>
+                    <td>${entry.cycle}</td>
+                    <td>${entry.cooler}</td>
+                    <td>${entry.valve}</td>
+                    <td>${entry.pump_leakage}</td>
+                    <td>${entry.accumulator}</td>
+                    <td>${entry.stable ? 'Sí' : 'No'}</td>
+                </tr>`;
+            });
+        })
+        .catch(error => console.error('Error cargando historial de datos:', error));
+}

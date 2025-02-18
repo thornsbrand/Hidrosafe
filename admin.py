@@ -27,3 +27,10 @@ def settings():
     if current_user.rol != "admin":
         abort(403)
     return render_template('admin_settings.html')
+
+@admin_bp.route('/maintenances')
+@login_required
+def maintenances():
+    if current_user.rol != "admin":
+        abort(403)  # 🔹 Acceso prohibido para usuarios normales
+    return render_template('admin_maintenances.html')

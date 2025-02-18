@@ -1,61 +1,54 @@
-// Initialize Chart.js
-const ctx = document.getElementById('metricsChart').getContext('2d');
-const chart = new Chart(ctx, {
-    type: 'line',
-    data: {
-        labels: [],
-        datasets: [{
-            label: 'Pressure (PSI)',
-            data: [],
-            borderColor: 'rgb(75, 192, 192)',
-            tension: 0.1
-        }, {
-            label: 'Flow Rate (GPM)',
-            data: [],
-            borderColor: 'rgb(255, 99, 132)',
-            tension: 0.1
-        }, {
-            label: 'Temperature (°C)',
-            data: [],
-            borderColor: 'rgb(153, 102, 255)',
-            tension: 0.1
-        }]
-    },
-    options: {
-        responsive: true,
-        scales: {
-            y: {
-                beginAtZero: true
-            }
-        }
+document.addEventListener("DOMContentLoaded", function () {
+    function fetchSensorData() {
+        fetch("/api/sensors")
+            .then(response => response.json())
+            .then(data => {
+                Object.keys(data).forEach(sensor => {
+                    const element = document.getElementById(sensor);
+                    if (element) {
+                        element.textContent = `${data[sensor]} ${getUnit(sensor)}`;
+                    }
+                });
+            })
+            .catch(error => console.error("Error al obtener datos de sensores:", error));
     }
+
+    function fetchSystemStatus() {
+        fetch("/api/system_status")
+            .then(response => response.json())
+            .then(data => {
+                Object.keys(data).forEach(status => {
+                    const element = document.getElementById(status.replace(" ", "_").toLowerCase());
+                    if (element) {
+                        element.textContent = formatStatusValue(status, data[status]);
+                    }
+                });
+            })
+            .catch(error => console.error("Error al obtener estado del sistema:", error));
+    }
+
+    function getUnit(sensor) {
+        const units = {
+            "PS1": "bar", "PS2": "bar", "PS3": "bar", "PS4": "bar", "PS5": "bar", "PS6": "bar",
+            "EPS1": "W", "FS1": "l/min", "FS2": "l/min", "TS1": "°C", "TS2": "°C", "TS3": "°C", "TS4": "°C",
+            "VS1": "mm/s", "CE": "%", "CP": "kW", "SE": "%"
+        };
+        return units[sensor] || "";
+    }
+
+    function formatStatusValue(status, value) {
+        const mappings = {
+            "Cooler": { 3: "Cerca de falla total", 20: "Eficiencia reducida", 100: "Eficiencia total" },
+            "Valve": { 100: "Óptimo", 90: "Retraso pequeño", 80: "Retraso severo", 73: "Cerca de falla total" },
+            "Pump Leakage": { 0: "Sin fugas", 1: "Fuga leve", 2: "Fuga severa" },
+            "Accumulator Pressure": { 130: "Óptimo", 115: "Leve reducción", 100: "Reducción severa", 90: "Cerca de falla" },
+            "Stability": { 0: "Estable", 1: "Condiciones inestables" }
+        };
+        return mappings[status] ? mappings[status][value] || "Desconocido" : value;
+    }
+
+    setInterval(fetchSensorData, 5000); // Actualiza sensores cada 5s
+    setInterval(fetchSystemStatus, 10000); // Actualiza estado cada 10s
+    fetchSensorData();
+    fetchSystemStatus();
 });
-
-// Simulate real-time data updates
-function updateData() {
-    const pressure = Math.random() * 100 + 50;
-    const flowRate = Math.random() * 20 + 10;
-    const temperature = Math.random() * 30 + 20;
-    
-    document.getElementById('current-pressure').textContent = pressure.toFixed(1);
-    document.getElementById('current-flow').textContent = flowRate.toFixed(1);
-    document.getElementById('current-temp').textContent = temperature.toFixed(1);
-    
-    const now = new Date().toLocaleTimeString();
-    
-    chart.data.labels.push(now);
-    chart.data.datasets[0].data.push(pressure);
-    chart.data.datasets[1].data.push(flowRate);
-    chart.data.datasets[2].data.push(temperature);
-    
-    if (chart.data.labels.length > 20) {
-        chart.data.labels.shift();
-        chart.data.datasets.forEach(dataset => dataset.data.shift());
-    }
-    
-    chart.update();
-}
-
-// Update every 2 seconds
-setInterval(updateData, 2000);
-updateData(); // Initial update

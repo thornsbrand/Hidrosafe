@@ -19,3 +19,11 @@ def manage_users():
         abort(403)
     users = db.collection("usuarios").get()
     return render_template('admin_manage_users.html', users=users)
+
+
+@admin_bp.route('/settings')
+@login_required
+def settings():
+    if current_user.rol != "admin":
+        abort(403)
+    return render_template('admin_settings.html')

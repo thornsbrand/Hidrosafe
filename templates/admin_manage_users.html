@@ -5,18 +5,40 @@
     <h2>Administrar Usuarios</h2>
     <p>Lista de usuarios registrados en el sistema.</p>
 
+    {% with messages = get_flashed_messages(with_categories=True) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
     <table class="table">
         <thead>
             <tr>
                 <th>Email</th>
                 <th>Rol</th>
+                <th>Acciones</th>
             </tr>
         </thead>
         <tbody>
             {% for user in users %}
             <tr>
-                <td>{{ user.to_dict().email }}</td>
-                <td>{{ user.to_dict().rol }}</td>
+                <td>{{ user.email }}</td>
+                <td>
+                    <form method="POST" action="{{ url_for('admin.edit_user', uid=user.uid) }}">
+                        <select name="role" class="form-select d-inline w-auto">
+                            <option value="usuario" {% if user.rol == 'usuario' %}selected{% endif %}>Usuario</option>
+                            <option value="admin" {% if user.rol == 'admin' %}selected{% endif %}>Admin</option>
+                        </select>
+                        <button type="submit" class="btn btn-primary btn-sm">Actualizar</button>
+                    </form>
+                </td>
+                <td>
+                    <form method="POST" action="{{ url_for('admin.delete_user', uid=user.uid) }}" onsubmit="return confirm('¿Estás seguro de eliminar este usuario?')">
+                        <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                    </form>
+                </td>
             </tr>
             {% endfor %}
         </tbody>

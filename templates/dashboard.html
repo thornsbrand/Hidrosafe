@@ -54,8 +54,22 @@
                 <!-- Aquí se insertarán los datos del historial dinámicamente -->
             </tbody>
         </table>
+
+        <!-- Sección de Gráficos -->
+        <h3 class="mt-4">Tendencias de Variables</h3>
+        <div class="row">
+            {% for variable in ["Cooler", "Valve", "Pump Leakage", "Accumulator Pressure", "Stable"] %}
+            <div class="col-md-6 mb-4">
+                <div class="card p-3 border rounded">
+                    <h6>{{ variable }}</h6>
+                    <canvas id="chart_{{ variable|lower|replace(' ', '_') }}"></canvas>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
 {% endblock %}

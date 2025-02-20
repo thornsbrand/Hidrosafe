@@ -59,6 +59,34 @@ function loadHistoryData() {
                     <td>${entry.stable ? 'Sí' : 'No'}</td>
                 </tr>`;
             });
+            generateCharts(data);
         })
         .catch(error => console.error('Error cargando historial de datos:', error));
+}
+
+function generateCharts(data) {
+    const variables = ["cooler", "valve", "pump_leakage", "accumulator", "stable"];
+    variables.forEach(variable => {
+        const ctx = document.getElementById(`chart_${variable}`).getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: data.map(entry => entry.cycle),
+                datasets: [{
+                    label: variable.replace('_', ' ').toUpperCase(),
+                    data: data.map(entry => entry[variable]),
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: { title: { display: true, text: 'Ciclo' } },
+                    y: { title: { display: true, text: variable.replace('_', ' ') } }
+                }
+            }
+        });
+    });
 }

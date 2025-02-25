@@ -1,59 +1,21 @@
 {% extends "base.html" %}
 
-{% block title %}Documentación Avanzada{% endblock %}
+{% block title %}Documentación del Sistema{% endblock %}
 
 {% block content %}
 <div class="container">
-    <h1 class="mb-4">Documentación Avanzada del Sistema</h1>
+    <h1 class="mb-4">Documentación del Sistema</h1>
 
     <div class="row">
         <div class="col-md-3">
             <div class="list-group">
-                <a href="#architecture" class="list-group-item list-group-item-action">Arquitectura del Sistema</a>
-                <a href="#api" class="list-group-item list-group-item-action">Endpoints API</a>
-                <a href="#database" class="list-group-item list-group-item-action">Estructura de la Base de Datos</a>
-                <a href="#security" class="list-group-item list-group-item-action">Seguridad y Autenticación</a>
-                <a href="#deployment" class="list-group-item list-group-item-action">Despliegue</a>
                 <a href="#sensors" class="list-group-item list-group-item-action">Datos de Sensores</a>
+                <a href="#predictive_maintenance" class="list-group-item list-group-item-action">Mantenimiento Predictivo</a>
+                <a href="#general_info" class="list-group-item list-group-item-action">Información General</a>
             </div>
         </div>
 
         <div class="col-md-9">
-            <section id="architecture" class="mb-5">
-                <h2>Arquitectura del Sistema</h2>
-                <p>Hydrosafe está construido con Flask en el backend, Firebase para la base de datos y autenticación, y Render para el despliegue.</p>
-            </section>
-
-            <section id="api" class="mb-5">
-                <h2>Endpoints API</h2>
-                <p>Lista de endpoints disponibles para el monitoreo y gestión del sistema:</p>
-                <ul>
-                    <li><code>GET /api/sensors</code>: Obtiene datos en tiempo real de los sensores.</li>
-                    <li><code>GET /api/history</code>: Recupera datos históricos del sistema.</li>
-                    <li><code>POST /api/alerts</code>: Crea nuevas alertas.</li>
-                </ul>
-            </section>
-
-            <section id="database" class="mb-5">
-                <h2>Estructura de la Base de Datos</h2>
-                <p>Los datos se almacenan en Firebase Firestore con las siguientes colecciones:</p>
-                <ul>
-                    <li><strong>usuarios</strong>: Contiene información de los usuarios registrados.</li>
-                    <li><strong>notificaciones</strong>: Almacena alertas generadas en el sistema.</li>
-                    <li><strong>sensores</strong>: Registra datos en tiempo real de los sensores.</li>
-                </ul>
-            </section>
-
-            <section id="security" class="mb-5">
-                <h2>Seguridad y Autenticación</h2>
-                <p>El sistema usa Firebase Authentication para gestionar el acceso seguro a los usuarios.</p>
-            </section>
-
-            <section id="deployment" class="mb-5">
-                <h2>Despliegue</h2>
-                <p>Hydrosafe está desplegado en Render con integración continua desde GitHub.</p>
-            </section>
-
             <section id="sensors" class="mb-5">
                 <h2>Datos de Sensores</h2>
                 <p>El sistema recopila datos en tiempo real de múltiples sensores con distintas unidades y frecuencias de muestreo.</p>
@@ -77,6 +39,24 @@
                         <tr><td>SE</td><td>Factor de eficiencia</td><td>%</td><td>1 Hz</td></tr>
                     </tbody>
                 </table>
+            </section>
+
+            <section id="predictive_maintenance" class="mb-5">
+                <h2>Mantenimiento Predictivo</h2>
+                <p>El mantenimiento predictivo permite detectar fallas antes de que ocurran, utilizando datos de sensores para anticipar problemas en el sistema.</p>
+                <p>El sistema evalúa condiciones críticas como:</p>
+                <ul>
+                    <li><strong>Condición del Enfriador:</strong> Evaluación de eficiencia y posibles fallas.</li>
+                    <li><strong>Válvulas:</strong> Identificación de retrasos o comportamientos anómalos.</li>
+                    <li><strong>Fugas Internas de Bomba:</strong> Detección de niveles de fuga.</li>
+                    <li><strong>Presión del Acumulador:</strong> Seguimiento del rendimiento del sistema hidráulico.</li>
+                </ul>
+            </section>
+
+            <section id="general_info" class="mb-5">
+                <h2>Información General</h2>
+                <p>Hydrosafe es una plataforma integral para el monitoreo y mantenimiento predictivo de sistemas hidráulicos.</p>
+                <p>Utiliza sensores en tiempo real y modelos de análisis de datos para mejorar la eficiencia operativa y reducir el tiempo de inactividad del sistema.</p>
             </section>
         </div>
     </div>

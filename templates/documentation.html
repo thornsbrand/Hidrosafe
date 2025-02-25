@@ -1,34 +1,82 @@
 {% extends "base.html" %}
 
-{% block title %}Documentación{% endblock %}
+{% block title %}Documentación Avanzada{% endblock %}
 
 {% block content %}
 <div class="container">
-    <h1 class="mb-4">Documentación del Sistema</h1>
+    <h1 class="mb-4">Documentación Avanzada del Sistema</h1>
 
     <div class="row">
         <div class="col-md-3">
             <div class="list-group">
-                <a href="#overview" class="list-group-item list-group-item-action">Descripción General</a>
-                <a href="#installation" class="list-group-item list-group-item-action">Instalación</a>
-                <a href="#usage" class="list-group-item list-group-item-action">Uso del Sistema</a>
+                <a href="#architecture" class="list-group-item list-group-item-action">Arquitectura del Sistema</a>
+                <a href="#api" class="list-group-item list-group-item-action">Endpoints API</a>
+                <a href="#database" class="list-group-item list-group-item-action">Estructura de la Base de Datos</a>
+                <a href="#security" class="list-group-item list-group-item-action">Seguridad y Autenticación</a>
+                <a href="#deployment" class="list-group-item list-group-item-action">Despliegue</a>
+                <a href="#sensors" class="list-group-item list-group-item-action">Datos de Sensores</a>
             </div>
         </div>
 
         <div class="col-md-9">
-            <section id="overview" class="mb-5">
-                <h2>Descripción General</h2>
-                <p>Hydrosafe es una plataforma integral para el monitoreo y mantenimiento predictivo de sistemas hidráulicos.</p>
+            <section id="architecture" class="mb-5">
+                <h2>Arquitectura del Sistema</h2>
+                <p>Hydrosafe está construido con Flask en el backend, Firebase para la base de datos y autenticación, y Render para el despliegue.</p>
             </section>
 
-            <section id="installation" class="mb-5">
-                <h2>Instalación</h2>
-                <p>Guía paso a paso para la instalación y configuración del sistema.</p>
+            <section id="api" class="mb-5">
+                <h2>Endpoints API</h2>
+                <p>Lista de endpoints disponibles para el monitoreo y gestión del sistema:</p>
+                <ul>
+                    <li><code>GET /api/sensors</code>: Obtiene datos en tiempo real de los sensores.</li>
+                    <li><code>GET /api/history</code>: Recupera datos históricos del sistema.</li>
+                    <li><code>POST /api/alerts</code>: Crea nuevas alertas.</li>
+                </ul>
             </section>
 
-            <section id="usage" class="mb-5">
-                <h2>Uso del Sistema</h2>
-                <p>Instrucciones detalladas sobre cómo utilizar las diferentes funcionalidades del sistema.</p>
+            <section id="database" class="mb-5">
+                <h2>Estructura de la Base de Datos</h2>
+                <p>Los datos se almacenan en Firebase Firestore con las siguientes colecciones:</p>
+                <ul>
+                    <li><strong>usuarios</strong>: Contiene información de los usuarios registrados.</li>
+                    <li><strong>notificaciones</strong>: Almacena alertas generadas en el sistema.</li>
+                    <li><strong>sensores</strong>: Registra datos en tiempo real de los sensores.</li>
+                </ul>
+            </section>
+
+            <section id="security" class="mb-5">
+                <h2>Seguridad y Autenticación</h2>
+                <p>El sistema usa Firebase Authentication para gestionar el acceso seguro a los usuarios.</p>
+            </section>
+
+            <section id="deployment" class="mb-5">
+                <h2>Despliegue</h2>
+                <p>Hydrosafe está desplegado en Render con integración continua desde GitHub.</p>
+            </section>
+
+            <section id="sensors" class="mb-5">
+                <h2>Datos de Sensores</h2>
+                <p>El sistema recopila datos en tiempo real de múltiples sensores con distintas unidades y frecuencias de muestreo.</p>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Sensor</th>
+                            <th>Cantidad Física</th>
+                            <th>Unidad</th>
+                            <th>Frecuencia de Muestreo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>PS1 - PS6</td><td>Presión</td><td>bar</td><td>100 Hz</td></tr>
+                        <tr><td>EPS1</td><td>Potencia del motor</td><td>W</td><td>100 Hz</td></tr>
+                        <tr><td>FS1 - FS2</td><td>Flujo de volumen</td><td>l/min</td><td>10 Hz</td></tr>
+                        <tr><td>TS1 - TS4</td><td>Temperatura</td><td>°C</td><td>1 Hz</td></tr>
+                        <tr><td>VS1</td><td>Vibración</td><td>mm/s</td><td>1 Hz</td></tr>
+                        <tr><td>CE</td><td>Eficiencia de enfriamiento</td><td>%</td><td>1 Hz</td></tr>
+                        <tr><td>CP</td><td>Potencia de enfriamiento</td><td>kW</td><td>1 Hz</td></tr>
+                        <tr><td>SE</td><td>Factor de eficiencia</td><td>%</td><td>1 Hz</td></tr>
+                    </tbody>
+                </table>
             </section>
         </div>
     </div>

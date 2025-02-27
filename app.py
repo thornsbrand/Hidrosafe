@@ -4,6 +4,7 @@ import firebase_admin
 from firebase_admin import credentials, auth, firestore
 from flask import Flask, request, jsonify
 from flask_login import LoginManager, UserMixin, login_user, logout_user, current_user
+from dotenv import load_dotenv
 
 # Cargar credenciales de Firebase desde la variable de entorno en Render
 firebase_config = json.loads(os.getenv("FIREBASE_CREDENTIALS"))
@@ -61,6 +62,21 @@ app = create_app()
 @app.route('/test_firebase')
 def test_firebase():
     return jsonify({"message": "Firebase está funcionando correctamente"}), 200
+
+load_dotenv()  # Cargar variables de entorno desde .env
+
+@app.route('/get-firebase-config')
+def get_firebase_config():
+    return jsonify({
+        "apiKey": os.getenv("FIREBASE_API_KEY"),
+        "authDomain": os.getenv("FIREBASE_AUTH_DOMAIN"),
+        "projectId": os.getenv("FIREBASE_PROJECT_ID"),
+        "storageBucket": os.getenv("FIREBASE_STORAGE_BUCKET"),
+        "messagingSenderId": os.getenv("FIREBASE_MESSAGING_SENDER_ID"),
+        "appId": os.getenv("FIREBASE_APP_ID"),
+        "measurementId": os.getenv("FIREBASE_MEASUREMENT_ID")
+    })
+
 
 if __name__ == '__main__':
     app.run(debug=True)

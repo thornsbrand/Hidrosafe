@@ -9,6 +9,9 @@ import json
 
 auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 
+# ✅ Obtener Firestore directamente desde firebase_admin
+db = firestore.client()
+
 # 🔹 Modelo de Usuario con rol
 class User(UserMixin):
     def __init__(self, uid, email, rol):

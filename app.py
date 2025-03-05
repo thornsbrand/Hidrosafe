@@ -30,7 +30,6 @@ class User(UserMixin):
 def create_app():
     app = Flask(__name__)
     app.secret_key = os.environ.get("FLASK_SECRET_KEY") or "hydrosafe_secret_key"
-
     # 🔹 Configurar Flask-Login
     login_manager = LoginManager()
     login_manager.init_app(app)

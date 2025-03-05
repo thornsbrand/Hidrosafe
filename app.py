@@ -6,22 +6,20 @@ from flask import Flask, request, jsonify
 from flask_login import LoginManager, UserMixin, login_user, logout_user, current_user
 from dotenv import load_dotenv
 
-# 🔹 Cargar la variable de entorno
-firebase_config = os.getenv("FIREBASE_CREDENTIALS")
+# Ruta donde Render almacena los archivos secretos
+FIREBASE_CREDENTIALS_PATH = "/etc/secrets/firebase_credentials.json"
 
-if firebase_config:
+if os.path.exists(FIREBASE_CREDENTIALS_PATH):
     try:
-        # 🔹 Decodificar JSON correctamente (sin replace innecesario)
-        cred_dict = json.loads(firebase_config)
-        cred = credentials.Certificate(cred_dict)
+        cred = credentials.Certificate(FIREBASE_CREDENTIALS_PATH)
         firebase_admin.initialize_app(cred)
-        print("✅ Firebase inicializado correctamente.")
-    except json.JSONDecodeError as e:
-        print(f"❌ Error en JSON de Firebase: {e}")
-        raise ValueError("Error en el formato de `FIREBASE_CREDENTIALS`")
+        print("✅ Firebase inicializado correctamente desde Secrets Files.")
+    except Exception as e:
+        print(f"❌ Error al cargar Firebase: {e}")
+        raise ValueError("Error al leer `FIREBASE_CREDENTIALS_FILE`")
 else:
-    raise ValueError("❌ No se encontró `FIREBASE_CREDENTIALS` en Render.")
-    
+    raise ValueError("❌ No se encontró `FIREBASE_CREDENTIALS_FILE` en Secrets Files.")
+
 # 🔹 Modelo de Usuario con rol
 class User(UserMixin):
     def __init__(self, uid, email, rol):

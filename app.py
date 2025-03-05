@@ -5,15 +5,26 @@ from firebase_admin import credentials, auth, firestore
 from flask import Flask, request, jsonify
 from flask_login import LoginManager, UserMixin, login_user, logout_user, current_user
 from dotenv import load_dotenv
-from dotenv import load_dotenv
-
-# Cargar variables de entorno desde .env
+    
+# Cargar variables de entorno
 load_dotenv()
 
-# Cargar credenciales de Firebase desde la variable de entorno en Render
-firebase_config = json.loads(os.getenv("FIREBASE_CREDENTIALS"))
-cred = credentials.Certificate(firebase_config)
-firebase_admin.initialize_app(cred)
+# 🔹 Verificar que Firebase no esté inicializado antes de inicializarlo
+if not firebase_admin._apps:
+    firebase_config = os.getenv("FIREBASE_CREDENTIALS")
+    
+    if firebase_config:
+        try:
+            # 🔹 Asegurar que el JSON es interpretado correctamente
+            cred_dict = json.loads(firebase_config.replace("\\n", "\n"))
+            cred = credentials.Certificate(cred_dict)
+            firebase_admin.initialize_app(cred)
+            print("✅ Firebase inicializado correctamente en `app.py`")
+        except json.JSONDecodeError as e:
+            print(f"❌ Error al decodificar JSON de Firebase: {e}")
+            raise ValueError("Error en el formato de `FIREBASE_CREDENTIALS`")
+    else:
+        raise ValueError("❌ No se encontró `FIREBASE_CREDENTIALS` en Render.")
 
 # Instancia de Firestore
 db = firestore.client()

@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request, jsonify
 from flask_login import login_user, logout_user, login_required, UserMixin
 from urllib.parse import urlparse
-from app import db
+from app import db  # ✅ Importamos la instancia de Firebase Firestore desde app.py
 import firebase_admin  # 🔹 Importar firebase_admin
 from firebase_admin import credentials, auth  # 🔹 Importar auth para autenticación
 import os
@@ -15,23 +15,6 @@ class User(UserMixin):
         self.id = uid
         self.email = email
         self.rol = rol
-
-# ✅ Modificación: Cargar Firebase correctamente
-if not firebase_admin._apps:  
-    firebase_config = os.getenv("FIREBASE_CREDENTIALS")  # Cargar variable de entorno
-
-    if firebase_config:
-        try:
-            # 🔹 Asegurar que el formato JSON es correcto (Reemplazar \n)
-            cred_dict = json.loads(firebase_config.replace("\\n", "\n"))  
-            cred = credentials.Certificate(cred_dict)
-            firebase_admin.initialize_app(cred)
-            print("✅ Firebase inicializado correctamente.")
-        except json.JSONDecodeError as e:
-            print(f"❌ Error en el JSON de Firebase: {e}")
-            raise ValueError("Error en el formato de FIREBASE_CREDENTIALS")
-    else:
-        raise ValueError("❌ Error: No se encontró la variable FIREBASE_CREDENTIALS en Render.")
 
 # 🔹 Ruta para mostrar el formulario de login (no necesita cambios)
 @auth_bp.route('/login', methods=['GET'])

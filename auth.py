@@ -4,6 +4,8 @@ from urllib.parse import urlparse
 from app import db
 import firebase_admin  # 🔹 Importar firebase_admin
 from firebase_admin import credentials, auth  # 🔹 Importar auth para autenticación
+import os
+import json
 
 auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 
@@ -14,16 +16,22 @@ class User(UserMixin):
         self.email = email
         self.rol = rol
 
-# Inicializa Firebase si aún no está inicializado
-if not firebase_admin._apps:
-    firebase_config = os.getenv("FIREBASE_CREDENTIALS")  # Obtiene la credencial desde Render
+# ✅ Modificación: Cargar Firebase correctamente
+if not firebase_admin._apps:  
+    firebase_config = os.getenv("FIREBASE_CREDENTIALS")  # Cargar variable de entorno
 
     if firebase_config:
-        cred_dict = json.loads(firebase_config)  # Convierte la cadena JSON a diccionario
-        cred = credentials.Certificate(cred_dict)  # Crea la credencial de Firebase
-        firebase_admin.initialize_app(cred)  # Inicializa Firebase
+        try:
+            # 🔹 Asegurar que el formato JSON es correcto (Reemplazar \n)
+            cred_dict = json.loads(firebase_config.replace("\\n", "\n"))  
+            cred = credentials.Certificate(cred_dict)
+            firebase_admin.initialize_app(cred)
+            print("✅ Firebase inicializado correctamente.")
+        except json.JSONDecodeError as e:
+            print(f"❌ Error en el JSON de Firebase: {e}")
+            raise ValueError("Error en el formato de FIREBASE_CREDENTIALS")
     else:
-        raise ValueError("Error: La variable de entorno FIREBASE_CREDENTIALS no está configurada en Render.")
+        raise ValueError("❌ Error: No se encontró la variable FIREBASE_CREDENTIALS en Render.")
 
 # 🔹 Ruta para mostrar el formulario de login (no necesita cambios)
 @auth_bp.route('/login', methods=['GET'])
@@ -40,7 +48,12 @@ def login_post():
             return jsonify({"success": False, "error": "Token no proporcionado"}), 400
 
         # 🔹 Verificar token en Firebase
-        decoded_token = auth.verify_id_token(id_token)
+        try:
+            decoded_token = auth.verify_id_token(id_token)
+        except Exception as e:
+            print(f"❌ Error al verificar el token de Firebase: {e}")
+            return jsonify({"success": False, "error": "Token inválido o expirado"}), 401
+
         user_uid = decoded_token["uid"]
         user_email = decoded_token.get("email", "usuario_desconocido")
 
@@ -48,21 +61,22 @@ def login_post():
         user_doc = db.collection("usuarios").document(user_uid).get()
         if user_doc.exists:
             user_data = user_doc.to_dict()
-            user_rol = user_data.get("rol", "usuario")  # Si no tiene rol, asignar "usuario"
+            user_rol = user_data.get("rol", "usuario")
         else:
             user_rol = "usuario"
 
-        # 🔹 Crear el objeto de usuario y autenticarlo en Flask-Login
+        # 🔹 Crear usuario y autenticar en Flask-Login
         user = User(user_uid, user_email, user_rol)
-        login_user(user)  # ✅ Marca al usuario como autenticado
+        login_user(user)
 
         print(f"✅ Usuario autenticado: {user.email} (Rol: {user.rol})")
 
         return jsonify({"success": True, "uid": user_uid, "rol": user.rol}), 200
 
     except Exception as e:
-        print("❌ Error en la autenticación:", str(e))
+        print(f"❌ Error en la autenticación: {str(e)}")
         return jsonify({"success": False, "error": str(e)}), 401
+
 
 
 

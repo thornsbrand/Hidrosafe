@@ -1,18 +1,25 @@
-// Import the functions you need from the SDKs
+// Importar las funciones necesarias de Firebase
 import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
+import { getAuth } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
 
-// Configuración de Firebase con variables de entorno
-const firebaseConfig = {
-  apiKey: process.env.FIREBASE_API_KEY,
-  authDomain: process.env.FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.FIREBASE_PROJECT_ID,
-  storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.FIREBASE_APP_ID,
-  measurementId: process.env.FIREBASE_MEASUREMENT_ID
-};
+// 🔹 Si estás cargando variables desde un backend, necesitas obtenerlas desde un archivo JSON
+async function getFirebaseConfig() {
+  try {
+    const response = await fetch("/get-firebase-config");
+    const firebaseConfig = await response.json();
+    
+    // ✅ Inicializar Firebase con los datos recibidos
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
 
-// Inicializar Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+    console.log("✅ Firebase inicializado correctamente en frontend.");
+    return { auth, db };
+  } catch (error) {
+    console.error("❌ Error al obtener la configuración de Firebase:", error);
+  }
+}
+
+// Exportar la inicialización de Firebase
+export const firebaseServices = getFirebaseConfig();

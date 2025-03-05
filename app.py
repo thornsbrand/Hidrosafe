@@ -76,6 +76,6 @@ def get_firebase_config():
         "appId": os.getenv("FIREBASE_APP_ID"),
         "measurementId": os.getenv("FIREBASE_MEASUREMENT_ID")
     })
-
+    
 if __name__ == '__main__':
     app.run(debug=True)

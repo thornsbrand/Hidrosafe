@@ -5,6 +5,10 @@ from firebase_admin import credentials, auth, firestore
 from flask import Flask, request, jsonify
 from flask_login import LoginManager, UserMixin, login_user, logout_user, current_user
 from dotenv import load_dotenv
+from dotenv import load_dotenv
+
+# Cargar variables de entorno desde .env
+load_dotenv()
 
 # Cargar credenciales de Firebase desde la variable de entorno en Render
 firebase_config = json.loads(os.getenv("FIREBASE_CREDENTIALS"))

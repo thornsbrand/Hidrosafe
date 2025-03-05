@@ -6,20 +6,6 @@ from flask import Flask, request, jsonify
 from flask_login import LoginManager, UserMixin, login_user, logout_user, current_user
 from dotenv import load_dotenv
 
-# Ruta donde Render almacena los archivos secretos
-FIREBASE_CREDENTIALS_PATH = "/etc/secrets/firebase_credentials.json"
-
-if os.path.exists(FIREBASE_CREDENTIALS_PATH):
-    try:
-        cred = credentials.Certificate(FIREBASE_CREDENTIALS_PATH)
-        firebase_admin.initialize_app(cred)
-        print("✅ Firebase inicializado correctamente desde Secrets Files.")
-    except Exception as e:
-        print(f"❌ Error al cargar Firebase: {e}")
-        raise ValueError("Error al leer `FIREBASE_CREDENTIALS_FILE`")
-else:
-    raise ValueError("❌ No se encontró `FIREBASE_CREDENTIALS_FILE` en Secrets Files.")
-
 # 🔹 Modelo de Usuario con rol
 class User(UserMixin):
     def __init__(self, uid, email, rol):
@@ -30,19 +16,28 @@ class User(UserMixin):
 def create_app():
     app = Flask(__name__)
     app.secret_key = os.environ.get("FLASK_SECRET_KEY") or "hydrosafe_secret_key"
+    
+    # 🔹 Inicializar Firebase solo si aún no está inicializado
+    if not firebase_admin._apps:
+        cred = credentials.Certificate("/etc/secrets/firebase_credentials.json")
+        firebase_admin.initialize_app(cred)
+    
+    # 🔹 Inicializar Firestore
+    db = firestore.client()
+
     # 🔹 Configurar Flask-Login
     login_manager = LoginManager()
     login_manager.init_app(app)
     login_manager.login_view = "auth.login"  # Redirigir a login si no está autenticado
 
-    # 🔹 Importar blueprints dentro de la función para evitar errores
+    # 🔹 Importar blueprints dentro de la función para evitar errores de importación circular
     from routes import main
     from auth import auth_bp
     from admin import admin_bp 
 
     app.register_blueprint(main)
     app.register_blueprint(auth_bp)
-    app.register_blueprint(admin_bp)  # 🔹 Registrar blueprint del admin
+    app.register_blueprint(admin_bp)
 
     # 🔹 Cargar usuario desde Firestore en cada solicitud
     @login_manager.user_loader
@@ -58,10 +53,10 @@ def create_app():
     def inject_user():
         return dict(current_user=current_user)
 
-    return app  # 🔹 Retornar la app correctamente
+    return app, db  # 🔹 Retornar app y db correctamente
 
 # 🔹 Crear la aplicación después de definir `create_app`
-app = create_app()
+app, db = create_app()
 
 # Ruta de prueba para verificar que Firebase está conectado
 @app.route('/test_firebase')
@@ -81,7 +76,6 @@ def get_firebase_config():
         "appId": os.getenv("FIREBASE_APP_ID"),
         "measurementId": os.getenv("FIREBASE_MEASUREMENT_ID")
     })
-
 
 if __name__ == '__main__':
     app.run(debug=True)

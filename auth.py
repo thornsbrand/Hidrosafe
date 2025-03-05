@@ -1,9 +1,8 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request, jsonify
 from flask_login import login_user, logout_user, login_required, UserMixin
 from urllib.parse import urlparse
-from app import db  # ✅ Importamos la instancia de Firebase Firestore desde app.py
 import firebase_admin  # 🔹 Importar firebase_admin
-from firebase_admin import credentials, auth  # 🔹 Importar auth para autenticación
+from firebase_admin import credentials, auth, firestore  # 🔹 Importar auth para autenticación
 import os
 import json
 

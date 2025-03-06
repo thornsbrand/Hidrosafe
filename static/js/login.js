@@ -28,8 +28,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // 🔹 Verifica si el usuario ya está autenticado y evita redirección en bucle
 onAuthStateChanged(auth, (user) => {
-    if (user && window.location.pathname === "/auth/login") {
-        console.log("✅ Usuario ya autenticado, redirigiendo...");
-        window.location.href = "/dashboard";
+    const currentPath = window.location.pathname;
+
+    if (user) {
+        console.log("✅ Usuario ya autenticado.");
+
+        // ✅ Redirigir solo si NO está en el dashboard
+        if (currentPath !== "/dashboard") {
+            console.log("➡️ Redirigiendo a /dashboard...");
+            window.location.href = "/dashboard";
+        }
+    } else {
+        console.log("⚠️ Usuario no autenticado.");
+        // ✅ Si el usuario no está autenticado y NO está en login, redirigir a login
+        if (currentPath !== "/auth/login") {
+            console.log("➡️ Redirigiendo a /auth/login...");
+            window.location.href = "/auth/login";
+        }
     }
 });

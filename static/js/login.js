@@ -1,5 +1,18 @@
 import { auth } from "./firebaseConfig.js";
 import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { auth } from "./firebaseConfig.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+// 🔹 Verificar si el usuario está autenticado
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        console.log("✅ Usuario autenticado:", user);
+    } else {
+        console.log("⚠ Usuario no autenticado. Redirigiendo a login...");
+        window.location.href = "/auth/login";  // Asegúrate de que esta es tu ruta de login
+    }
+});
+
 
 // 🔹 Función para iniciar sesión con Firebase
 async function loginUser(email, password) {
@@ -14,7 +27,7 @@ async function loginUser(email, password) {
         console.error("❌ Error en inicio de sesión:", error.message);
         alert("Error: " + error.message);
     }
-}
+}   
 
 // 🔹 Manejar el evento de envío del formulario
 document.getElementById("login-form").addEventListener("submit", function (event) {

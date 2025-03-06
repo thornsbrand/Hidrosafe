@@ -1,15 +1,8 @@
-// Asegúrate de usar imports correctos en ES Modules
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
+// Importar Firebase y autenticación
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { auth } from "./firebaseConfig.js";  // ✅ Importamos desde firebaseConfig.js
 
-// Importa la configuración de Firebase
-import { firebaseConfig } from "./firebaseConfig.js";
-
-// Inicializa Firebase
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-
-// Función para iniciar sesión
+// 🔹 Función para iniciar sesión
 const loginUser = async (email, password) => {
     try {
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
@@ -20,17 +13,22 @@ const loginUser = async (email, password) => {
     }
 };
 
-// Manejo del evento de formulario
-document.getElementById("loginForm").addEventListener("submit", function (event) {
-    event.preventDefault();
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
-    loginUser(email, password);
+// 🔹 Manejo del evento de formulario
+document.addEventListener("DOMContentLoaded", () => {
+    const loginForm = document.getElementById("loginForm");
+    if (loginForm) {
+        loginForm.addEventListener("submit", function (event) {
+            event.preventDefault();
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+            loginUser(email, password);
+        });
+    }
 });
 
-// Verifica si el usuario ya está autenticado
+// 🔹 Verifica si el usuario ya está autenticado y evita redirección en bucle
 onAuthStateChanged(auth, (user) => {
-    if (user) {
+    if (user && window.location.pathname === "/auth/login") {
         console.log("✅ Usuario ya autenticado, redirigiendo...");
         window.location.href = "/dashboard";
     }

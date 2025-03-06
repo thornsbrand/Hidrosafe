@@ -8,7 +8,6 @@ export const firebaseConfig = await fetch("/get-firebase-config")
     .then(response => response.json())
     .catch(error => console.error("Error al obtener la configuración de Firebase:", error));
 
-
 // 🔹 Configuración de Firebase (Reemplaza con tus valores reales)
 const firebaseConfig = {
   apiKey: "AIzaSyADxmST-tVzWPery7a7tYksjeBNKlbYMxk",

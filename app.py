@@ -6,6 +6,8 @@ from flask import Flask, request, jsonify
 from flask_login import LoginManager, UserMixin, login_user, logout_user, current_user
 from dotenv import load_dotenv
 
+db = firestore.client()  # ✅ Se inicializa aquí
+
 # 🔹 Modelo de Usuario con rol
 class User(UserMixin):
     def __init__(self, uid, email, rol):
@@ -21,9 +23,6 @@ def create_app():
     if not firebase_admin._apps:
         cred = credentials.Certificate("/etc/secrets/firebase_credentials.json")
         firebase_admin.initialize_app(cred)
-    
-    # 🔹 Inicializar Firestore
-    db = firestore.client()
 
     # 🔹 Configurar Flask-Login
     login_manager = LoginManager()

@@ -3,10 +3,11 @@ from models import add_system_data, get_all_system_data
 from firebase_admin import firestore, auth
 from auth import auth_bp
 from flask_login import login_required, current_user
-from app import db
-
 
 admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
+
+# ✅ Accede a Firestore desde la instancia de Firebase Admin
+db = firestore.client()
 
 # Blueprint principal
 main = Blueprint('main', __name__)

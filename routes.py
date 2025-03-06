@@ -1,13 +1,11 @@
-from flask import Blueprint, render_template, request, jsonify
+from flask import Blueprint, render_template, request, jsonify, redirect, url_for, abort
 from models import add_system_data, get_all_system_data
-from firebase_admin import firestore, auth
+from firebase_admin import auth
 from auth import auth_bp
 from flask_login import login_required, current_user
+from app import db  # 🔹 Importamos `db` desde `app.py`
 
 admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
-
-# ✅ Accede a Firestore desde la instancia de Firebase Admin
-db = firestore.client()
 
 # Blueprint principal
 main = Blueprint('main', __name__)
@@ -21,7 +19,7 @@ def index():
 @login_required
 def dashboard():
     if not current_user.is_authenticated:
-        return redirect(url_for('auth.login'))  # Redirigir solo si no está autenticado
+        return redirect(url_for('auth.login'))
     return render_template('dashboard.html')
 
 @main.route('/documentation')

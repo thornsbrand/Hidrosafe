@@ -6,14 +6,7 @@ from flask import Flask, request, jsonify
 from flask_login import LoginManager, UserMixin, login_user, logout_user, current_user
 from dotenv import load_dotenv
 
-db = firestore.client()  # ✅ Se inicializa aquí
-
-# 🔹 Modelo de Usuario con rol
-class User(UserMixin):
-    def __init__(self, uid, email, rol):
-        self.id = uid
-        self.email = email
-        self.rol = rol
+load_dotenv()  # Cargar variables de entorno desde .env
 
 def create_app():
     app = Flask(__name__)
@@ -23,11 +16,21 @@ def create_app():
     if not firebase_admin._apps:
         cred = credentials.Certificate("/etc/secrets/firebase_credentials.json")
         firebase_admin.initialize_app(cred)
+    
+    # 🔹 Inicializar Firestore después de Firebase
+    db = firestore.client()
+
+    # 🔹 Modelo de Usuario con rol
+    class User(UserMixin):
+        def __init__(self, uid, email, rol):
+            self.id = uid
+            self.email = email
+            self.rol = rol
 
     # 🔹 Configurar Flask-Login
     login_manager = LoginManager()
     login_manager.init_app(app)
-    login_manager.login_view = "auth.login"  # Redirigir a login si no está autenticado
+    login_manager.login_view = "auth.login"
     login_manager.session_protection = "strong"
 
     # 🔹 Importar blueprints dentro de la función para evitar errores de importación circular
@@ -63,8 +66,6 @@ app = create_app()
 def test_firebase():
     return jsonify({"message": "Firebase está funcionando correctamente"}), 200
 
-load_dotenv()  # Cargar variables de entorno desde .env
-
 @app.route('/get-firebase-config')
 def get_firebase_config():
     return jsonify({
@@ -76,6 +77,6 @@ def get_firebase_config():
         "appId": os.getenv("FIREBASE_APP_ID"),
         "measurementId": os.getenv("FIREBASE_MEASUREMENT_ID")
     })
-    
+
 if __name__ == '__main__':
     app.run(debug=True)

@@ -3,6 +3,11 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebas
 import { getAuth } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { getFirestore } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";  // 🔹 Agrega esta línea
 
+// Configuración de Firebase desde el backend
+export const firebaseConfig = await fetch("/get-firebase-config")
+    .then(response => response.json())
+    .catch(error => console.error("Error al obtener la configuración de Firebase:", error));
+
 
 // 🔹 Configuración de Firebase (Reemplaza con tus valores reales)
 const firebaseConfig = {

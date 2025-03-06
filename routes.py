@@ -3,10 +3,10 @@ from models import add_system_data, get_all_system_data
 from firebase_admin import firestore, auth
 from auth import auth_bp
 from flask_login import login_required, current_user
+from app import db
+
 
 admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
-
-db = firestore.client()
 
 # Blueprint principal
 main = Blueprint('main', __name__)
@@ -19,6 +19,8 @@ def index():
 @main.route('/dashboard')
 @login_required
 def dashboard():
+    if not current_user.is_authenticated:
+        return redirect(url_for('auth.login'))  # Redirigir solo si no está autenticado
     return render_template('dashboard.html')
 
 @main.route('/documentation')

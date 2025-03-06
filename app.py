@@ -29,6 +29,7 @@ def create_app():
     login_manager = LoginManager()
     login_manager.init_app(app)
     login_manager.login_view = "auth.login"  # Redirigir a login si no está autenticado
+    login_manager.session_protection = "strong"
 
     # 🔹 Importar blueprints dentro de la función para evitar errores de importación circular
     from routes import main
@@ -53,10 +54,10 @@ def create_app():
     def inject_user():
         return dict(current_user=current_user)
 
-    return app, db  # 🔹 Retornar app y db correctamente
+    return app
 
 # 🔹 Crear la aplicación después de definir `create_app`
-app, db = create_app()
+app = create_app()
 
 # Ruta de prueba para verificar que Firebase está conectado
 @app.route('/test_firebase')

@@ -1,6 +1,8 @@
 // Importa solo una vez
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getAuth } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getFirestore } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";  // 🔹 Agrega esta línea
+
 
 // 🔹 Configuración de Firebase (Reemplaza con tus valores reales)
 const firebaseConfig = {

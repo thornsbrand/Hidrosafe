@@ -1,27 +1,22 @@
-import { auth, initializeFirebase } from "./firebaseConfig.js";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "./firebaseConfig.js";
+import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-async function loginUser(event) {
-    event.preventDefault(); // Evita que el formulario recargue la página
-
-    // ✅ Asegurar que Firebase se ha inicializado antes de intentar usar `auth`
-    await initializeFirebase();
-
-    // Capturar datos del formulario
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
-
-    // Iniciar sesión con Firebase
-    signInWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-            console.log("✅ Usuario autenticado:", userCredential.user);
-            window.location.href = "dashboard.html"; // Redirigir al usuario
-        })
-        .catch((error) => {
-            console.error("❌ Error al iniciar sesión:", error);
-            alert("Error al iniciar sesión: " + error.message);
-        });
+// 🔹 Función para iniciar sesión con Firebase
+async function loginUser(email, password) {
+    try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        console.log("✅ Usuario autenticado:", userCredential.user);
+        window.location.href = "/dashboard";  // Redirigir tras inicio de sesión
+    } catch (error) {
+        console.error("❌ Error en inicio de sesión:", error.message);
+        alert("Error: " + error.message);
+    }
 }
 
-// ✅ Asignar la función al formulario de inicio de sesión
-document.getElementById("login-form").addEventListener("submit", loginUser);
+// 🔹 Manejar el evento de envío del formulario
+document.getElementById("login-form").addEventListener("submit", function (event) {
+    event.preventDefault();
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    loginUser(email, password);
+});

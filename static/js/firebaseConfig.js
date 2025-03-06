@@ -5,12 +5,13 @@ import { getFirestore } from "https://www.gstatic.com/firebasejs/10.7.1/firebase
 
 // 🔹 Configuración de Firebase (Reemplaza con tus valores reales)
 const firebaseConfig = {
-  apiKey: "TU_API_KEY",
-  authDomain: "TU_AUTH_DOMAIN",
-  projectId: "TU_PROJECT_ID",
-  storageBucket: "TU_STORAGE_BUCKET",
-  messagingSenderId: "TU_MESSAGING_SENDER_ID",
-  appId: "TU_APP_ID"
+  apiKey: "AIzaSyADxmST-tVzWPery7a7tYksjeBNKlbYMxk",
+  authDomain: "hydrosafe-b8635.firebaseapp.com",
+  projectId: "hydrosafe-b8635",
+  storageBucket: "hydrosafe-b8635.firebasestorage.app",
+  messagingSenderId: "670282184676",
+  appId: "1:670282184676:web:ca9e9c512e7a6d5c6fb9f1",
+  measurementId: "G-Q2WRN959TS"
 };
 
 // 🔹 Inicializar Firebase si no está inicializado

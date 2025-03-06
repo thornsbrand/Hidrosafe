@@ -6,7 +6,10 @@ async function loginUser(email, password) {
     try {
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         console.log("✅ Usuario autenticado:", userCredential.user);
-        window.location.href = "/dashboard";  // Redirigir tras inicio de sesión
+
+        // 🔹 Redirigir a la página de Dashboard o la que corresponda
+        window.location.href = "/dashboard";  // Cambia "/dashboard" por tu URL real
+
     } catch (error) {
         console.error("❌ Error en inicio de sesión:", error.message);
         alert("Error: " + error.message);

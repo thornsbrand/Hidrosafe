@@ -1,14 +1,15 @@
-from flask import Blueprint, render_template, request, jsonify, redirect, url_for, abort
-from models import add_system_data, get_all_system_data
+from flask import Blueprint, render_template, redirect, url_for, abort, current_app
 from firebase_admin import auth
-from auth import auth_bp
 from flask_login import login_required, current_user
-from app import db  # 🔹 Importamos `db` desde `app.py`
 
 admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
 
 # Blueprint principal
 main = Blueprint('main', __name__)
+
+# 🔹 Acceder a Firestore desde `current_app.config["FIRESTORE_DB"]`
+def get_db():
+    return current_app.config["FIRESTORE_DB"]
 
 # Rutas principales
 @main.route('/')
@@ -48,7 +49,7 @@ def admin_panel():
 def manage_users():
     if current_user.rol != "admin":
         abort(403)
-    users = db.collection("usuarios").get()
+    users = get_db().collection("usuarios").get()
     return render_template('admin_manage_users.html', users=users)
 
 @admin_bp.route('/settings')

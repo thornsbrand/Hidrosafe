@@ -16,10 +16,14 @@ def login():
         try:
             user = auth.get_user_by_email(email)  # Obtiene el usuario en Firebase
 
-            # 🔹 Guardar la información del usuario en sesión
+            # 🔹 Recuperar información del usuario en Firestore
+            user_doc = db.collection("usuarios").document(user.uid).get()
+            user_data = user_doc.to_dict() if user_doc.exists else {}
+
             session["user"] = {
                 "uid": user.uid,
-                "email": user.email
+                "email": user.email,
+                "rol": user_data.get("rol", "usuario")  # Rol por defecto "usuario"
             }
 
             flash("Inicio de sesión exitoso", "success")
@@ -29,6 +33,7 @@ def login():
             flash(f"Error en el inicio de sesión: {str(e)}", "danger")
 
     return render_template("auth/login.html")
+
 
 
 @auth_bp.route('/register', methods=['GET', 'POST'])

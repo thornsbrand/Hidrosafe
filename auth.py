@@ -3,67 +3,30 @@ from flask_login import login_user, logout_user, login_required, UserMixin
 from urllib.parse import urlparse
 import firebase_admin  # 🔹 Importar firebase_admin
 from firebase_admin import credentials, auth, firestore  # 🔹 Importar auth para autenticación
-import os
-import json
+from werkzeug.security import check_password_hash
+from models import db, User
 
-auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
+auth_bp = Blueprint("auth", __name__)
 
 # ✅ Obtener Firestore directamente desde firebase_admin
 db = firestore.client()
 
-# 🔹 Modelo de Usuario con rol
-class User(UserMixin):
-    def __init__(self, uid, email, rol):
-        self.id = uid
-        self.email = email
-        self.rol = rol
-
-# 🔹 Ruta para mostrar el formulario de login (no necesita cambios)
-@auth_bp.route('/login', methods=['GET'])
+@auth_bp.route("/login", methods=["GET", "POST"])
 def login():
-    return render_template('auth/login.html')
+    if request.method == "POST":
+        email = request.form.get("email")
+        password = request.form.get("password")
 
-@auth_bp.route('/login', methods=['POST'])
-def login_post():
-    try:
-        data = request.json
-        id_token = data.get("idToken")
+        user = User.query.filter_by(email=email).first()
 
-        if not id_token:
-            return jsonify({"success": False, "error": "Token no proporcionado"}), 400
+        if user and check_password_hash(user.password, password):
+            session["user_id"] = user.id  # Guardar sesión
+            flash("Inicio de sesión exitoso", "success")
+            return redirect(url_for("dashboard"))
 
-        # 🔹 Verificar token en Firebase
-        try:
-            decoded_token = auth.verify_id_token(id_token)
-        except Exception as e:
-            print(f"❌ Error al verificar el token de Firebase: {e}")
-            return jsonify({"success": False, "error": "Token inválido o expirado"}), 401
+        flash("Correo o contraseña incorrectos", "danger")
 
-        user_uid = decoded_token["uid"]
-        user_email = decoded_token.get("email", "usuario_desconocido")
-
-        # 🔹 Obtener el rol desde Firestore
-        user_doc = db.collection("usuarios").document(user_uid).get()
-        if user_doc.exists:
-            user_data = user_doc.to_dict()
-            user_rol = user_data.get("rol", "usuario")
-        else:
-            user_rol = "usuario"
-
-        # 🔹 Crear usuario y autenticar en Flask-Login
-        user = User(user_uid, user_email, user_rol)
-        login_user(user)
-
-        print(f"✅ Usuario autenticado: {user.email} (Rol: {user.rol})")
-
-        return jsonify({"success": True, "uid": user_uid, "rol": user.rol}), 200
-
-    except Exception as e:
-        print(f"❌ Error en la autenticación: {str(e)}")
-        return jsonify({"success": False, "error": str(e)}), 401
-
-
-
+    return render_template("auth/login.html")
 
 # Ruta para mostrar el formulario de registro
 @auth_bp.route('/register', methods=['GET'])

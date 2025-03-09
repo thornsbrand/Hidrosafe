@@ -1,25 +1,28 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container">
-    <h2>Iniciar Sesión</h2>
-    <form method="POST" action="{{ url_for('auth.login') }}">
-        <input type="email" name="email" placeholder="Correo electrónico" required>
-        <input type="password" name="password" placeholder="Contraseña" required>
-        <button type="submit">Iniciar sesión</button>
-    </form>
+<div class="auth-container">
+    <h2 class="text-center">Iniciar Sesión</h2>
 
+    <!-- Mensajes de error o éxito -->
     {% with messages = get_flashed_messages(with_categories=True) %}
         {% if messages %}
-            <div class="container">
-                {% for category, message in messages %}
-                    <div class="alert alert-{{ category }}">{{ message }}</div>
-                {% endfor %}
-            </div>
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
         {% endif %}
     {% endwith %}
+
+    <form action="{{ url_for('auth.login') }}" method="POST">
+        <div class="mb-3">
+            <label for="email" class="form-label">Correo Electrónico</label>
+            <input type="email" class="form-control" name="email" required>
+        </div>
+        <div class="mb-3">
+            <label for="password" class="form-label">Contraseña</label>
+            <input type="password" class="form-control" name="password" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Iniciar sesión</button>
+    </form>
 </div>
 {% endblock %}
-
-
-

@@ -1,15 +1,12 @@
 from flask import Blueprint, render_template, redirect, url_for, abort, current_app, session, flash, request
 import firebase_admin
-from firebase_admin import credentials, firestore, auth
-from functools import wraps
-import datetime
+from firebase_admin import firestore
 
-# 🔹 Verificar que Firebase esté inicializado
+# 🔹 Verificar si Firebase ya está inicializado
 if not firebase_admin._apps:
-    cred = credentials.Certificate("/etc/secrets/firebase_credentials.json")  # Asegúrate de que la ruta sea correcta
-    firebase_admin.initialize_app(cred)
+    firebase_admin.initialize_app()
 
-db = firestore.client()  # 🔹 Ahora Firestore está correctamente inicializado
+db = firestore.client()  # 🔹 Inicializar Firestore sin JSON
 
 requests_bp = Blueprint("requests", __name__)
 admin_bp = Blueprint('admin', __name__, url_prefix='/admin')

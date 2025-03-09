@@ -87,3 +87,19 @@
     font-size: 0.875rem;
     color: rgba(255, 255, 255, 0.7); /* Color gris claro */
 }
+
+.alert {
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    font-size: 14px;
+    text-align: center;
+    width: 100%;
+    max-width: 400px;  /* Ajusta el ancho */
+}
+
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}

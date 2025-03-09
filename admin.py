@@ -1,23 +1,34 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, abort
-from flask_login import login_required, current_user
+from flask import Blueprint, render_template, request, redirect, url_for, flash, abort, session
+from functools import wraps
 from firebase_admin import firestore
-
 
 admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
 db = firestore.client()
 
+# 🔹 Decorador para verificar autenticación basada en sesión
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if "user" not in session:
+            flash("Debes iniciar sesión para acceder a esta página.", "warning")
+            return redirect(url_for("auth.login"))
+        return f(*args, **kwargs)
+    return decorated_function
+
 @admin_bp.route('/')
 @login_required
 def admin_panel():
-    if current_user.rol != "admin":
+    user = session.get("user")
+    if not user or user.get("rol") != "admin":
         abort(403)  # 🔹 Acceso prohibido para usuarios normales
     return render_template('admin_panel.html')
 
 @admin_bp.route('/manage_users')
 @login_required
 def manage_users():
-    if current_user.rol != "admin":
-        abort(403)  # Acceso restringido solo para admins
+    user = session.get("user")
+    if not user or user.get("rol") != "admin":
+        abort(403) 
     
     users_ref = db.collection("usuarios").stream()
     users = [{**user.to_dict(), "uid": user.id} for user in users_ref]
@@ -27,28 +38,32 @@ def manage_users():
 @admin_bp.route('/settings')
 @login_required
 def settings():
-    if current_user.rol != "admin":
+    user = session.get("user")
+    if not user or user.get("rol") != "admin":
         abort(403)
     return render_template('admin_settings.html')
 
 @admin_bp.route('/maintenances')
 @login_required
 def maintenances():
-    if current_user.rol != "admin":
-        abort(403)  # 🔹 Acceso prohibido para usuarios normales
+    user = session.get("user")
+    if not user or user.get("rol") != "admin":
+        abort(403)
     return render_template('admin_maintenances.html')
 
 @admin_bp.route('/reports')
 @login_required
 def reports():
-    if current_user.rol != "admin":
-        abort(403)  # 🔹 Acceso prohibido para usuarios normales
+    user = session.get("user")
+    if not user or user.get("rol") != "admin":
+        abort(403)
     return render_template('admin_reports.html')
 
 @admin_bp.route('/manage_users/edit/<uid>', methods=['POST'])
 @login_required
 def edit_user(uid):
-    if current_user.rol != "admin":
+    user = session.get("user")
+    if not user or user.get("rol") != "admin":
         abort(403)
     
     new_role = request.form.get("role")
@@ -64,11 +79,11 @@ def edit_user(uid):
 
     return redirect(url_for('admin.manage_users'))
 
-
 @admin_bp.route('/manage_users/delete/<uid>', methods=['POST'])
 @login_required
 def delete_user(uid):
-    if current_user.rol != "admin":
+    user = session.get("user")
+    if not user or user.get("rol") != "admin":
         abort(403)
 
     try:
@@ -82,7 +97,8 @@ def delete_user(uid):
 @admin_bp.route('/alerts', methods=['GET', 'POST'])
 @login_required
 def alerts():
-    if current_user.rol != "admin":
+    user = session.get("user")
+    if not user or user.get("rol") != "admin":
         abort(403)
 
     # Obtener lista de usuarios con sus correos
@@ -103,7 +119,8 @@ def alerts():
 @admin_bp.route('/alerts/create', methods=['POST'])
 @login_required
 def create_alert():
-    if current_user.rol != "admin":
+    user = session.get("user")
+    if not user or user.get("rol") != "admin":
         abort(403)
 
     message = request.form.get("message")
@@ -125,11 +142,11 @@ def create_alert():
     flash("Alerta creada con éxito.", "success")
     return redirect(url_for('admin.alerts'))
 
-
 @admin_bp.route('/alerts/edit/<alert_id>', methods=['POST'])
 @login_required
 def edit_alert(alert_id):
-    if current_user.rol != "admin":
+    user = session.get("user")
+    if not user or user.get("rol") != "admin":
         abort(403)
 
     message = request.form.get("message")
@@ -146,11 +163,11 @@ def edit_alert(alert_id):
 
     return redirect(url_for('admin.alerts'))
 
-
 @admin_bp.route('/alerts/delete/<alert_id>', methods=['POST'])
 @login_required
 def delete_alert(alert_id):
-    if current_user.rol != "admin":
+    user = session.get("user")
+    if not user or user.get("rol") != "admin":
         abort(403)
 
     try:
@@ -164,7 +181,8 @@ def delete_alert(alert_id):
 @admin_bp.route('/requests')
 @login_required
 def requests():
-    if current_user.rol != "admin":
+    user = session.get("user")
+    if not user or user.get("rol") != "admin":
         abort(403)  # 🔹 Solo los administradores pueden acceder
 
     return render_template('admin_requests.html')

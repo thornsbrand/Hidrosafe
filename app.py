@@ -1,12 +1,7 @@
 import os
 import firebase_admin
-from firebase_admin import credentials, auth, firestore
-from flask import Flask
-from flask import session
-
-@app.context_processor
-def inject_user():
-    return dict(current_user=session.get("user", None))
+from firebase_admin import credentials, firestore
+from flask import Flask, session
 
 def create_app():
     app = Flask(__name__)
@@ -17,7 +12,7 @@ def create_app():
         cred = credentials.Certificate("/etc/secrets/firebase_credentials.json")
         firebase_admin.initialize_app(cred)
 
-    # 🔹 Guardar Firestore en `app.config` para evitar la importación circular
+    # 🔹 Guardar Firestore en `app.config`
     app.config["FIRESTORE_DB"] = firestore.client()
 
     # 🔹 Importar blueprints dentro de la función para evitar errores de importación circular
@@ -26,12 +21,17 @@ def create_app():
     from admin import admin_bp 
 
     app.register_blueprint(main)
-    app.register_blueprint(auth_bp, url_prefix="/auth")  # 🔹 Asegurar el prefijo correcto
+    app.register_blueprint(auth_bp, url_prefix="/auth")  # Prefijo para autenticación
     app.register_blueprint(admin_bp, url_prefix="/admin")
+
+    # 🔹 Inyectar `current_user` en todas las plantillas para manejar autenticación
+    @app.context_processor
+    def inject_user():
+        return dict(current_user=session.get("user", None))
 
     return app
 
-# 🔹 Crear la aplicación después de definir `create_app`
+# 🔹 Crear la aplicación correctamente
 app = create_app()
 
 @app.route('/test_firebase')

@@ -189,3 +189,36 @@ def requests():
         abort(403)  # 🔹 Solo los administradores pueden acceder
 
     return render_template('admin_requests.html')
+
+@admin_bp.route("/requests", methods=["GET", "POST"])
+def admin_requests():
+    user = session.get("user")
+    if not user or user.get("rol") != "admin":
+        flash("No tienes permisos para acceder a esta página.", "danger")
+        return redirect(url_for("main.index"))
+
+    if request.method == "POST":
+        solicitud_id = request.form.get("solicitud_id")
+        estado = request.form.get("estado")
+        respuesta = request.form.get("respuesta", "").strip()
+
+        if not solicitud_id or not estado:
+            flash("Todos los campos son obligatorios.", "danger")
+            return redirect(url_for("admin.admin_requests"))
+
+        # Actualizar Firestore con la respuesta del admin
+        solicitud_ref = db.collection("solicitudes").document(solicitud_id)
+        solicitud_ref.update({
+            "estado": estado,
+            "respuesta": respuesta
+        })
+
+        flash("Solicitud actualizada correctamente.", "success")
+        return redirect(url_for("admin.admin_requests"))
+
+    # Obtener todas las solicitudes
+    all_requests = db.collection("solicitudes").stream()
+    solicitudes = [{**req.to_dict(), "id": req.id} for req in all_requests]
+
+    return render_template("admin_requests.html", solicitudes=solicitudes)
+

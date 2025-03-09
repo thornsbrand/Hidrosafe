@@ -1,7 +1,10 @@
 from flask import Blueprint, render_template, redirect, url_for, abort, current_app, session, flash
 from firebase_admin import auth
 from functools import wraps
+import datetime
 
+db = firestore.client()  # Inicializar Firestore
+requests_bp = Blueprint("requests", __name__)
 admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
 
 # Blueprint principal
@@ -102,3 +105,33 @@ def permissions():
     if not user or user.get("rol") != "admin":
         abort(403)
     return render_template('admin_permissions.html')
+
+@requests_bp.route("/requests", methods=["GET", "POST"])
+def user_requests():
+    user = session.get("user")
+    if not user:
+        flash("Debes iniciar sesión para enviar una solicitud.", "danger")
+        return redirect(url_for("auth.login"))
+
+    if request.method == "POST":
+        descripcion = request.form.get("descripcion")
+        if not descripcion:
+            flash("La descripción no puede estar vacía.", "danger")
+            return redirect(url_for("requests.user_requests"))
+
+        solicitud = {
+            "usuario": user["email"],
+            "descripcion": descripcion,
+            "estado": "pendiente",
+            "respuesta": "",
+            "fecha": datetime.datetime.utcnow()
+        }
+        db.collection("solicitudes").add(solicitud)
+        flash("Solicitud enviada con éxito.", "success")
+        return redirect(url_for("requests.user_requests"))
+
+    # Obtener solicitudes enviadas por el usuario actual
+    user_requests = db.collection("solicitudes").where("usuario", "==", user["email"]).stream()
+    solicitudes = [{**req.to_dict(), "id": req.id} for req in user_requests]
+
+    return render_template("user_requests.html", solicitudes=solicitudes)

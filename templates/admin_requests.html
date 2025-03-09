@@ -1,35 +1,39 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container mt-3">
-    <a href="{{ url_for('admin.admin_panel') }}" class="btn btn-secondary mb-3">⬅ Volver al Panel de Administración</a>
-</div>
-
-<div class="container mt-5">
-    <h2>Requerimientos y Solicitudes</h2>
-    <p>Desde aquí puedes gestionar todas las solicitudes enviadas por los usuarios.</p>
-
-    <table class="table table-dark table-striped">
+<div class="container">
+    <h2>Gestionar Solicitudes</h2>
+    <table class="table table-dark">
         <thead>
             <tr>
-                <th>ID</th>
                 <th>Usuario</th>
-                <th>Tipo de Solicitud</th>
+                <th>Descripción</th>
                 <th>Estado</th>
+                <th>Respuesta</th>
                 <th>Acciones</th>
             </tr>
         </thead>
         <tbody>
+            {% for solicitud in solicitudes %}
             <tr>
-                <td>001</td>
-                <td>usuario@ejemplo.com</td>
-                <td>Acceso especial</td>
-                <td>Pendiente</td>
+                <td>{{ solicitud.usuario }}</td>
+                <td>{{ solicitud.descripcion }}</td>
+                <td>{{ solicitud.estado }}</td>
+                <td>{{ solicitud.respuesta or "Sin respuesta" }}</td>
                 <td>
-                    <button class="btn btn-success btn-sm">Aprobar</button>
-                    <button class="btn btn-danger btn-sm">Rechazar</button>
+                    <form method="POST" action="{{ url_for('admin.admin_requests') }}">
+                        <input type="hidden" name="solicitud_id" value="{{ solicitud.id }}">
+                        <select name="estado" class="form-select">
+                            <option value="pendiente" {% if solicitud.estado == "pendiente" %}selected{% endif %}>Pendiente</option>
+                            <option value="aprobada" {% if solicitud.estado == "aprobada" %}selected{% endif %}>Aprobada</option>
+                            <option value="rechazada" {% if solicitud.estado == "rechazada" %}selected{% endif %}>Rechazada</option>
+                        </select>
+                        <input type="text" name="respuesta" class="form-control mt-2" placeholder="Escribe una respuesta...">
+                        <button type="submit" class="btn btn-success mt-2">Actualizar</button>
+                    </form>
                 </td>
             </tr>
+            {% endfor %}
         </tbody>
     </table>
 </div>

@@ -22,6 +22,12 @@
             <label for="password" class="form-label">Contraseña</label>
             <input type="password" class="form-control" name="password" required>
         </div>
+
+        <!-- 🔹 Enlace para recuperar la contraseña -->
+        <div class="text-end">
+            <a href="{{ url_for('auth.forgot_password') }}" class="small">¿Olvidaste tu contraseña?</a>
+        </div>
+
         <button type="submit" class="btn btn-primary">Iniciar sesión</button>
     </form>
 </div>

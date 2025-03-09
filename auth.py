@@ -64,6 +64,24 @@ def register():
 
     return render_template('auth/register.html')
 
+@auth_bp.route("/forgot_password", methods=["GET", "POST"])
+def forgot_password():
+    if request.method == "POST":
+        email = request.form.get("email")
+
+        if not email:
+            flash("Por favor, ingresa tu correo electrónico.", "error")
+            return redirect(url_for("auth.forgot_password"))
+
+        try:
+            auth.generate_password_reset_link(email)  # Envía el enlace de recuperación de Firebase
+            flash("Se ha enviado un enlace de recuperación a tu correo.", "success")
+            return redirect(url_for("auth.login"))
+
+        except Exception as e:
+            flash(f"Error al enviar el correo: {str(e)}", "danger")
+
+    return render_template("auth/forgot_password.html")
 
 
 @auth_bp.route("/logout")

@@ -74,14 +74,18 @@ def forgot_password():
             return redirect(url_for("auth.forgot_password"))
 
         try:
-            auth.generate_password_reset_link(email)  # Envía el enlace de recuperación de Firebase
+            # Enviar enlace de recuperación a través de Firebase
+            link = auth.generate_password_reset_link(email)
             flash("Se ha enviado un enlace de recuperación a tu correo.", "success")
             return redirect(url_for("auth.login"))
 
+        except auth.UserNotFoundError:
+            flash("No se encontró una cuenta con ese correo electrónico.", "danger")
         except Exception as e:
             flash(f"Error al enviar el correo: {str(e)}", "danger")
 
     return render_template("auth/forgot_password.html")
+
 
 
 @auth_bp.route("/logout")

@@ -106,7 +106,6 @@ def permissions():
         abort(403)
     return render_template('admin_permissions.html')
 
-# 🔹 Enviar solicitudes de usuario
 @requests_bp.route("/requests", methods=["GET", "POST"])
 @login_required
 def user_requests():
@@ -114,6 +113,11 @@ def user_requests():
     if not user:
         flash("Debes iniciar sesión para enviar una solicitud.", "danger")
         return redirect(url_for("auth.login"))
+
+    # 🔹 Bloquear a los administradores para que no puedan crear solicitudes
+    if user.get("rol") == "admin":
+        flash("Los administradores no pueden crear solicitudes.", "danger")
+        return redirect(url_for("admin.admin_requests"))
 
     if request.method == "POST":
         descripcion = request.form.get("descripcion")
@@ -137,3 +141,4 @@ def user_requests():
     solicitudes = [{**req.to_dict(), "id": req.id} for req in user_requests]
 
     return render_template("user_requests.html", solicitudes=solicitudes)
+

@@ -2,16 +2,22 @@
 
 {% block content %}
 <div class="container">
-    <h2>Enviar Solicitud</h2>
+    <h2>Mis Solicitudes</h2>
+
+    <!-- 🔹 Mostrar formulario solo si el usuario NO es admin -->
+    {% if session["user"]["rol"] != "admin" %}
     <form method="POST" action="{{ url_for('requests.user_requests') }}">
         <div class="mb-3">
             <label class="form-label">Descripción de la solicitud</label>
             <textarea class="form-control" name="descripcion" required></textarea>
         </div>
-        <button type="submit" class="btn btn-primary">Enviar</button>
+        <button type="submit" class="btn btn-primary">Enviar Solicitud</button>
     </form>
+    {% else %}
+        <div class="alert alert-warning">Los administradores no pueden crear solicitudes.</div>
+    {% endif %}
 
-    <h3 class="mt-4">Mis Solicitudes</h3>
+    <h3 class="mt-4">Historial de Solicitudes</h3>
     <table class="table table-dark">
         <thead>
             <tr>

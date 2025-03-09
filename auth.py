@@ -60,6 +60,7 @@ def register():
     return render_template('auth/register.html')
 
 
+
 @auth_bp.route("/logout")
 def logout():
     session.pop("user", None)  # 🔹 Eliminar usuario de la sesión

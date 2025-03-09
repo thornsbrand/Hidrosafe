@@ -4,7 +4,6 @@ from urllib.parse import urlparse
 import firebase_admin  # 🔹 Importar firebase_admin
 from firebase_admin import credentials, auth, firestore  # 🔹 Importar auth para autenticación
 from werkzeug.security import check_password_hash
-from models import db, User
 
 auth_bp = Blueprint("auth", __name__)
 

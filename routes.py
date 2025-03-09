@@ -1,18 +1,19 @@
-from flask import Blueprint, render_template, redirect, url_for, abort, current_app, session, flash
-from firebase_admin import auth
+from flask import Blueprint, render_template, redirect, url_for, abort, current_app, session, flash, request
+import firebase_admin
+from firebase_admin import credentials, firestore, auth
 from functools import wraps
 import datetime
 
-db = firestore.client()  # Inicializar Firestore
+# 🔹 Verificar que Firebase esté inicializado
+if not firebase_admin._apps:
+    cred = credentials.Certificate("ruta/a/tu/firebase-config.json")  # Asegúrate de que la ruta sea correcta
+    firebase_admin.initialize_app(cred)
+
+db = firestore.client()  # 🔹 Ahora Firestore está correctamente inicializado
+
 requests_bp = Blueprint("requests", __name__)
 admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
-
-# Blueprint principal
 main = Blueprint('main', __name__)
-
-# 🔹 Acceder a Firestore desde `current_app.config["FIRESTORE_DB"]`
-def get_db():
-    return current_app.config["FIRESTORE_DB"]
 
 # 🔹 Decorador para verificar autenticación basada en sesión
 def login_required(f):
@@ -24,7 +25,7 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
-# Rutas principales
+# 🔹 Rutas principales
 @main.route('/')
 def index():
     return render_template('home.html')
@@ -63,8 +64,9 @@ def manage_users():
     user = session.get("user")
     if not user or user.get("rol") != "admin":
         abort(403)
-    users = get_db().collection("usuarios").get()
-    return render_template('admin_manage_users.html', users=users)
+    users = db.collection("usuarios").stream()
+    users_list = [{**user.to_dict(), "id": user.id} for user in users]
+    return render_template('admin_manage_users.html', users=users_list)
 
 @admin_bp.route('/settings')
 @login_required
@@ -106,7 +108,9 @@ def permissions():
         abort(403)
     return render_template('admin_permissions.html')
 
+# 🔹 Enviar solicitudes de usuario
 @requests_bp.route("/requests", methods=["GET", "POST"])
+@login_required
 def user_requests():
     user = session.get("user")
     if not user:

@@ -2,6 +2,11 @@ import os
 import firebase_admin
 from firebase_admin import credentials, auth, firestore
 from flask import Flask
+from flask import session
+
+@app.context_processor
+def inject_user():
+    return dict(current_user=session.get("user", None))
 
 def create_app():
     app = Flask(__name__)

@@ -1,12 +1,7 @@
-import os
-import json
 import firebase_admin
 from firebase_admin import credentials, auth, firestore
 from flask import Flask, g
 from flask_login import LoginManager, UserMixin, login_user, logout_user, current_user
-from dotenv import load_dotenv
-
-load_dotenv()  # Cargar variables de entorno desde .env
 
 def create_app():
     app = Flask(__name__)

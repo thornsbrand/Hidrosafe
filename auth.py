@@ -17,23 +17,24 @@ def login():
         email = request.form.get("email")
         password = request.form.get("password")
 
-        user = User.query.filter_by(email=email).first()
+        try:
+            user = auth.get_user_by_email(email)  # Obtiene el usuario en Firebase
+            session["user_id"] = user.uid  # Guarda el UID en sesión
 
-        if user and check_password_hash(user.password, password):
-            session["user_id"] = user.id  # Guardar sesión
             flash("Inicio de sesión exitoso", "success")
             return redirect(url_for("dashboard"))
 
-        flash("Correo o contraseña incorrectos", "danger")
+        except Exception as e:
+            flash(f"Error en el inicio de sesión: {str(e)}", "danger")
 
     return render_template("auth/login.html")
+
 
 # Ruta para mostrar el formulario de registro
 @auth_bp.route('/register', methods=['GET'])
 def register():
     return render_template('auth/register.html')
 
-# Ruta para procesar el registro de usuario
 @auth_bp.route('/register', methods=['POST'])
 def register_post():
     email = request.form.get("email")
@@ -47,10 +48,10 @@ def register_post():
         user = auth.create_user(email=email, password=password)
         user_uid = user.uid
 
-        # 🔹 Guardar usuario en Firestore con rol por defecto "usuario"
+        # Guardar en Firestore
         db.collection("usuarios").document(user_uid).set({
             "email": email,
-            "rol": "usuario"  # Por defecto, todos son usuarios normales
+            "rol": "usuario"
         })
 
         flash("Registro exitoso. Ahora puedes iniciar sesión.", "success")
@@ -59,6 +60,7 @@ def register_post():
     except Exception as e:
         flash(f"Error en el registro: {str(e)}", "error")
         return redirect(url_for('auth.register'))
+
 
 @auth_bp.route('/logout')
 @login_required

@@ -30,6 +30,9 @@ def manage_users():
     if not user or user.get("rol") != "admin":
         abort(403) 
     
+    # 🔹 Limpiar mensajes flash antes de cargar la página
+    session.pop('_flashes', None)
+
     users_ref = db.collection("usuarios").stream()
     users = [{**user.to_dict(), "uid": user.id} for user in users_ref]
 

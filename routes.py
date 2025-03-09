@@ -6,7 +6,7 @@ import datetime
 
 # 🔹 Verificar que Firebase esté inicializado
 if not firebase_admin._apps:
-    cred = credentials.Certificate("ruta/a/tu/firebase-config.json")  # Asegúrate de que la ruta sea correcta
+    cred = credentials.Certificate("/etc/secrets/firebase_credentials.json")  # Asegúrate de que la ruta sea correcta
     firebase_admin.initialize_app(cred)
 
 db = firestore.client()  # 🔹 Ahora Firestore está correctamente inicializado

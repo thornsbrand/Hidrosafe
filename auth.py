@@ -21,10 +21,11 @@ def login():
             user_data = user_doc.to_dict() if user_doc.exists else {}
 
             session["user"] = {
-                "uid": user.uid,
+                "uid": user.uid,  # 🔹 Guardar el UID en la sesión
                 "email": user.email,
-                "rol": user_data.get("rol", "usuario")  # Rol por defecto "usuario"
+                "rol": user_data.get("rol", "usuario")  
             }
+
 
             flash("Inicio de sesión exitoso", "success")
             return redirect(url_for("main.index"))  # Redirigir a la página principal

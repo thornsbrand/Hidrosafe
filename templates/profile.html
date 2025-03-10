@@ -45,21 +45,22 @@
 <script>
     // 🚀 Función para cargar datos del usuario desde Flask
     function cargarPerfil() {
-        fetch('/profile/data')  // 🔹 Nueva ruta en Flask para obtener datos
-            .then(response => response.json())
-            .then(data => {
-                if (data.error) {
-                    console.error("Error:", data.error);
-                    return;
-                }
-                document.getElementById("nombre").value = data.nombre || "";
-                document.getElementById("apellidos").value = data.apellidos || "";
-                document.getElementById("celular").value = data.celular || "";
-                document.getElementById("empresa").value = data.empresa || "";
-                document.getElementById("rol").value = data.rol || "Usuario";
-            })
-            .catch(error => console.error("Error al obtener perfil:", error));
+    fetch('/profile/data')
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                console.error("Error:", data.error);
+                return;
+            }
+            document.getElementById("nombre").value = data.nombre || "";
+            document.getElementById("apellidos").value = data.apellidos || "";
+            document.getElementById("celular").value = data.celular || "";
+            document.getElementById("empresa").value = data.empresa || "";
+            document.getElementById("rol").value = data.rol || "Usuario";
+        })
+        .catch(error => console.error("Error al obtener perfil:", error));
     }
+
 
     // 🚀 Función para guardar los datos del usuario en Flask
     function guardarPerfil() {

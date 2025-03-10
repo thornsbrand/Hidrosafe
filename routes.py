@@ -47,10 +47,10 @@ def profile():
 @login_required
 def get_profile_data():
     user = session.get("user")
-    if not user:
+    if not user or "uid" not in user:
         return jsonify({"error": "No hay usuario autenticado"}), 401
 
-    user_ref = db.collection("usuarios").document(user["email"])  # O usa user["uid"] si en Firestore los docs tienen UID
+    user_ref = db.collection("usuarios").document(user["uid"])  # 🔹 Buscar por UID
     user_doc = user_ref.get()
 
     if user_doc.exists:
@@ -63,11 +63,11 @@ def get_profile_data():
 @login_required
 def update_profile():
     user = session.get("user")
-    if not user:
+    if not user or "uid" not in user:
         return jsonify({"error": "No hay usuario autenticado"}), 401
 
     data = request.json
-    user_ref = db.collection("usuarios").document(user["email"])  # O usa user["uid"] si Firestore usa UID
+    user_ref = db.collection("usuarios").document(user["uid"])  # 🔹 Guardar por UID
     user_ref.set(data, merge=True)
 
     return jsonify({"success": True})

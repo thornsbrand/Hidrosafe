@@ -37,6 +37,12 @@ def dashboard():
 def documentation():
     return render_template('documentation.html')
 
+@main.route('/profile', methods=['GET'])
+@login_required
+def profile():
+    return render_template('profile.html', user=session.get("user"))
+
+
 @main.route('/profile/data', methods=['GET'])
 @login_required
 def get_profile_data():

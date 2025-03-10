@@ -37,36 +37,34 @@
                     </li>
 
                     <!-- Mostrar "Crear Solicitud" SOLO si el usuario NO es admin -->
-                    {% if session["user"]["rol"] == "usuario" %}
+                    {% if session["user"]["rol"] != "admin" %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('requests.user_requests') }}">Crear Solicitud</a>
+                        <a class="nav-link" href="{{ url_for('main.create_request') }}">Crear Solicitud</a>
                     </li>
                     {% endif %}
                     {% endif %}
                 </ul>
             </div>
 
-                
-
-                <div class="d-flex">
-                    {% if current_user %}
-                        <div class="dropdown">
-                            <button class="btn btn-outline-light dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                                {{ current_user.email }}
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                                {% if current_user.rol == "admin" %}
-                                <li><a class="dropdown-item" href="{{ url_for('admin.admin_panel') }}">Panel Admin</a></li>
-                                {% endif %}
-                                <li><a class="dropdown-item" href="{{ url_for('main.profile') }}">Perfil</a></li>
-                                <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}">Cerrar sesión</a></li>
-                            </ul>
-                        </div>
-                    {% else %}
-                        <a href="{{ url_for('auth.login') }}" class="btn btn-outline-light me-2">Iniciar sesión</a>
-                        <a href="{{ url_for('auth.register') }}" class="btn btn-primary">Registrarse</a>
-                    {% endif %}
-                </div>
+            <div class="d-flex">
+                {% if current_user %}
+                    <div class="dropdown">
+                        <button class="btn btn-outline-light dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            {{ current_user.email }}
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            {% if current_user.rol == "admin" %}
+                            <li><a class="dropdown-item" href="{{ url_for('admin.admin_panel') }}">Panel Admin</a></li>
+                            {% endif %}
+                            <li><a class="dropdown-item" href="{{ url_for('main.profile') }}">Perfil</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}">Cerrar sesión</a></li>
+                        </ul>
+                    </div>
+                {% else %}
+                    <a href="{{ url_for('auth.login') }}" class="btn btn-outline-light me-2">Iniciar sesión</a>
+                    <a href="{{ url_for('auth.register') }}" class="btn btn-primary">Registrarse</a>
+                {% endif %}
+            </div>
                 
 
             </div>

@@ -42,99 +42,53 @@
     </form>
 </div>
 
-<!-- 🚀 Agregar Firebase y Firestore -->
-<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
-
 <script>
-    // 🔹 Configuración de Firebase
-    const firebaseConfig = {
-        apiKey: "AIzaSyADxmST-tVzWPery7a7tYksjeBNKlbYMxk",
-        authDomain: "hydrosafe-b8635.firebaseapp.com",
-        projectId: "hydrosafe-b8635",
-        storageBucket: "hydrosafe-b8635.appspot.com",
-        messagingSenderId: "670282184676",
-        appId: "1:670282184676:web:1cda5088c7cca03e6fb9f1",
-        measurementId: "G-P79J6CG5S8"
-    };
-
-    // 🔹 Inicializar Firebase si aún no está inicializado
-    if (!firebase.apps.length) {
-        firebase.initializeApp(firebaseConfig);
-    }
-    const db = firebase.firestore();
-
-    // 🚀 Función para cargar datos del usuario
+    // 🚀 Función para cargar datos del usuario desde Flask
     function cargarPerfil() {
-    firebase.auth().onAuthStateChanged((user) => {
-        if (!user) {
-            console.error("Usuario no autenticado");
-            return;
-        }
-
-        // 🔹 Verificar si el documento usa UID o Email como ID
-        const userRef = db.collection("usuarios").doc(user.email); // Si los docs usan el email como ID
-        // Si usan el UID, reemplaza con:
-        // const userRef = db.collection("usuarios").doc(user.uid);
-
-        userRef.get().then((doc) => {
-            if (doc.exists) {
-                const data = doc.data();
+        fetch('/profile/data')  // 🔹 Nueva ruta en Flask para obtener datos
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    console.error("Error:", data.error);
+                    return;
+                }
                 document.getElementById("nombre").value = data.nombre || "";
                 document.getElementById("apellidos").value = data.apellidos || "";
                 document.getElementById("celular").value = data.celular || "";
                 document.getElementById("empresa").value = data.empresa || "";
-                document.getElementById("rol").value = data.rol || "";
-            } else {
-                console.log("No hay datos guardados.");
-            }
-        }).catch((error) => {
-            console.error("Error al obtener perfil:", error);
-        });
-    });
-}
+                document.getElementById("rol").value = data.rol || "Usuario";
+            })
+            .catch(error => console.error("Error al obtener perfil:", error));
+    }
 
-
-    // 🚀 Función para guardar datos del usuario
+    // 🚀 Función para guardar los datos del usuario en Flask
     function guardarPerfil() {
-    firebase.auth().onAuthStateChanged((user) => {
-        if (!user) {
-            alert("Error: No hay usuario autenticado.");
-            return;
-        }
-
         const perfilData = {
             nombre: document.getElementById("nombre").value,
             apellidos: document.getElementById("apellidos").value,
             celular: document.getElementById("celular").value,
             empresa: document.getElementById("empresa").value,
-            // 🔹 No permitimos que el usuario cambie su rol (solo admin)
         };
 
-        // 🔹 Usamos el email o UID como ID del documento en Firestore
-        // const userRef = db.collection("usuarios").doc(user.email); 
-        // Si usas UID, reemplaza con:
-        const userRef = db.collection("usuarios").doc(user.uid);
+        fetch('/profile/update', {  // 🔹 Nueva ruta en Flask para actualizar datos
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(perfilData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert("✅ Perfil actualizado correctamente.");
+                cargarPerfil();
+            } else {
+                alert("❌ Error al actualizar perfil: " + data.error);
+            }
+        })
+        .catch(error => alert("❌ Error de conexión: " + error.message));
+    }
 
-        userRef.set(perfilData, { merge: true })
-            .then(() => {
-                alert("Perfil actualizado correctamente.");
-                cargarPerfil(); // 🔹 Recargar los datos actualizados
-            })
-            .catch((error) => {
-                alert("Error al actualizar perfil: " + error.message);
-            });
-    });
-}
-
-
-    // 🔹 Esperar a que el usuario esté autenticado antes de cargar el perfil
-    firebase.auth().onAuthStateChanged((user) => {
-        if (user) {
-            cargarPerfil();
-        }
-    });
+    // 🔹 Cargar el perfil cuando la página se carga
+    document.addEventListener("DOMContentLoaded", cargarPerfil);
 </script>
 
 {% endblock %}

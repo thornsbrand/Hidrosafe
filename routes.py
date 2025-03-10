@@ -37,10 +37,35 @@ def dashboard():
 def documentation():
     return render_template('documentation.html')
 
-@main.route('/profile')
+@main.route('/profile/data', methods=['GET'])
 @login_required
-def profile():
-    return render_template('profile.html', user=session.get("user"))
+def get_profile_data():
+    user = session.get("user")
+    if not user:
+        return jsonify({"error": "No hay usuario autenticado"}), 401
+
+    user_ref = db.collection("usuarios").document(user["email"])  # O usa user["uid"] si en Firestore los docs tienen UID
+    user_doc = user_ref.get()
+
+    if user_doc.exists:
+        return jsonify(user_doc.to_dict())
+    else:
+        return jsonify({"error": "No hay datos guardados para este usuario"}), 404
+
+
+@main.route('/profile/update', methods=['POST'])
+@login_required
+def update_profile():
+    user = session.get("user")
+    if not user:
+        return jsonify({"error": "No hay usuario autenticado"}), 401
+
+    data = request.json
+    user_ref = db.collection("usuarios").document(user["email"])  # O usa user["uid"] si Firestore usa UID
+    user_ref.set(data, merge=True)
+
+    return jsonify({"success": True})
+
 
 @main.route('/notifications')
 @login_required

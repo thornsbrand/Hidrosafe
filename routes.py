@@ -1,5 +1,5 @@
 from functools import wraps  # 🔹 IMPORTANTE: Añade esta línea
-from flask import Blueprint, render_template, redirect, url_for, abort, current_app, session, flash, request
+from flask import Blueprint, render_template, redirect, url_for, abort, current_app, session, flash, request, jsonify
 import firebase_admin
 from firebase_admin import firestore
 

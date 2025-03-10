@@ -50,13 +50,15 @@ def get_profile_data():
     if not user:
         return jsonify({"error": "No hay usuario autenticado"}), 401
 
-    user_ref = db.collection("usuarios").document(user["email"])  # O usa user["uid"] si en Firestore los docs tienen UID
+    # 🔹 CORRECCIÓN: Usar `user["uid"]` en lugar de `user["email"]`
+    user_ref = db.collection("usuarios").document(user["uid"])
     user_doc = user_ref.get()
 
     if user_doc.exists:
         return jsonify(user_doc.to_dict())
     else:
         return jsonify({"error": "No hay datos guardados para este usuario"}), 404
+
 
 
 @main.route('/profile/update', methods=['POST'])
@@ -67,10 +69,13 @@ def update_profile():
         return jsonify({"error": "No hay usuario autenticado"}), 401
 
     data = request.json
-    user_ref = db.collection("usuarios").document(user["email"])  # O usa user["uid"] si Firestore usa UID
+
+    # 🔹 CORRECCIÓN: Guardar los datos usando `uid` como ID
+    user_ref = db.collection("usuarios").document(user["uid"])
     user_ref.set(data, merge=True)
 
     return jsonify({"success": True})
+
 
 
 @main.route('/notifications')

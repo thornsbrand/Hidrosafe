@@ -67,13 +67,18 @@
 
     // 🚀 Función para cargar datos del usuario
     function cargarPerfil() {
-        const user = firebase.auth().currentUser;
+    firebase.auth().onAuthStateChanged((user) => {
         if (!user) {
             console.error("Usuario no autenticado");
             return;
         }
 
-        db.collection("usuarios").doc(user.uid).get().then((doc) => {
+        // 🔹 Verificar si el documento usa UID o Email como ID
+        const userRef = db.collection("usuarios").doc(user.email); // Si los docs usan el email como ID
+        // Si usan el UID, reemplaza con:
+        // const userRef = db.collection("usuarios").doc(user.uid);
+
+        userRef.get().then((doc) => {
             if (doc.exists) {
                 const data = doc.data();
                 document.getElementById("nombre").value = data.nombre || "";
@@ -87,11 +92,13 @@
         }).catch((error) => {
             console.error("Error al obtener perfil:", error);
         });
-    }
+    });
+}
+
 
     // 🚀 Función para guardar datos del usuario
     function guardarPerfil() {
-        const user = firebase.auth().currentUser;
+    firebase.auth().onAuthStateChanged((user) => {
         if (!user) {
             alert("Error: No hay usuario autenticado.");
             return;
@@ -102,17 +109,25 @@
             apellidos: document.getElementById("apellidos").value,
             celular: document.getElementById("celular").value,
             empresa: document.getElementById("empresa").value,
-            rol: document.getElementById("rol").value,
+            // 🔹 No permitimos que el usuario cambie su rol (solo admin)
         };
 
-        db.collection("usuarios").doc(user.uid).set(perfilData, { merge: true })
+        // 🔹 Usamos el email o UID como ID del documento en Firestore
+        // const userRef = db.collection("usuarios").doc(user.email); 
+        // Si usas UID, reemplaza con:
+        const userRef = db.collection("usuarios").doc(user.uid);
+
+        userRef.set(perfilData, { merge: true })
             .then(() => {
                 alert("Perfil actualizado correctamente.");
+                cargarPerfil(); // 🔹 Recargar los datos actualizados
             })
             .catch((error) => {
                 alert("Error al actualizar perfil: " + error.message);
             });
-    }
+    });
+}
+
 
     // 🔹 Esperar a que el usuario esté autenticado antes de cargar el perfil
     firebase.auth().onAuthStateChanged((user) => {

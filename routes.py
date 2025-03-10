@@ -1,7 +1,8 @@
-from functools import wraps  # 🔹 IMPORTANTE: Añade esta línea
+from functools import wraps
 from flask import Blueprint, render_template, redirect, url_for, abort, current_app, session, flash, request, jsonify
 import firebase_admin
 from firebase_admin import firestore
+import datetime  # 🔹 Importar datetime para manejar fechas
 
 # 🔹 Verificar si Firebase ya está inicializado
 if not firebase_admin._apps:
@@ -9,7 +10,8 @@ if not firebase_admin._apps:
 
 db = firestore.client()  # 🔹 Inicializar Firestore sin JSON
 
-requests_bp = Blueprint("requests", __name__)
+requests_bp = Blueprint("requests", __name__, url_prefix="/requests")  # 🔹 Añadir prefijo a requests
+
 admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
 main = Blueprint('main', __name__)
 
@@ -142,15 +144,15 @@ def permissions():
         abort(403)
     return render_template('admin_permissions.html')
 
-@requests_bp.route("/requests", methods=["GET", "POST"])
+# 🔹 Nueva ruta corregida para crear solicitudes
+@requests_bp.route("/create", methods=["GET", "POST"])
 @login_required
-def user_requests():
+def create_request():
     user = session.get("user")
     if not user:
         flash("Debes iniciar sesión para enviar una solicitud.", "danger")
         return redirect(url_for("auth.login"))
 
-    # 🔹 Bloquear a los administradores para que no puedan crear solicitudes
     if user.get("rol") == "admin":
         flash("Los administradores no pueden crear solicitudes.", "danger")
         return redirect(url_for("admin.admin_requests"))
@@ -159,7 +161,7 @@ def user_requests():
         descripcion = request.form.get("descripcion")
         if not descripcion:
             flash("La descripción no puede estar vacía.", "danger")
-            return redirect(url_for("requests.user_requests"))
+            return redirect(url_for("requests.create_request"))
 
         solicitud = {
             "usuario": user["email"],
@@ -170,11 +172,10 @@ def user_requests():
         }
         db.collection("solicitudes").add(solicitud)
         flash("Solicitud enviada con éxito.", "success")
-        return redirect(url_for("requests.user_requests"))
+        return redirect(url_for("requests.create_request"))
 
     # Obtener solicitudes enviadas por el usuario actual
     user_requests = db.collection("solicitudes").where("usuario", "==", user["email"]).stream()
     solicitudes = [{**req.to_dict(), "id": req.id} for req in user_requests]
 
     return render_template("user_requests.html", solicitudes=solicitudes)
-

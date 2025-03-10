@@ -2,6 +2,7 @@ import os
 import firebase_admin
 from firebase_admin import credentials, firestore
 from flask import Flask, session
+from routes import main, requests_bp  # 🔹 Asegúrate de importar requests_bp
 
 def create_app():
     app = Flask(__name__)
@@ -21,6 +22,7 @@ def create_app():
     from admin import admin_bp 
 
     app.register_blueprint(main)
+    app.register_blueprint(requests_bp)  # 🔹 Registra el blueprint
     app.register_blueprint(auth_bp, url_prefix="/auth")  # Prefijo para autenticación
     app.register_blueprint(admin_bp, url_prefix="/admin")
 

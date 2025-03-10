@@ -38,9 +38,9 @@
 
                     <!-- Mostrar "Crear Solicitud" SOLO si el usuario NO es admin -->
                     {% if session["user"]["rol"] != "admin" %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('main.create_request') }}">Crear Solicitud</a>
-                    </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('requests.create_request') }}">Crear Solicitud</a>
+                        </li>
                     {% endif %}
                     {% endif %}
                 </ul>

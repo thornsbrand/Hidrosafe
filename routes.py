@@ -184,15 +184,18 @@ def forgot_password():
             return redirect(url_for("auth.forgot_password"))
 
         try:
-            # ✅ Enviar el correo de recuperación de contraseña directamente desde Firebase
-            auth.send_password_reset_email(email)
+            print(f"Intentando enviar correo de restablecimiento a: {email}")  # ✅ Verifica si entra aquí
+            auth.send_password_reset_email(email)  # ✅ Envío del correo
 
+            print("Correo enviado correctamente")  # ✅ Si llega aquí, Firebase sí ejecutó el envío
             flash("Se ha enviado un enlace de recuperación a tu correo.", "success")
             return redirect(url_for("auth.login"))
 
         except auth.UserNotFoundError:
+            print("Usuario no encontrado en Firebase")  # ❌ Si llega aquí, el usuario no existe
             flash("No se encontró una cuenta con ese correo electrónico.", "danger")
         except Exception as e:
+            print(f"Error al enviar el correo: {e}")  # ❌ Depuración de error
             flash(f"Error al enviar el correo: {str(e)}", "danger")
 
     return render_template("auth/forgot_password.html")

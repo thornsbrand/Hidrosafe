@@ -4,17 +4,17 @@
 
 {% block content %}
 <div class="container mt-5">
-    <h2>Notificaciones</h2>
-    <p>Aquí puedes ver las alertas y mensajes importantes.</p>
+    <h2>📢 Notificaciones</h2>
+    <p>Aquí puedes ver alertas y mensajes importantes.</p>
 
     <!-- 🚀 Filtros -->
     <div class="mb-3">
         <label class="form-label">Filtrar por tipo:</label>
         <select id="filtroTipo" class="form-select" onchange="cargarNotificaciones()">
             <option value="todas">Todas</option>
-            <option value="alerta">Alertas de Falla</option>
-            <option value="mantenimiento">Mantenimientos</option>
-            <option value="admin">Mensajes del Administrador</option>
+            <option value="alerta">🚨 Alertas de Falla</option>
+            <option value="mantenimiento">🛠 Mantenimientos</option>
+            <option value="admin">📌 Mensajes del Administrador</option>
         </select>
     </div>
 
@@ -25,7 +25,7 @@
 
 <script>
     function cargarNotificaciones() {
-        fetch("/notifications/data")  // 🔹 Ahora obtenemos los datos desde el backend
+        fetch("/notifications/data")
             .then(response => response.json())
             .then(data => {
                 const notificationList = document.getElementById("notificationList");
@@ -41,19 +41,44 @@
                     return;
                 }
 
+                const filtro = document.getElementById("filtroTipo").value;
+
                 data.forEach(notificacion => {
+                    if (filtro !== "todas" && notificacion.tipo !== filtro) return;
+
+                    // Formato de fecha y hora
                     const fechaCompleta = new Date(notificacion.fecha);
-                    const fecha = fechaCompleta.toLocaleDateString();
-                    const hora = fechaCompleta.toLocaleTimeString();
+                    const opcionesFecha = { year: "numeric", month: "long", day: "numeric" };
+                    const opcionesHora = { hour: "2-digit", minute: "2-digit", second: "2-digit" };
+
+                    const fecha = fechaCompleta.toLocaleDateString("es-ES", opcionesFecha);
+                    const hora = fechaCompleta.toLocaleTimeString("es-ES", opcionesHora);
+
+                    // Ícono por tipo de notificación
+                    let icono = "";
+                    switch (notificacion.tipo) {
+                        case "alerta":
+                            icono = "🚨";
+                            break;
+                        case "mantenimiento":
+                            icono = "🛠";
+                            break;
+                        case "admin":
+                            icono = "📌";
+                            break;
+                        default:
+                            icono = "🔔";
+                    }
 
                     const li = document.createElement("li");
-                    li.className = "list-group-item";
-                    li.textContent = `${fecha} - ${hora}: ${notificacion.mensaje}`;
+                    li.className = "list-group-item d-flex align-items-center";
+                    li.innerHTML = `<span class="me-2">${icono}</span> <strong>${fecha} - ${hora}:</strong> ${notificacion.mensaje}`;
                     notificationList.appendChild(li);
                 });
             })
             .catch(error => {
                 console.error("Error al obtener notificaciones:", error);
+                notificationList.innerHTML = "<li class='list-group-item text-danger'>Error al cargar notificaciones.</li>";
             });
     }
 

@@ -73,10 +73,18 @@ def update_profile():
     return jsonify({"success": True})
 
 
-@main.route('/notifications')
+@main.route("/api/notifications")
 @login_required
-def notifications():
-    return render_template('notifications.html', user=session.get("user"))
+def get_notifications():
+    user = session.get("user")
+    if not user:
+        return jsonify({"error": "Usuario no autenticado"}), 401
+
+    notifications_ref = db.collection("notificaciones").where("usuario_id", "==", user["uid"])
+    notifications = [doc.to_dict() for doc in notifications_ref.stream()]
+
+    return jsonify(notifications)
+
 
 # 🔹 Rutas de administración protegidas
 @admin_bp.route('/')

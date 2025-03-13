@@ -23,80 +23,40 @@
     </ul>
 </div>
 
-<!-- 🚀 Agregar Firebase y Firestore -->
-<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
-
 <script>
-    // 🔹 Configuración de Firebase
-    const firebaseConfig = {
-        apiKey: "AIzaSyADxmST-tVzWPery7a7tYksjeBNKlbYMxk",
-        authDomain: "hydrosafe-b8635.firebaseapp.com",
-        projectId: "hydrosafe-b8635",
-        storageBucket: "hydrosafe-b8635.appspot.com",
-        messagingSenderId: "670282184676",
-        appId: "1:670282184676:web:1cda5088c7cca03e6fb9f1",
-        measurementId: "G-P79J6CG5S8"
-    };
-
-    // 🔹 Inicializar Firebase si aún no está inicializado
-    if (!firebase.apps.length) {
-        firebase.initializeApp(firebaseConfig);
-    }
-    const db = firebase.firestore();
-
-    // 🚀 Función para cargar notificaciones con filtros y ordenamiento
     function cargarNotificaciones() {
-        const user = firebase.auth().currentUser;
-        if (!user) {
-            console.error("Usuario no autenticado");
-            return;
-        }
+        fetch("/notifications/data")  // 🔹 Ahora obtenemos los datos desde el backend
+            .then(response => response.json())
+            .then(data => {
+                const notificationList = document.getElementById("notificationList");
+                notificationList.innerHTML = "";
 
-        const filtroTipo = document.getElementById("filtroTipo").value;
-        const notificationList = document.getElementById("notificationList");
-        notificationList.innerHTML = "<li class='list-group-item'>Cargando notificaciones...</li>";
+                if (data.error) {
+                    notificationList.innerHTML = `<li class='list-group-item text-danger'>${data.error}</li>`;
+                    return;
+                }
 
-        let query = db.collection("notificaciones").where("usuario_id", "==", user.uid);
+                if (data.length === 0) {
+                    notificationList.innerHTML = "<li class='list-group-item'>No hay notificaciones disponibles.</li>";
+                    return;
+                }
 
-        if (filtroTipo !== "todas") {
-            query = query.where("tipo", "==", filtroTipo);
-        }
+                data.forEach(notificacion => {
+                    const fechaCompleta = new Date(notificacion.fecha);
+                    const fecha = fechaCompleta.toLocaleDateString();
+                    const hora = fechaCompleta.toLocaleTimeString();
 
-        query = query.orderBy("fecha", "desc");
-
-        query.get().then((querySnapshot) => {
-            notificationList.innerHTML = ""; // Limpiar lista
-            if (querySnapshot.empty) {
-                notificationList.innerHTML = "<li class='list-group-item'>No hay notificaciones disponibles.</li>";
-                return;
-            }
-
-            querySnapshot.forEach((doc) => {
-            const data = doc.data();
-            const fechaCompleta = new Date(data.fecha.seconds * 1000);
-            
-            const fecha = fechaCompleta.toLocaleDateString(); // Solo la fecha (dd/mm/aaaa)
-            const hora = fechaCompleta.toLocaleTimeString(); // Solo la hora (hh:mm:ss AM/PM)
-
-            const li = document.createElement("li");
-            li.className = "list-group-item";
-            li.textContent = `${fecha} - ${hora}: ${data.mensaje}`;
-            
-            notificationList.appendChild(li);
-        });
-        }).catch((error) => {
-            console.error("Error al obtener notificaciones:", error);
-        });
+                    const li = document.createElement("li");
+                    li.className = "list-group-item";
+                    li.textContent = `${fecha} - ${hora}: ${notificacion.mensaje}`;
+                    notificationList.appendChild(li);
+                });
+            })
+            .catch(error => {
+                console.error("Error al obtener notificaciones:", error);
+            });
     }
 
-    // 🔹 Esperar a que el usuario esté autenticado antes de cargar las notificaciones
-    firebase.auth().onAuthStateChanged((user) => {
-        if (user) {
-            cargarNotificaciones();
-        }
-    });
+    document.addEventListener("DOMContentLoaded", cargarNotificaciones);
 </script>
-
 {% endblock %}

@@ -1,26 +1,28 @@
 {% extends "base.html" %}
 
-{% block title %}Notificaciones - Hydrosafe{% endblock %}
+{% block title %}Notificaciones{% endblock %}
 
 {% block content %}
 <div class="container mt-5">
-    <h2>📢 Notificaciones</h2>
-    <p>Aquí puedes ver alertas y mensajes importantes.</p>
+    <h2 class="text-center mb-4">📢 Notificaciones</h2>
 
-    <!-- 🚀 Filtros -->
-    <div class="mb-3">
-        <label class="form-label">Filtrar por tipo:</label>
-        <select id="filtroTipo" class="form-select" onchange="cargarNotificaciones()">
+    <!-- Filtro de notificaciones -->
+    <div class="mb-3 text-center">
+        <label for="filtroTipo" class="form-label">Filtrar por tipo:</label>
+        <select id="filtroTipo" class="form-select w-auto mx-auto" onchange="cargarNotificaciones()">
             <option value="todas">Todas</option>
-            <option value="alerta">🚨 Alertas de Falla</option>
+            <option value="alerta">🚨 Alertas</option>
             <option value="mantenimiento">🛠 Mantenimientos</option>
-            <option value="admin">📌 Mensajes del Administrador</option>
+            <option value="admin">📌 Administrador</option>
         </select>
     </div>
 
-    <ul id="notificationList" class="list-group">
-        <li class="list-group-item">Cargando notificaciones...</li>
-    </ul>
+    <!-- Lista de notificaciones -->
+    <div id="notificationList" class="row g-3 justify-content-center">
+        <div class="col-12 text-center">
+            <p class="text-muted">Cargando notificaciones...</p>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -32,12 +34,12 @@
                 notificationList.innerHTML = "";
 
                 if (data.error) {
-                    notificationList.innerHTML = `<li class='list-group-item text-danger'>${data.error}</li>`;
+                    notificationList.innerHTML = `<div class='col-12 text-danger text-center'>${data.error}</div>`;
                     return;
                 }
 
                 if (data.length === 0) {
-                    notificationList.innerHTML = "<li class='list-group-item'>No hay notificaciones disponibles.</li>";
+                    notificationList.innerHTML = "<div class='col-12 text-center text-muted'>No hay notificaciones.</div>";
                     return;
                 }
 
@@ -46,7 +48,7 @@
                 data.forEach(notificacion => {
                     if (filtro !== "todas" && notificacion.tipo !== filtro) return;
 
-                    // Formato de fecha y hora
+                    // Formatear fecha y hora
                     const fechaCompleta = new Date(notificacion.fecha);
                     const opcionesFecha = { year: "numeric", month: "long", day: "numeric" };
                     const opcionesHora = { hour: "2-digit", minute: "2-digit", second: "2-digit" };
@@ -54,31 +56,46 @@
                     const fecha = fechaCompleta.toLocaleDateString("es-ES", opcionesFecha);
                     const hora = fechaCompleta.toLocaleTimeString("es-ES", opcionesHora);
 
-                    // Ícono por tipo de notificación
-                    let icono = "";
+                    // Estilos por tipo de notificación
+                    let estilo = "", icono = "";
                     switch (notificacion.tipo) {
                         case "alerta":
+                            estilo = "bg-danger text-light"; 
                             icono = "🚨";
                             break;
                         case "mantenimiento":
+                            estilo = "bg-warning text-dark";
                             icono = "🛠";
                             break;
                         case "admin":
+                            estilo = "bg-info text-light";
                             icono = "📌";
                             break;
                         default:
+                            estilo = "bg-secondary text-light"; 
                             icono = "🔔";
                     }
 
-                    const li = document.createElement("li");
-                    li.className = "list-group-item d-flex align-items-center";
-                    li.innerHTML = `<span class="me-2">${icono}</span> <strong>${fecha} - ${hora}:</strong> ${notificacion.mensaje}`;
-                    notificationList.appendChild(li);
+                    // Crear tarjeta de notificación
+                    const card = document.createElement("div");
+                    card.className = "col-md-6 col-lg-4";
+
+                    card.innerHTML = `
+                        <div class="card ${estilo} shadow-lg">
+                            <div class="card-body">
+                                <h5 class="card-title">${icono} ${notificacion.tipo.toUpperCase()}</h5>
+                                <p class="card-text">${notificacion.mensaje}</p>
+                                <small class="text-light">📅 ${fecha} - 🕒 ${hora}</small>
+                            </div>
+                        </div>
+                    `;
+
+                    notificationList.appendChild(card);
                 });
             })
             .catch(error => {
                 console.error("Error al obtener notificaciones:", error);
-                notificationList.innerHTML = "<li class='list-group-item text-danger'>Error al cargar notificaciones.</li>";
+                notificationList.innerHTML = "<div class='col-12 text-danger text-center'>Error al cargar notificaciones.</div>";
             });
     }
 

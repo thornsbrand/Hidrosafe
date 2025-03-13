@@ -83,7 +83,7 @@ def get_notifications():
     notifications_ref = db.collection("notificaciones").where("usuario_id", "==", user["uid"])
     notifications = [doc.to_dict() for doc in notifications_ref.stream()]
 
-    return jsonify(notifications)
+    return render_template("notifications.html")
 
 
 # 🔹 Rutas de administración protegidas

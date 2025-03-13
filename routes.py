@@ -12,7 +12,6 @@ db = firestore.client()  # 🔹 Inicializar Firestore sin JSON
 requests_bp = Blueprint("requests", __name__)
 admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
 main = Blueprint('main', __name__)
-auth_bp = Blueprint("auth", __name__) 
 
 # 🔹 Decorador para verificar autenticación basada en sesión
 def login_required(f):
@@ -173,33 +172,3 @@ def user_requests():
     solicitudes = [{**req.to_dict(), "id": req.id} for req in user_requests]
 
     return render_template("user_requests.html", solicitudes=solicitudes)
-
-@auth_bp.route("/forgot_password", methods=["GET", "POST"])
-def forgot_password():
-    print("🔹 Se ha accedido a la función forgot_password")  # ✅ Verifica si se imprime esto
-
-    if request.method == "POST":
-        email = request.form.get("email")
-        print(f"🔹 Correo ingresado: {email}")  # ✅ Verifica si el correo llega al backend
-
-        if not email:
-            flash("Por favor, ingresa tu correo electrónico.", "error")
-            return redirect(url_for("auth.forgot_password"))
-
-        try:
-            print(f"🔹 Intentando enviar correo de restablecimiento a: {email}")
-            auth.send_password_reset_email(email)  # ✅ Intenta enviar el correo
-
-            print("✅ Correo enviado correctamente")  
-            flash("Se ha enviado un enlace de recuperación a tu correo.", "success")
-            return redirect(url_for("auth.login"))
-
-        except auth.UserNotFoundError:
-            print("⚠️ Usuario no encontrado en Firebase")
-            flash("No se encontró una cuenta con ese correo electrónico.", "danger")
-        except Exception as e:
-            print(f"❌ Error al enviar el correo: {e}")
-            flash(f"Error al enviar el correo: {str(e)}", "danger")
-
-    return render_template("auth/forgot_password.html")
-

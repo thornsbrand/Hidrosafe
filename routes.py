@@ -176,26 +176,30 @@ def user_requests():
 
 @auth_bp.route("/forgot_password", methods=["GET", "POST"])
 def forgot_password():
+    print("🔹 Se ha accedido a la función forgot_password")  # ✅ Verifica si se imprime esto
+
     if request.method == "POST":
         email = request.form.get("email")
+        print(f"🔹 Correo ingresado: {email}")  # ✅ Verifica si el correo llega al backend
 
         if not email:
             flash("Por favor, ingresa tu correo electrónico.", "error")
             return redirect(url_for("auth.forgot_password"))
 
         try:
-            print(f"Intentando enviar correo de restablecimiento a: {email}")  # ✅ Verifica si entra aquí
-            auth.send_password_reset_email(email)  # ✅ Envío del correo
+            print(f"🔹 Intentando enviar correo de restablecimiento a: {email}")
+            auth.send_password_reset_email(email)  # ✅ Intenta enviar el correo
 
-            print("Correo enviado correctamente")  # ✅ Si llega aquí, Firebase sí ejecutó el envío
+            print("✅ Correo enviado correctamente")  
             flash("Se ha enviado un enlace de recuperación a tu correo.", "success")
             return redirect(url_for("auth.login"))
 
         except auth.UserNotFoundError:
-            print("Usuario no encontrado en Firebase")  # ❌ Si llega aquí, el usuario no existe
+            print("⚠️ Usuario no encontrado en Firebase")
             flash("No se encontró una cuenta con ese correo electrónico.", "danger")
         except Exception as e:
-            print(f"Error al enviar el correo: {e}")  # ❌ Depuración de error
+            print(f"❌ Error al enviar el correo: {e}")
             flash(f"Error al enviar el correo: {str(e)}", "danger")
 
     return render_template("auth/forgot_password.html")
+

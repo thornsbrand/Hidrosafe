@@ -1,7 +1,7 @@
 from functools import wraps  # 🔹 IMPORTANTE: Añade esta línea
 from flask import Blueprint, render_template, redirect, url_for, abort, current_app, session, flash, request, jsonify
 import firebase_admin
-from firebase_admin import firestore
+from firebase_admin import firestore, auth
 
 # 🔹 Verificar si Firebase ya está inicializado
 if not firebase_admin._apps:
@@ -12,6 +12,7 @@ db = firestore.client()  # 🔹 Inicializar Firestore sin JSON
 requests_bp = Blueprint("requests", __name__)
 admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
 main = Blueprint('main', __name__)
+auth_bp = Blueprint("auth", __name__) 
 
 # 🔹 Decorador para verificar autenticación basada en sesión
 def login_required(f):
@@ -173,3 +174,25 @@ def user_requests():
 
     return render_template("user_requests.html", solicitudes=solicitudes)
 
+@auth_bp.route("/forgot_password", methods=["GET", "POST"])
+def forgot_password():
+    if request.method == "POST":
+        email = request.form.get("email")
+
+        if not email:
+            flash("Por favor, ingresa tu correo electrónico.", "error")
+            return redirect(url_for("auth.forgot_password"))
+
+        try:
+            # ✅ Enviar el correo de recuperación de contraseña directamente desde Firebase
+            auth.send_password_reset_email(email)
+
+            flash("Se ha enviado un enlace de recuperación a tu correo.", "success")
+            return redirect(url_for("auth.login"))
+
+        except auth.UserNotFoundError:
+            flash("No se encontró una cuenta con ese correo electrónico.", "danger")
+        except Exception as e:
+            flash(f"Error al enviar el correo: {str(e)}", "danger")
+
+    return render_template("auth/forgot_password.html")

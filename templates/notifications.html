@@ -27,7 +27,7 @@
 
 <script>
     function cargarNotificaciones() {
-        fetch("/notifications/data")
+        fetch("{{ url_for('main.get_notifications') }}")
             .then(response => response.json())
             .then(data => {
                 const notificationList = document.getElementById("notificationList");

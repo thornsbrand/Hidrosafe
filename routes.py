@@ -73,17 +73,28 @@ def update_profile():
     return jsonify({"success": True})
 
 
-@main.route("/notifications", methods=["GET"])
+@main.route("/notifications/data", methods=["GET"])
 @login_required
 def get_notifications():
     user = session.get("user")
     if not user:
         return jsonify({"error": "Usuario no autenticado"}), 401
 
-    notifications_ref = db.collection("notificaciones").where("usuario_id", "==", user["uid"])
-    notifications = [doc.to_dict() for doc in notifications_ref.stream()]
+    user_id = user.get("uid")  # ⚠️ Usa "uid" porque los documentos usan UID
+    if not user_id:
+        return jsonify({"error": "No se encontró el UID del usuario"}), 400
 
-    return render_template("notifications.html")
+    notifications_ref = db.collection("notificaciones").where("usuario_id", "==", user_id)
+    notifications = notifications_ref.stream()
+
+    data = []
+    for doc in notifications:
+        notif = doc.to_dict()
+        notif["fecha"] = notif["fecha"].isoformat()  # ⚠️ Asegurar que la fecha es serializable
+        data.append(notif)
+
+    return jsonify(data)
+
 
 
 # 🔹 Rutas de administración protegidas

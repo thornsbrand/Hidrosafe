@@ -153,3 +153,11 @@
         padding: 15px;
     }
 }
+
+.admin {
+    background-color: #ffeb3b; /* Amarillo para admin */
+    color: #000; /* Negro para que se vea */
+    font-weight: bold;
+    padding: 8px;
+    border-radius: 5px;
+}

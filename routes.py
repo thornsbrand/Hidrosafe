@@ -72,8 +72,14 @@ def update_profile():
 
     return jsonify({"success": True})
 
-
+# Ruta para renderizar la página de notificaciones
 @main.route("/notifications", methods=["GET"])
+@login_required
+def notifications():
+    return render_template("notifications.html")
+
+# Ruta para obtener las notificaciones en JSON
+@main.route("/notifications/data", methods=["GET"])
 @login_required
 def get_notifications():
     user = session.get("user")
@@ -94,8 +100,6 @@ def get_notifications():
         data.append(notif)
 
     return jsonify(data)
-
-
 
 # 🔹 Rutas de administración protegidas
 @admin_bp.route('/')

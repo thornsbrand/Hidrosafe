@@ -27,7 +27,7 @@
 
 <script>
     function cargarNotificaciones() {
-        fetch("/notifications")
+        fetch("/notifications/data")
             .then(response => {
                 if (!response.ok) {
                     throw new Error(`Error HTTP: ${response.status}`);

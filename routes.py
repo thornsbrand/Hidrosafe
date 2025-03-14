@@ -95,10 +95,10 @@ def get_notifications():
     data = []
     for doc in notifications:
         notif = doc.to_dict()
-        notif["fecha"] = notif["fecha"].isoformat()  # ⚠️ Convierte la fecha a string
+        notif["fecha"] = notif["fecha"].isoformat()
         data.append(notif)
 
-    return jsonify(data)  # ✅ DEVUELVE JSON CORRECTAMENTE
+    return jsonify(data)
 
 
 # 🔹 Rutas de administración protegidas

@@ -2,7 +2,6 @@ import os
 import firebase_admin
 from firebase_admin import credentials, firestore
 from flask import Flask, session
-from routes import main  # ✅ Importa las rutas correctamente
 
 def create_app():
     app = Flask(__name__)

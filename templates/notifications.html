@@ -59,22 +59,26 @@
                     const hora = fechaCompleta.toLocaleTimeString("es-ES");
 
                     // Estilos y iconos por tipo de notificación
-                    let estilo = "", icono = "";
+                    let estilo = "", icono = "", tituloClase = "";
                     switch (notificacion.tipo) {
                         case "alerta":
-                            estilo = "bg-danger text-light"; 
+                            estilo = "bg-danger text-white"; 
+                            tituloClase = "text-light";
                             icono = "🚨";
                             break;
                         case "mantenimiento":
                             estilo = "bg-warning text-dark";
+                            tituloClase = "text-dark";
                             icono = "🛠";
                             break;
                         case "admin":
-                            estilo = "bg-info text-dark"; // Cambié text-light a text-dark
+                            estilo = "bg-primary text-white";
+                            tituloClase = "text-light";
                             icono = "📌";
                             break;
                         default:
                             estilo = "bg-secondary text-light"; 
+                            tituloClase = "text-light";
                             icono = "🔔";
                     }
 
@@ -85,7 +89,7 @@
                     card.innerHTML = `
                         <div class="card ${estilo} shadow-lg">
                             <div class="card-body">
-                                <h5 class="card-title fw-bold">${icono} ${notificacion.tipo.toUpperCase()}</h5>
+                                <h5 class="card-title fw-bold ${tituloClase}">${icono} ${notificacion.tipo.toUpperCase()}</h5>
                                 <p class="card-text">${notificacion.mensaje}</p>
                                 <small class="text-muted">📅 ${fecha} - 🕒 ${hora}</small>
                             </div>
@@ -103,4 +107,5 @@
 
     document.addEventListener("DOMContentLoaded", cargarNotificaciones);
 </script>
+
 {% endblock %}

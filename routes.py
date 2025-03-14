@@ -2,6 +2,9 @@ from functools import wraps  # 🔹 IMPORTANTE: Añade esta línea
 from flask import Blueprint, render_template, redirect, url_for, abort, current_app, session, flash, request, jsonify
 import firebase_admin
 from firebase_admin import firestore, auth
+import random
+
+app = Flask(__name__)
 
 # 🔹 Verificar si Firebase ya está inicializado
 if not firebase_admin._apps:
@@ -195,3 +198,44 @@ def user_requests():
     solicitudes = [{**req.to_dict(), "id": req.id} for req in user_requests]
 
     return render_template("user_requests.html", solicitudes=solicitudes)
+
+@app.route('/api/sensor_data', methods=['GET'])
+def get_sensor_data():
+    """ Devuelve datos simulados en tiempo real """
+    data = {
+        "sensors": {
+            "PS1": random.uniform(10, 50),
+            "PS2": random.uniform(10, 50),
+            "PS3": random.uniform(10, 50),
+            "EPS1": random.uniform(0.8, 1.2),
+            "FS1": random.uniform(5, 20),
+            "TS1": random.uniform(20, 80),
+            "VS1": random.uniform(0.1, 5.0)
+        },
+        "units": {
+            "PS1": "bar", "PS2": "bar", "PS3": "bar",
+            "EPS1": "kW", "FS1": "L/min", "TS1": "°C", "VS1": "m/s²"
+        },
+        "system": {
+            "cooler": random.choice([100, 20, 3]),
+            "valve": random.choice([100, 90, 80, 73]),
+            "pump_leakage": random.choice([0, 1, 2]),
+            "accumulator": random.choice([130, 115, 100, 90]),
+            "stable": random.choice([True, False])
+        }
+    }
+    return jsonify(data)
+
+@app.route('/api/history_data', methods=['GET'])
+def get_history_data():
+    """ Devuelve datos de historial """
+    history = [
+        {"cycle": i, "cooler": random.choice([100, 20, 3]), "valve": random.choice([100, 90, 80, 73]),
+         "pump_leakage": random.choice([0, 1, 2]), "accumulator": random.choice([130, 115, 100, 90]),
+         "stable": random.choice([True, False])}
+        for i in range(1, 20)
+    ]
+    return jsonify(history)
+
+if __name__ == '__main__':
+    app.run(debug=True)

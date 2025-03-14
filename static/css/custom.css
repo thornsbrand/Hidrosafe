@@ -153,15 +153,3 @@
         padding: 15px;
     }
 }
-
-/* Ajuste para notificaciones de tipo admin */
-.notificacion.admin {
-    background-color: #3498db; /* Azul (puedes cambiar el tono) */
-    color: white !important; /* Asegura que el texto sea blanco */
-}
-
-/* Asegurar que el título en admin sea visible */
-.notificacion.admin h3 {
-    color: white !important; /* Forzar el color blanco en los títulos */
-}
-

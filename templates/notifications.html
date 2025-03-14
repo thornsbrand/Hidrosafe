@@ -70,7 +70,7 @@
                             icono = "🛠";
                             break;
                         case "admin":
-                            estilo = "bg-info text-light";
+                            estilo = "bg-info text-dark"; // Cambié text-light a text-dark
                             icono = "📌";
                             break;
                         default:
@@ -85,9 +85,9 @@
                     card.innerHTML = `
                         <div class="card ${estilo} shadow-lg">
                             <div class="card-body">
-                                <h5 class="card-title">${icono} ${notificacion.tipo.toUpperCase()}</h5>
+                                <h5 class="card-title fw-bold">${icono} ${notificacion.tipo.toUpperCase()}</h5>
                                 <p class="card-text">${notificacion.mensaje}</p>
-                                <small class="text-light">📅 ${fecha} - 🕒 ${hora}</small>
+                                <small class="text-muted">📅 ${fecha} - 🕒 ${hora}</small>
                             </div>
                         </div>
                     `;

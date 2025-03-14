@@ -28,13 +28,18 @@
 <script>
     function cargarNotificaciones() {
         fetch("/notifications/data")
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Error HTTP: ${response.status}`);
+                }
+                return response.json();
+            })
             .then(data => {
                 const notificationList = document.getElementById("notificationList");
                 notificationList.innerHTML = "";
 
-                if (data.error) {
-                    notificationList.innerHTML = `<div class='col-12 text-danger text-center'>${data.error}</div>`;
+                if (!Array.isArray(data)) {
+                    notificationList.innerHTML = "<div class='col-12 text-danger text-center'>Error: Datos incorrectos.</div>";
                     return;
                 }
 
@@ -48,15 +53,12 @@
                 data.forEach(notificacion => {
                     if (filtro !== "todas" && notificacion.tipo !== filtro) return;
 
-                    // Formatear fecha y hora
+                    // Formatear fecha
                     const fechaCompleta = new Date(notificacion.fecha);
-                    const opcionesFecha = { year: "numeric", month: "long", day: "numeric" };
-                    const opcionesHora = { hour: "2-digit", minute: "2-digit", second: "2-digit" };
+                    const fecha = fechaCompleta.toLocaleDateString("es-ES");
+                    const hora = fechaCompleta.toLocaleTimeString("es-ES");
 
-                    const fecha = fechaCompleta.toLocaleDateString("es-ES", opcionesFecha);
-                    const hora = fechaCompleta.toLocaleTimeString("es-ES", opcionesHora);
-
-                    // Estilos por tipo de notificación
+                    // Estilos y iconos por tipo de notificación
                     let estilo = "", icono = "";
                     switch (notificacion.tipo) {
                         case "alerta":
@@ -95,7 +97,7 @@
             })
             .catch(error => {
                 console.error("Error al obtener notificaciones:", error);
-                notificationList.innerHTML = "<div class='col-12 text-danger text-center'>Error al cargar notificaciones.</div>";
+                document.getElementById("notificationList").innerHTML = "<div class='col-12 text-danger text-center'>Error al cargar notificaciones.</div>";
             });
     }
 

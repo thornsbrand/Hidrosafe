@@ -73,7 +73,7 @@ def update_profile():
     return jsonify({"success": True})
 
 
-@main.route("/notifications/data", methods=["GET"])
+@main.route("/notifications", methods=["GET"])
 @login_required
 def get_notifications():
     user = session.get("user")

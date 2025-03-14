@@ -78,7 +78,6 @@ def update_profile():
 def notifications():
     return render_template("notifications.html")
 
-# Ruta para obtener las notificaciones en JSON
 @main.route("/notifications/data", methods=["GET"])
 @login_required
 def get_notifications():
@@ -86,7 +85,7 @@ def get_notifications():
     if not user:
         return jsonify({"error": "Usuario no autenticado"}), 401
 
-    user_id = user.get("uid")  # ⚠️ Usa "uid" porque los documentos usan UID
+    user_id = user.get("uid")
     if not user_id:
         return jsonify({"error": "No se encontró el UID del usuario"}), 400
 
@@ -96,10 +95,11 @@ def get_notifications():
     data = []
     for doc in notifications:
         notif = doc.to_dict()
-        notif["fecha"] = notif["fecha"].isoformat()  # ⚠️ Asegurar que la fecha es serializable
+        notif["fecha"] = notif["fecha"].isoformat()  # ⚠️ Convierte la fecha a string
         data.append(notif)
 
-    return jsonify(data)
+    return jsonify(data)  # ✅ DEVUELVE JSON CORRECTAMENTE
+
 
 # 🔹 Rutas de administración protegidas
 @admin_bp.route('/')

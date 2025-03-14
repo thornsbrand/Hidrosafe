@@ -90,3 +90,24 @@ function generateCharts(data) {
         });
     });
 }
+
+async function cargarDatos() {
+    try {
+        let respuesta = await fetch("/api/sensor_data");  // ✅ Verifica la URL
+        let datos = await respuesta.json();
+        console.log("Datos en tiempo real:", datos);
+    } catch (error) {
+        console.error("Error cargando datos en tiempo real:", error);
+    }
+
+    try {
+        let respuestaHistorial = await fetch("/api/history_data");  // ✅ Verifica la URL
+        let historial = await respuestaHistorial.json();
+        console.log("Historial de datos:", historial);
+    } catch (error) {
+        console.error("Error cargando historial de datos:", error);
+    }
+}
+
+// Ejecutar la función al cargar el dashboard
+window.onload = cargarDatos;

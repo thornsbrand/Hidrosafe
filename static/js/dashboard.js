@@ -93,7 +93,7 @@ function generateCharts(data) {
 
 async function cargarDatosSensores() {
     try {
-        const response = await fetch("/api/sensor_data");
+        const response = await fetch("/api/sensor_data");  // 🔹 Llama a la API de Flask
         const data = await response.json();
 
         if (data.error) {
@@ -101,7 +101,7 @@ async function cargarDatosSensores() {
             return;
         }
 
-        // Actualizar cada sensor en el HTML
+        // 🔹 Actualizar cada sensor en el Dashboard
         document.getElementById("PS1").innerText = data.PS1 + " bar";
         document.getElementById("PS2").innerText = data.PS2 + " bar";
         document.getElementById("PS3").innerText = data.PS3 + " bar";
@@ -125,8 +125,9 @@ async function cargarDatosSensores() {
     }
 }
 
-// Cargar los datos cada 5 segundos
+// 🔹 Ejecutar cada 5 segundos para actualizar los datos
 setInterval(cargarDatosSensores, 5000);
+
 
 // Ejecutar la función al cargar el dashboard
 window.onload = cargarDatos;

@@ -1,9 +1,7 @@
 from functools import wraps  # 🔹 IMPORTANTE: Añade esta línea
-from flask import Blueprint, render_template, redirect, url_for, abort, current_app, session, flash, request, jsonify, Flask
+from flask import Blueprint, render_template, redirect, url_for, abort, current_app, session, flash, request, jsonify
 import firebase_admin
 from firebase_admin import firestore, auth
-
-app = Flask(__name__)
 
 # 🔹 Verificar si Firebase ya está inicializado
 if not firebase_admin._apps:
@@ -198,14 +196,13 @@ def user_requests():
 
     return render_template("user_requests.html", solicitudes=solicitudes)
 
-
-@app.route('/api/sensor_data', methods=['GET'])
+@main.route('/api/sensor_data', methods=['GET'])
 def get_sensor_data():
-    """Obtiene los datos más recientes de los sensores desde Firestore"""
+    """Obtiene el último conjunto de datos de sensores desde Firestore"""
     sensores_ref = db.collection("sensores").order_by("timestamp", direction=firestore.Query.DESCENDING).limit(1)
     sensores_docs = sensores_ref.stream()
     
-    # Si hay datos, devolver el más reciente
+    # Si Firestore tiene datos, devolver el más reciente
     for doc in sensores_docs:
         return jsonify(doc.to_dict())
 

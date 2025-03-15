@@ -125,6 +125,28 @@ async function cargarDatosSensores() {
     }
 }
 
+async function cargarEstadoSistema() {
+    try {
+        const response = await fetch("/api/system_status");  // 🔹 Llama a la API de Flask
+        const data = await response.json();
+
+        if (data.error) {
+            console.error("Error al obtener datos:", data.error);
+            return;
+        }
+
+        // 🔹 Actualizar Estado del Sistema
+        document.getElementById("cooler").innerText = data.cooler_condition + " %";
+        document.getElementById("valve").innerText = data.valve_condition + " %";
+        document.getElementById("pump_leakage").innerText = data.pump_leakage === 0 ? "No leakage" : (data.pump_leakage === 1 ? "Weak leakage" : "Severe leakage");
+        document.getElementById("accumulator").innerText = data.accumulator_pressure + " bar";
+        document.getElementById("stability").innerText = data.stable ? "Stable" : "Unstable";
+
+    } catch (error) {
+        console.error("Error cargando estado del sistema:", error);
+    }
+}
+
 // 🔹 Ejecutar cada 5 segundos para actualizar los datos
 setInterval(cargarDatosSensores, 5000);
 

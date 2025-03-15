@@ -208,3 +208,15 @@ def get_sensor_data():
 
     # Si no hay datos en la base
     return jsonify({"error": "No hay datos en sensores"}), 404
+
+@main.route('/api/system_status', methods=['GET'])
+def get_system_status():
+    """Obtiene el último estado del sistema desde la colección 'condiciones' en Firestore"""
+    condiciones_ref = db.collection("condiciones").order_by("timestamp", direction=firestore.Query.DESCENDING).limit(1)
+    condiciones_docs = condiciones_ref.stream()
+
+    for doc in condiciones_docs:
+        data = doc.to_dict()
+        return jsonify(data)  # ✅ Retorna los datos del estado del sistema
+
+    return jsonify({"error": "No hay datos en condiciones"}), 404

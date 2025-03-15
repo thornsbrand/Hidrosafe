@@ -3,6 +3,8 @@ from flask import Blueprint, render_template, redirect, url_for, abort, current_
 import firebase_admin
 from firebase_admin import firestore, auth
 
+app = Flask(__name__)
+
 # 🔹 Verificar si Firebase ya está inicializado
 if not firebase_admin._apps:
     firebase_admin.initialize_app()
@@ -196,3 +198,16 @@ def user_requests():
 
     return render_template("user_requests.html", solicitudes=solicitudes)
 
+
+@app.route('/api/sensor_data', methods=['GET'])
+def get_sensor_data():
+    """Obtiene los datos más recientes de los sensores desde Firestore"""
+    sensores_ref = db.collection("sensores").order_by("timestamp", direction=firestore.Query.DESCENDING).limit(1)
+    sensores_docs = sensores_ref.stream()
+    
+    # Si hay datos, devolver el más reciente
+    for doc in sensores_docs:
+        return jsonify(doc.to_dict())
+
+    # Si no hay datos en la base
+    return jsonify({"error": "No hay datos en sensores"}), 404

@@ -91,23 +91,42 @@ function generateCharts(data) {
     });
 }
 
-async function cargarDatos() {
+async function cargarDatosSensores() {
     try {
-        let respuesta = await fetch("/api/sensor_data");  // ✅ Verifica la URL
-        let datos = await respuesta.json();
-        console.log("Datos en tiempo real:", datos);
+        const response = await fetch("/api/sensor_data");
+        const data = await response.json();
+
+        if (data.error) {
+            console.error("Error al obtener datos:", data.error);
+            return;
+        }
+
+        // Actualizar cada sensor en el HTML
+        document.getElementById("PS1").innerText = data.PS1 + " bar";
+        document.getElementById("PS2").innerText = data.PS2 + " bar";
+        document.getElementById("PS3").innerText = data.PS3 + " bar";
+        document.getElementById("PS4").innerText = data.PS4 + " bar";
+        document.getElementById("PS5").innerText = data.PS5 + " bar";
+        document.getElementById("PS6").innerText = data.PS6 + " bar";
+        document.getElementById("EPS1").innerText = data.EPS1 + " W";
+        document.getElementById("FS1").innerText = data.FS1 + " L/min";
+        document.getElementById("FS2").innerText = data.FS2 + " L/min";
+        document.getElementById("TS1").innerText = data.TS1 + " °C";
+        document.getElementById("TS2").innerText = data.TS2 + " °C";
+        document.getElementById("TS3").innerText = data.TS3 + " °C";
+        document.getElementById("TS4").innerText = data.TS4 + " °C";
+        document.getElementById("VS1").innerText = data.VS1 + " mm/s";
+        document.getElementById("CE").innerText = data.CE + " %";
+        document.getElementById("CP").innerText = data.CP + " kW";
+        document.getElementById("SE").innerText = data.SE + " %";
+
     } catch (error) {
         console.error("Error cargando datos en tiempo real:", error);
     }
-
-    try {
-        let respuestaHistorial = await fetch("/api/history_data");  // ✅ Verifica la URL
-        let historial = await respuestaHistorial.json();
-        console.log("Historial de datos:", historial);
-    } catch (error) {
-        console.error("Error cargando historial de datos:", error);
-    }
 }
+
+// Cargar los datos cada 5 segundos
+setInterval(cargarDatosSensores, 5000);
 
 // Ejecutar la función al cargar el dashboard
 window.onload = cargarDatos;

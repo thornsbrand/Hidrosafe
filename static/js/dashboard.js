@@ -9,43 +9,50 @@ async function actualizarDatos() {
     await cargarEstadoSistema();
 }
 
-// 📌 Función para actualizar sensores
+// 📌 Función para actualizar sensores en el Dashboard
 async function cargarDatosSensores() {
     try {
         const response = await fetch("/api/sensor_data");
         const data = await response.json();
 
-        if (data.error) {
-            console.error("Error al obtener datos de sensores:", data.error);
+        console.log("📥 Datos recibidos de sensor_data:", data);  // 🔎 Debugging
+
+        if (!data || typeof data !== "object") {
+            console.error("⚠️ Error: La API no devolvió un objeto válido.");
             return;
         }
 
-        // 🔹 Actualizar cada sensor en el Dashboard
+        // 🔹 Lista de sensores esperados en la respuesta
         const sensores = ["PS1", "PS2", "PS3", "PS4", "PS5", "PS6", "EPS1", "FS1", "FS2", "TS1", "TS2", "TS3", "TS4", "VS1", "CE", "CP", "SE"];
 
         sensores.forEach(sensor => {
-            if (document.getElementById(sensor)) {
-                document.getElementById(sensor).innerText = data.sensors[sensor] + " " + (data.units[sensor] || "");
+            const element = document.getElementById(sensor);
+            if (element && data[sensor] !== undefined) {
+                element.innerText = `${data[sensor]}`;  // 📌 Se asigna directamente el valor recibido
+            } else {
+                console.warn(`⚠️ No se encontró '${sensor}' en los datos recibidos.`);
             }
         });
 
     } catch (error) {
-        console.error("Error cargando datos en tiempo real:", error);
+        console.error("❌ Error cargando datos en tiempo real:", error);
     }
 }
 
-// 📌 Función para actualizar el estado del sistema
+// 📌 Función para actualizar el estado del sistema en el Dashboard
 async function cargarEstadoSistema() {
     try {
         const response = await fetch("/api/system_status");
         const data = await response.json();
 
-        if (data.error) {
-            console.error("Error al obtener estado del sistema:", data.error);
+        console.log("📥 Datos recibidos de system_status:", data);  // 🔎 Debugging
+
+        if (!data || typeof data !== "object") {
+            console.error("⚠️ Error: La API no devolvió un objeto válido.");
             return;
         }
 
-        // 🔹 Mapeo de IDs en el HTML a los datos de la API
+        // 🔹 Mapeo de los valores de estado a sus elementos en el Dashboard
         const statusMapping = {
             "cooler_condition": "Cooler Condition",
             "valve_condition": "Valve Condition",
@@ -56,12 +63,14 @@ async function cargarEstadoSistema() {
 
         Object.entries(statusMapping).forEach(([key, label]) => {
             const element = document.getElementById(key);
-            if (element) {
-                element.innerText = key === "stable" ? (data[key] ? "Stable" : "Unstable") : data[key] + (key.includes("pressure") ? " bar" : " %");
+            if (element && data[key] !== undefined) {
+                element.innerText = key === "stable" ? (data[key] ? "Stable" : "Unstable") : data[key];
+            } else {
+                console.warn(`⚠️ No se encontró '${key}' en los datos recibidos.`);
             }
         });
 
     } catch (error) {
-        console.error("Error cargando estado del sistema:", error);
+        console.error("❌ Error cargando estado del sistema:", error);
     }
 }

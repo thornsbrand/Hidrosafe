@@ -64,7 +64,11 @@ async function cargarEstadoSistema() {
         Object.entries(statusMapping).forEach(([key, label]) => {
             const element = document.getElementById(key);
             if (element && data[key] !== undefined) {
-                element.innerText = key === "stable" ? (data[key] ? "Stable" : "Unstable") : data[key];
+                if (key === "stable") {
+                    element.innerText = data[key] ? "Stable ✅" : "Unstable ❌";
+                } else {
+                    element.innerText = data[key];  // 📌 Muestra el valor recibido
+                }
             } else {
                 console.warn(`⚠️ No se encontró '${key}' en los datos recibidos.`);
             }
@@ -74,3 +78,9 @@ async function cargarEstadoSistema() {
         console.error("❌ Error cargando estado del sistema:", error);
     }
 }
+
+// 📌 Asegurar que se ejecuta la función en la carga de la página
+document.addEventListener("DOMContentLoaded", function () {
+    actualizarDatos();
+    setInterval(actualizarDatos, 5000);  // Recargar cada 5 segundos
+});

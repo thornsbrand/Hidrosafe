@@ -111,11 +111,18 @@ async function cargarHistorialConFiltro(startDate, endDate) {
     }
 }
 
-// Función genérica para generar gráficos
+// Función para generar un gráfico y destruir el anterior si existe
 function generarGrafico(canvasId, data, label, getData) {
     const ctx = document.getElementById(canvasId);
+
+    // Si ya existe un gráfico en ese canvas, destruirlo antes de crear uno nuevo
+    if (ctx && window[canvasId]) {
+        window[canvasId].destroy();
+    }
+
+    // Crear el gráfico nuevo
     if (ctx) {
-        new Chart(ctx, {
+        window[canvasId] = new Chart(ctx, {
             type: 'line',
             data: {
                 labels: data.map(item => new Date(item.timestamp).toLocaleString()),  // Convertir el timestamp a fecha local
@@ -165,6 +172,7 @@ function generarGrafico(canvasId, data, label, getData) {
         });
     }
 }
+
 
 function aplicarFiltro() {
     let startDate = document.getElementById('startDate').value;

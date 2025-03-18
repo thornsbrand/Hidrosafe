@@ -95,13 +95,13 @@ async function cargarHistorial() {
             tbody.appendChild(row);
         });
 
-        // Gráfico de Cooler Condition
+        // Crear gráfico de Cooler Condition
         const ctxCooler = document.getElementById('chart_cooler_condition');
         if (ctxCooler) {
-            new Chart(ctxCooler.getContext('2d'), {
+            new Chart(ctxCooler, {
                 type: 'line',
                 data: {
-                    labels: data.map(item => new Date(item.timestamp).getTime()),  // Convertir el timestamp a milisegundos
+                    labels: data.map(item => new Date(item.timestamp).getTime()),  // Convertir timestamp a milisegundos
                     datasets: [{
                         label: 'Cooler Condition',
                         data: data.map(item => item.cooler_condition),
@@ -116,8 +116,8 @@ async function cargarHistorial() {
                         x: {
                             type: 'time',  // Usar escala de tiempo
                             time: {
-                                unit: 'minute',  // Escala temporal por minuto (puedes ajustarlo según sea necesario)
-                                tooltipFormat: 'll HH:mm', // Formato del tooltip para fechas
+                                unit: 'minute',
+                                tooltipFormat: 'll HH:mm',
                             },
                             title: {
                                 display: true,
@@ -132,11 +132,50 @@ async function cargarHistorial() {
             });
         }
 
-        // Repite lo mismo para los otros gráficos (Valve Condition, Pump Leakage, etc.)
+        // Crear gráfico de Valve Condition
+        const ctxValve = document.getElementById('chart_valve_condition');
+        if (ctxValve) {
+            new Chart(ctxValve, {
+                type: 'line',
+                data: {
+                    labels: data.map(item => new Date(item.timestamp).getTime()),
+                    datasets: [{
+                        label: 'Valve Condition',
+                        data: data.map(item => item.valve_condition),
+                        borderColor: 'rgba(153, 102, 255, 1)',
+                        backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                        fill: false,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            type: 'time',
+                            time: {
+                                unit: 'minute',
+                                tooltipFormat: 'll HH:mm',
+                            },
+                            title: {
+                                display: true,
+                                text: 'Timestamp'
+                            }
+                        },
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        // Repite lo mismo para los otros gráficos (Pump Leakage, Accumulator Pressure, Stable Flag)
+        
     } catch (error) {
         console.error('Error cargando historial de datos:', error);
     }
 }
+
 
 
 // Llamar a la función para cargar el historial al ingresar a la sección de Historial

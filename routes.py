@@ -225,22 +225,28 @@ def get_system_status():
 # Ruta para obtener el historial de los últimos 15 días
 @main.route('/api/history_data', methods=['GET'])
 def get_history_data():
-    """Devuelve datos del historial de los últimos 15 días"""
+    """Devuelve los datos del historial de los últimos 15 días"""
     
     # Calcular la fecha 15 días atrás
     fifteen_days_ago = datetime.utcnow() - timedelta(days=15)
     
-    # Convertir a formato ISO para comparar en Firestore
-    fifteen_days_ago_str = fifteen_days_ago.isoformat()
+    # Convertir la fecha a un formato Timestamp compatible con Firestore
+    fifteen_days_ago_timestamp = firestore.Timestamp.from_datetime(fifteen_days_ago)
     
     # Consulta de los datos desde Firestore, filtrando por fecha
-    history_ref = db.collection("condiciones").where("timestamp", ">=", fifteen_days_ago_str)
+    history_ref = db.collection("condiciones").where("timestamp", ">=", fifteen_days_ago_timestamp)
     history = history_ref.stream()
 
+    # Almacenar los datos recibidos
     data = []
     for doc in history:
         doc_data = doc.to_dict()
         doc_data["timestamp"] = doc_data["timestamp"].isoformat()  # Asegurarse de que la fecha sea serializable
         data.append(doc_data)
 
+    # Si no se encuentran datos, retornar un error
+    if not data:
+        return jsonify({"error": "No se encontraron datos en el historial"}), 404
+
+    # Devolver los datos en formato JSON
     return jsonify(data)

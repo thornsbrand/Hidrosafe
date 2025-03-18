@@ -69,7 +69,6 @@ function showSection(sectionId) {
     document.getElementById("historySection").style.display = (sectionId === 'history') ? 'block' : 'none';
 }
 
-// Cargar los datos históricos para los gráficos
 async function cargarHistorial() {
     try {
         const response = await fetch('/api/history_data');
@@ -80,36 +79,59 @@ async function cargarHistorial() {
             return;
         }
 
-        // Verifica que los canvas existan antes de crear los gráficos
+        // Llenar la tabla de historial con los datos
+        const tbody = document.getElementById('historyData');
+        tbody.innerHTML = ''; // Limpiar tabla antes de agregar los nuevos datos
+        data.forEach(item => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${item.cycle}</td>
+                <td>${item.cooler_condition}</td>
+                <td>${item.valve_condition}</td>
+                <td>${item.pump_leakage}</td>
+                <td>${item.accumulator_pressure}</td>
+                <td>${item.stable}</td>
+            `;
+            tbody.appendChild(row);
+        });
+
+        // Gráfico de Cooler Condition
         const ctxCooler = document.getElementById('chart_cooler_condition');
         if (ctxCooler) {
-            new Chart(ctxCooler.getContext('2d'), { /* chart options */ });
+            new Chart(ctxCooler.getContext('2d'), {
+                type: 'line',  // Tipo de gráfico (puede ser 'line', 'bar', etc.)
+                data: {
+                    labels: data.map(item => item.timestamp),  // Utiliza los timestamps como etiquetas
+                    datasets: [{
+                        label: 'Cooler Condition',
+                        data: data.map(item => item.cooler_condition),  // Extrae los datos de la condición del cooler
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        fill: false,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            type: 'linear',  // O 'category' dependiendo del tipo de datos
+                            position: 'bottom'
+                        },
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
         }
 
-        const ctxValve = document.getElementById('chart_valve_condition');
-        if (ctxValve) {
-            new Chart(ctxValve.getContext('2d'), { /* chart options */ });
-        }
-
-        const ctxLeakage = document.getElementById('chart_pump_leakage');
-        if (ctxLeakage) {
-            new Chart(ctxLeakage.getContext('2d'), { /* chart options */ });
-        }
-
-        const ctxAccumulator = document.getElementById('chart_accumulator_pressure');
-        if (ctxAccumulator) {
-            new Chart(ctxAccumulator.getContext('2d'), { /* chart options */ });
-        }
-
-        const ctxStable = document.getElementById('chart_stable_flag');
-        if (ctxStable) {
-            new Chart(ctxStable.getContext('2d'), { /* chart options */ });
-        }
-
+        // Repite lo mismo para los otros gráficos (Valve Condition, Pump Leakage, etc.)
     } catch (error) {
         console.error('Error cargando historial de datos:', error);
     }
 }
+
+
 
 
 

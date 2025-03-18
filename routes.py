@@ -231,12 +231,8 @@ def get_history_data():
     # Calcular la fecha 15 días atrás
     fifteen_days_ago = datetime.utcnow() - timedelta(days=15)
     
-    # Convertir la fecha a un formato Timestamp compatible con Firestore
-    timestamp = Timestamp()
-    timestamp.FromDatetime(fifteen_days_ago)
-    
     # Consulta de los datos desde Firestore, filtrando por fecha
-    history_ref = db.collection("condiciones").where("timestamp", ">=", timestamp)
+    history_ref = db.collection("condiciones").where("timestamp", ">=", fifteen_days_ago)
     history = history_ref.stream()
 
     # Almacenar los datos recibidos

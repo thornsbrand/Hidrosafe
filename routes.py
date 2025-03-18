@@ -2,6 +2,7 @@ from functools import wraps  # 🔹 IMPORTANTE: Añade esta línea
 from flask import Blueprint, render_template, redirect, url_for, abort, current_app, session, flash, request, jsonify
 import firebase_admin
 from firebase_admin import firestore, auth
+from datetime import datetime, timedelta
 
 # 🔹 Verificar si Firebase ya está inicializado
 if not firebase_admin._apps:
@@ -220,3 +221,25 @@ def get_system_status():
         return jsonify(data)  # ✅ Retorna los datos del estado del sistema
 
     return jsonify({"error": "No hay datos en condiciones"}), 404
+
+@app.route('/api/history_data', methods=['GET'])
+def get_history_data():
+    """Devuelve datos del historial de los últimos 15 días"""
+    
+    # Calcular la fecha 15 días atrás
+    fifteen_days_ago = datetime.utcnow() - timedelta(days=15)
+    
+    # Convertir a formato ISO para comparar en Firestore
+    fifteen_days_ago_str = fifteen_days_ago.isoformat()
+    
+    # Consulta de los datos desde Firestore, filtrando por fecha
+    history_ref = db.collection("condiciones").where("timestamp", ">=", fifteen_days_ago_str)
+    history = history_ref.stream()
+
+    data = []
+    for doc in history:
+        doc_data = doc.to_dict()
+        doc_data["timestamp"] = doc_data["timestamp"].isoformat()  # Asegurarse de que la fecha sea serializable
+        data.append(doc_data)
+
+    return jsonify(data)

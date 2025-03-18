@@ -3,11 +3,26 @@
 {% block content %}
 <!-- Estilo CSS para asegurarse que el canvas tenga tamaño adecuado -->
 <style>
-    #chart_cooler_condition {
-        width: 100%;  /* El gráfico ocupará todo el ancho disponible */
-        height: 400px;  /* Establece la altura a 400px */
+    .chart-container {
+        margin-bottom: 30px;  /* Añadir margen entre los gráficos */
+        border: 2px solid #ddd;  /* Borde suave alrededor de los gráficos */
+        padding: 15px;  /* Espacio entre el borde y el contenido */
+        border-radius: 10px;  /* Bordes redondeados */
+        background-color: #f9f9f9;  /* Fondo suave */
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);  /* Sombra sutil */
+    }
+
+    canvas {
+        max-width: 100%;  /* Asegurarse de que el gráfico no se desborde */
+        height: 300px;  /* Altura consistente para los gráficos */
+    }
+
+    h6 {
+        color: #333;  /* Color más oscuro para los títulos */
+        font-weight: bold;
     }
 </style>
+
 
 <div class="container mt-4">
     <h2 class="text-center">Dashboard de Monitoreo</h2>

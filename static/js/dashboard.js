@@ -143,8 +143,6 @@ function generarGrafico(canvasId, data, label, getData) {
     }
 }
 
-
-
 // Cargar historial cuando la página cargue
 document.addEventListener('DOMContentLoaded', function () {
     cargarHistorial(); // Cargar historial al cargar la página

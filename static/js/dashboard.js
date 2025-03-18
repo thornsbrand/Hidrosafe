@@ -85,7 +85,7 @@ async function cargarHistorial() {
         data.forEach(item => {
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td>${item.cycle}</td>
+                <td>${item.timestamp}</td>
                 <td>${item.cooler_condition}</td>
                 <td>${item.valve_condition}</td>
                 <td>${item.pump_leakage}</td>
@@ -99,12 +99,12 @@ async function cargarHistorial() {
         const ctxCooler = document.getElementById('chart_cooler_condition');
         if (ctxCooler) {
             new Chart(ctxCooler.getContext('2d'), {
-                type: 'line',  // Tipo de gráfico (puede ser 'line', 'bar', etc.)
+                type: 'line',
                 data: {
-                    labels: data.map(item => item.timestamp),  // Utiliza los timestamps como etiquetas
+                    labels: data.map(item => new Date(item.timestamp).getTime()),  // Convertir el timestamp a milisegundos
                     datasets: [{
                         label: 'Cooler Condition',
-                        data: data.map(item => item.cooler_condition),  // Extrae los datos de la condición del cooler
+                        data: data.map(item => item.cooler_condition),
                         borderColor: 'rgba(75, 192, 192, 1)',
                         backgroundColor: 'rgba(75, 192, 192, 0.2)',
                         fill: false,
@@ -114,8 +114,15 @@ async function cargarHistorial() {
                     responsive: true,
                     scales: {
                         x: {
-                            type: 'linear',  // O 'category' dependiendo del tipo de datos
-                            position: 'bottom'
+                            type: 'time',  // Usar escala de tiempo
+                            time: {
+                                unit: 'minute',  // Escala temporal por minuto (puedes ajustarlo según sea necesario)
+                                tooltipFormat: 'll HH:mm', // Formato del tooltip para fechas
+                            },
+                            title: {
+                                display: true,
+                                text: 'Timestamp'
+                            }
                         },
                         y: {
                             beginAtZero: true
@@ -130,9 +137,6 @@ async function cargarHistorial() {
         console.error('Error cargando historial de datos:', error);
     }
 }
-
-
-
 
 
 // Llamar a la función para cargar el historial al ingresar a la sección de Historial

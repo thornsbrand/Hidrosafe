@@ -64,6 +64,12 @@ async function actualizarDatos() {
     await cargarEstadoSistema();
 }
 
+function showSection(sectionId) {
+    document.getElementById("realTimeSection").style.display = (sectionId === 'realTime') ? 'block' : 'none';
+    document.getElementById("historySection").style.display = (sectionId === 'history') ? 'block' : 'none';
+}
+
+
 setInterval(actualizarDatos, 5000);
 
 actualizarDatos();

@@ -184,13 +184,6 @@ function aplicarFiltro() {
     cargarHistorialConFiltro(startDate, endDate);
 }
 
-
-
-// Cargar historial cuando la página cargue
-document.addEventListener('DOMContentLoaded', function () {
-    cargarHistorial(); // Cargar historial al cargar la página
-});
-
 // Llamar a la función para cargar el historial al ingresar a la sección de Historial
 function mostrarHistorial() {
     cargarHistorial();  // Cargar los datos del historial
@@ -200,6 +193,7 @@ function mostrarHistorial() {
 
 document.addEventListener('DOMContentLoaded', function () {
     // No es necesario llamar a cargarHistorial aquí si solo la mostramos cuando el usuario navega a la sección de Historial.
+    cargarHistorial(); // Cargar historial al cargar la página
     console.log("Página cargada. Esperando la acción de mostrar historial...");
 });
 

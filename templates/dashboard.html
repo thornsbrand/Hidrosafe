@@ -74,35 +74,32 @@
         </tbody>
     </table>
 
-        <!-- Sección de Gráficos -->
-        <h3 class="mt-4">Tendencias de Variables</h3>
-        <div class="row">
-            <div class="col-md-2 mb-4">
-                <h6>Cooler Condition</h6>
-                <canvas id="chart_cooler_condition"></canvas>
-            </div>
-            <div class="col-md-2 mb-4">
-                <h6>Valve Condition</h6>
-                <canvas id="chart_valve_condition"></canvas>
-            </div>
-            <div class="col-md-2 mb-4">
-                <h6>Pump Leakage</h6>
-                <canvas id="chart_pump_leakage"></canvas>
-            </div>
-            <div class="col-md-2 mb-4">
-                <h6>Accumulator Pressure</h6>
-                <canvas id="chart_accumulator_pressure"></canvas>
-            </div>
-            <div class="col-md-2 mb-4">
-                <h6>Stable Flag</h6>
-                <canvas id="chart_stable_flag"></canvas>
-            </div>
+    <!-- Sección de Gráficos -->
+    <h3 class="mt-4">Tendencias de Variables</h3>
+    <div class="row">
+        <div class="col-md-3 mb-4">
+            <h6>Cooler Condition</h6>
+            <canvas id="chart_cooler_condition"></canvas>
+        </div>
+        <div class="col-md-3 mb-4">
+            <h6>Valve Condition</h6>
+            <canvas id="chart_valve_condition"></canvas>
+        </div>
+        <div class="col-md-3 mb-4">
+            <h6>Pump Leakage</h6>
+            <canvas id="chart_pump_leakage"></canvas>
+        </div>
+        <div class="col-md-3 mb-4">
+            <h6>Accumulator Pressure</h6>
+            <canvas id="chart_accumulator_pressure"></canvas>
+        </div>
+        <div class="col-md-3 mb-4">
+            <h6>Stable Flag</h6>
+            <canvas id="chart_stable_flag"></canvas>
         </div>
     </div>
-
-    </div>
-
 </div>
+
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>

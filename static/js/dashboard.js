@@ -69,45 +69,44 @@ function showSection(sectionId) {
     document.getElementById("historySection").style.display = (sectionId === 'history') ? 'block' : 'none';
 }
 
-function cargarHistorial() {
-    // Realiza la solicitud para obtener los datos del historial
-    fetch('/api/history_data')
-        .then(response => response.json())
-        .then(data => {
-            if (data.length === 0) {
-                console.log("⚠️ No se encontraron datos en el historial.");
-                return;
-            }
+async function cargarHistorial() {
+    try {
+        const response = await fetch('/api/history_data');
+        const data = await response.json();
 
-            // Llenar la tabla de historial con los datos
-            const tbody = document.getElementById('historyData');
-            tbody.innerHTML = ''; // Limpiar tabla antes de agregar los nuevos datos
-            data.forEach(item => {
-                const localTimestamp = new Date(item.timestamp).toLocaleString();  // Convertir UTC a hora local
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${localTimestamp}</td>
-                    <td>${item.cooler_condition || item.CE}</td>
-                    <td>${item.valve_condition || item.VS1}</td>
-                    <td>${item.pump_leakage || item.PS1}</td>
-                    <td>${item.accumulator_pressure || item.EPS1}</td>
-                    <td>${item.stable || item.SE}</td>
-                `;
-                tbody.appendChild(row);
-            });
+        if (data.length === 0) {
+            console.log("⚠️ No se encontraron datos en el historial.");
+            return;
+        }
 
-            // Generar los gráficos de las variables
-            generarGrafico('chart_cooler_condition', data, 'Cooler Condition', item => item.cooler_condition || item.CE);
-            generarGrafico('chart_valve_condition', data, 'Valve Condition', item => item.valve_condition || item.VS1);
-            generarGrafico('chart_pump_leakage', data, 'Pump Leakage', item => item.pump_leakage || item.PS1);
-            generarGrafico('chart_accumulator_pressure', data, 'Accumulator Pressure', item => item.accumulator_pressure || item.EPS1);
-            generarGrafico('chart_stable_flag', data, 'Stable Flag', item => item.stable || item.SE);
-        })
-        .catch(error => {
-            console.error('Error al cargar historial:', error);
+        // Llenar la tabla de historial con los datos
+        const tbody = document.getElementById('historyData');
+        tbody.innerHTML = ''; // Limpiar tabla antes de agregar los nuevos datos
+        data.forEach(item => {
+            const localTimestamp = new Date(item.timestamp).toLocaleString();  // Convertir UTC a hora local
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${localTimestamp}</td>  <!-- Mostrar la hora en formato local -->
+                <td>${item.cooler_condition}</td>
+                <td>${item.valve_condition}</td>
+                <td>${item.pump_leakage}</td>
+                <td>${item.accumulator_pressure}</td>
+                <td>${item.stable}</td>
+            `;
+            tbody.appendChild(row);
         });
-}
 
+        // Generar los gráficos de las variables
+        generarGrafico('chart_cooler_condition', data, 'Cooler Condition', item => item.cooler_condition);
+        generarGrafico('chart_valve_condition', data, 'Valve Condition', item => item.valve_condition);
+        generarGrafico('chart_pump_leakage', data, 'Pump Leakage', item => item.pump_leakage);
+        generarGrafico('chart_accumulator_pressure', data, 'Accumulator Pressure', item => item.accumulator_pressure);
+        generarGrafico('chart_stable_flag', data, 'Stable Flag', item => item.stable);
+
+    } catch (error) {
+        console.error('Error cargando historial de datos:', error);
+    }
+}
 
 // Función genérica para generar gráficos
 function generarGrafico(canvasId, data, label, getData) {
@@ -166,11 +165,24 @@ function generarGrafico(canvasId, data, label, getData) {
 
 
 
-// Actualizar los datos y los gráficos cada 5 segundos
+// Cargar historial cuando la página cargue
 document.addEventListener('DOMContentLoaded', function () {
-    cargarHistorial();  // Cargar historial cuando la página cargue
-
-    setInterval(function() {
-        cargarHistorial();  // Vuelve a cargar el historial y actualiza los gráficos
-    }, 5000);  // Cada 5 segundos
+    cargarHistorial(); // Cargar historial al cargar la página
 });
+
+
+// Llamar a la función para cargar el historial al ingresar a la sección de Historial
+function mostrarHistorial() {
+    cargarHistorial();  // Cargar los datos del historial
+    document.getElementById('realTimeSection').style.display = 'none';  // Ocultar la sección de Tiempo Real
+    document.getElementById('historySection').style.display = 'block';  // Mostrar la sección de Historial
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    // No es necesario llamar a cargarHistorial aquí si solo la mostramos cuando el usuario navega a la sección de Historial.
+    console.log("Página cargada. Esperando la acción de mostrar historial...");
+});
+
+setInterval(actualizarDatos, 5000); // Actualiza los datos cada 5 segundos
+actualizarDatos();  // Llamada inicial para cargar los datos en tiempo real
+

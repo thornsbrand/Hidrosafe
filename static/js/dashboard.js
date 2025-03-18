@@ -115,7 +115,7 @@ function generarGrafico(canvasId, data, label, getData) {
         new Chart(ctx, {
             type: 'line',
             data: {
-                labels: data.map(item => new Date(item.timestamp)),  // Usamos `new Date()` para convertir el timestamp a fecha
+                labels: data.map(item => new Date(item.timestamp).toLocaleString()),  // Convertir el timestamp a fecha local
                 datasets: [{
                     label: label,
                     data: data.map(getData),
@@ -128,15 +128,7 @@ function generarGrafico(canvasId, data, label, getData) {
                 responsive: true,
                 scales: {
                     x: {
-                        type: 'time',  // Usar escala de tiempo
-                        time: {
-                            unit: 'day',  // Cambiar de 'minute' a 'day' para mostrar fechas completas
-                            unitStepSize: 1,  // Esto asegura que el gráfico tenga pasos diarios
-                            tooltipFormat: 'll HH:mm', // Formato del tooltip para mostrar tanto fecha como hora
-                            displayFormats: {
-                                day: 'MMM DD, YYYY'  // Mostrar la fecha completa en formato "Mes Día, Año"
-                            }
-                        },
+                        type: 'category',  // Usar 'category' si el tipo de tiempo está causando problemas
                         title: {
                             display: true,
                             text: 'Fecha y Hora'
@@ -150,6 +142,7 @@ function generarGrafico(canvasId, data, label, getData) {
         });
     }
 }
+
 
 
 // Cargar historial cuando la página cargue

@@ -79,55 +79,72 @@ async function cargarHistorial() {
             return;
         }
 
-        // Verificar que el canvas se está encontrando correctamente
-        const ctxCooler = document.getElementById('chart_cooler_condition');
-        console.log("ctxCooler: ", ctxCooler);  // Verifica si el canvas está siendo encontrado
+        // Llenar la tabla de historial con los datos
+        const tbody = document.getElementById('historyData');
+        tbody.innerHTML = ''; // Limpiar tabla antes de agregar los nuevos datos
+        data.forEach(item => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${item.timestamp}</td>
+                <td>${item.cooler_condition}</td>
+                <td>${item.valve_condition}</td>
+                <td>${item.pump_leakage}</td>
+                <td>${item.accumulator_pressure}</td>
+                <td>${item.stable}</td>
+            `;
+            tbody.appendChild(row);
+        });
 
-        if (ctxCooler) {
-            console.log("Generando gráfico de Cooler Condition...");
-
-            // Generar el gráfico de Cooler Condition
-            new Chart(ctxCooler, {
-                type: 'line',
-                data: {
-                    labels: data.map(item => new Date(item.timestamp).getTime()),  // Convertir timestamp a milisegundos
-                    datasets: [{
-                        label: 'Cooler Condition',
-                        data: data.map(item => item.cooler_condition),
-                        borderColor: 'rgba(75, 192, 192, 1)',
-                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                        fill: false,
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    scales: {
-                        x: {
-                            type: 'time',  // Usar escala de tiempo
-                            time: {
-                                unit: 'minute',  // Escala temporal por minuto
-                                tooltipFormat: 'll HH:mm', // Formato del tooltip para fechas
-                            },
-                            title: {
-                                display: true,
-                                text: 'Timestamp'
-                            }
-                        },
-                        y: {
-                            beginAtZero: true
-                        }
-                    }
-                }
-            });
-        } else {
-            console.log("❌ No se encontró el canvas para el gráfico de Cooler Condition.");
-        }
+        // Generar los gráficos de las variables
+        generarGrafico('chart_cooler_condition', data, 'Cooler Condition', item => item.cooler_condition);
+        generarGrafico('chart_valve_condition', data, 'Valve Condition', item => item.valve_condition);
+        generarGrafico('chart_pump_leakage', data, 'Pump Leakage', item => item.pump_leakage);
+        generarGrafico('chart_accumulator_pressure', data, 'Accumulator Pressure', item => item.accumulator_pressure);
+        generarGrafico('chart_stable_flag', data, 'Stable Flag', item => item.stable);
 
     } catch (error) {
         console.error('Error cargando historial de datos:', error);
     }
 }
 
+// Función genérica para generar gráficos
+function generarGrafico(canvasId, data, label, getData) {
+    const ctx = document.getElementById(canvasId);
+    if (ctx) {
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: data.map(item => new Date(item.timestamp).getTime()),  // Convertir timestamp a milisegundos
+                datasets: [{
+                    label: label,
+                    data: data.map(getData),
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    fill: false,
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: {
+                        type: 'time',  // Usar escala de tiempo
+                        time: {
+                            unit: 'minute',  // Escala temporal por minuto
+                            tooltipFormat: 'll HH:mm', // Formato del tooltip para fechas
+                        },
+                        title: {
+                            display: true,
+                            text: 'Timestamp'
+                        }
+                    },
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+}
 
 // Cargar historial cuando la página cargue
 document.addEventListener('DOMContentLoaded', function () {

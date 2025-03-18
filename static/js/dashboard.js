@@ -114,7 +114,7 @@ function generarGrafico(canvasId, data, label, getData) {
         new Chart(ctx, {
             type: 'line',
             data: {
-                labels: data.map(item => new Date(item.timestamp).getTime()),  // Convertir timestamp a milisegundos
+                labels: data.map(item => new Date(item.timestamp)),  // Usamos `new Date()` para convertir el timestamp a fecha
                 datasets: [{
                     label: label,
                     data: data.map(getData),
@@ -130,11 +130,12 @@ function generarGrafico(canvasId, data, label, getData) {
                         type: 'time',  // Usar escala de tiempo
                         time: {
                             unit: 'minute',  // Escala temporal por minuto
+                            unitStepSize: 1,  // Opcional, ajusta el tamaño del paso de tiempo
                             tooltipFormat: 'll HH:mm', // Formato del tooltip para fechas
                         },
                         title: {
                             display: true,
-                            text: 'Timestamp'
+                            text: 'Fecha y Hora'
                         }
                     },
                     y: {
@@ -145,6 +146,7 @@ function generarGrafico(canvasId, data, label, getData) {
         });
     }
 }
+
 
 // Cargar historial cuando la página cargue
 document.addEventListener('DOMContentLoaded', function () {

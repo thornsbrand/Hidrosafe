@@ -69,36 +69,20 @@ function showSection(sectionId) {
     document.getElementById("historySection").style.display = (sectionId === 'history') ? 'block' : 'none';
 }
 
-// Llamar a la API para obtener los datos históricos
+// Cargar los datos históricos para los gráficos
 async function cargarHistorial() {
     try {
         const response = await fetch('/api/history_data');
         const data = await response.json();
-        
+
         if (data.length === 0) {
             console.log("⚠️ No se encontraron datos en el historial.");
             return;
         }
-        
-        // Llenar la tabla con los datos del historial
-        const historyData = document.getElementById('historyData');
-        historyData.innerHTML = ''; // Limpiar la tabla antes de agregar datos
-        data.forEach((entry, index) => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${index + 1}</td>
-                <td>${entry.cooler_condition}</td>
-                <td>${entry.valve_condition}</td>
-                <td>${entry.pump_leakage}</td>
-                <td>${entry.accumulator_pressure}</td>
-                <td>${entry.stable}</td>
-            `;
-            historyData.appendChild(row);
-        });
 
-        // Crear gráfico
-        const ctx = document.getElementById('chart_history').getContext('2d');
-        const chartData = {
+        // Gráfico: Cooler Condition
+        const ctxCooler = document.getElementById('chart_cooler_condition').getContext('2d');
+        const chartDataCooler = {
             labels: data.map(entry => new Date(entry.timestamp).toLocaleString()),
             datasets: [{
                 label: 'Cooler Condition',
@@ -106,48 +90,121 @@ async function cargarHistorial() {
                 borderColor: 'rgba(255, 99, 132, 1)',
                 borderWidth: 1,
                 fill: false
-            }, {
+            }]
+        };
+        new Chart(ctxCooler, {
+            type: 'line',
+            data: chartDataCooler,
+            options: {
+                responsive: true,
+                scales: {
+                    x: { title: { display: true, text: 'Fecha' } },
+                    y: { title: { display: true, text: 'Valor' } }
+                }
+            }
+        });
+
+        // Gráfico: Valve Condition
+        const ctxValve = document.getElementById('chart_valve_condition').getContext('2d');
+        const chartDataValve = {
+            labels: data.map(entry => new Date(entry.timestamp).toLocaleString()),
+            datasets: [{
                 label: 'Valve Condition',
                 data: data.map(entry => entry.valve_condition),
                 borderColor: 'rgba(54, 162, 235, 1)',
                 borderWidth: 1,
                 fill: false
-            }, {
+            }]
+        };
+        new Chart(ctxValve, {
+            type: 'line',
+            data: chartDataValve,
+            options: {
+                responsive: true,
+                scales: {
+                    x: { title: { display: true, text: 'Fecha' } },
+                    y: { title: { display: true, text: 'Valor' } }
+                }
+            }
+        });
+
+        // Gráfico: Pump Leakage
+        const ctxLeakage = document.getElementById('chart_pump_leakage').getContext('2d');
+        const chartDataLeakage = {
+            labels: data.map(entry => new Date(entry.timestamp).toLocaleString()),
+            datasets: [{
                 label: 'Pump Leakage',
                 data: data.map(entry => entry.pump_leakage),
+                borderColor: 'rgba(255, 159, 64, 1)',
+                borderWidth: 1,
+                fill: false
+            }]
+        };
+        new Chart(ctxLeakage, {
+            type: 'line',
+            data: chartDataLeakage,
+            options: {
+                responsive: true,
+                scales: {
+                    x: { title: { display: true, text: 'Fecha' } },
+                    y: { title: { display: true, text: 'Valor' } }
+                }
+            }
+        });
+
+        // Gráfico: Accumulator Pressure
+        const ctxAccumulator = document.getElementById('chart_accumulator_pressure').getContext('2d');
+        const chartDataAccumulator = {
+            labels: data.map(entry => new Date(entry.timestamp).toLocaleString()),
+            datasets: [{
+                label: 'Accumulator Pressure',
+                data: data.map(entry => entry.accumulator_pressure),
                 borderColor: 'rgba(75, 192, 192, 1)',
                 borderWidth: 1,
                 fill: false
             }]
         };
-
-        const chartOptions = {
-            responsive: true,
-            scales: {
-                x: {
-                    title: {
-                        display: true,
-                        text: 'Fecha'
-                    }
-                },
-                y: {
-                    title: {
-                        display: true,
-                        text: 'Valor'
-                    }
+        new Chart(ctxAccumulator, {
+            type: 'line',
+            data: chartDataAccumulator,
+            options: {
+                responsive: true,
+                scales: {
+                    x: { title: { display: true, text: 'Fecha' } },
+                    y: { title: { display: true, text: 'Valor' } }
                 }
             }
-        };
-
-        const chart = new Chart(ctx, {
-            type: 'line',
-            data: chartData,
-            options: chartOptions
         });
+
+        // Gráfico: Stable Flag
+        const ctxStable = document.getElementById('chart_stable_flag').getContext('2d');
+        const chartDataStable = {
+            labels: data.map(entry => new Date(entry.timestamp).toLocaleString()),
+            datasets: [{
+                label: 'Stable Flag',
+                data: data.map(entry => entry.stable ? 1 : 0),  // 1 si stable, 0 si no
+                borderColor: 'rgba(153, 102, 255, 1)',
+                borderWidth: 1,
+                fill: false
+            }]
+        };
+        new Chart(ctxStable, {
+            type: 'line',
+            data: chartDataStable,
+            options: {
+                responsive: true,
+                scales: {
+                    x: { title: { display: true, text: 'Fecha' } },
+                    y: { title: { display: true, text: 'Valor' } }
+                }
+            }
+        });
+
     } catch (error) {
         console.error('Error cargando historial de datos:', error);
     }
 }
+
 
 // Llamar a la función para cargar el historial al ingresar a la sección de Historial
 function mostrarHistorial() {

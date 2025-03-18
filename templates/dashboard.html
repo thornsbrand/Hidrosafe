@@ -55,16 +55,51 @@
             </tbody>
         </table>
 
+<!-- Sección de Gráficos de Historial -->
+<div id="historySection" style="display: none;">
+    <h3>Historial de Datos</h3>
+    <table class="table table-dark table-striped">
+        <thead>
+            <tr>
+                <th>Ciclo</th>
+                <th>Cooler Condition</th>
+                <th>Valve Condition</th>
+                <th>Pump Leakage</th>
+                <th>Accumulator Pressure</th>
+                <th>Stable Flag</th>
+            </tr>
+        </thead>
+        <tbody id="historyData">
+            <!-- Aquí se insertarán los datos del historial dinámicamente -->
+        </tbody>
+    </table>
+
         <!-- Sección de Gráficos -->
         <h3 class="mt-4">Tendencias de Variables</h3>
         <div class="row">
-            <div class="col-md-12 mb-4">
-                <div class="card p-3 border rounded">
-                    <h6>Tendencias de Condiciones del Sistema</h6>
-                    <canvas id="chart_history"></canvas> <!-- El gráfico se renderizará aquí -->
-                </div>
+            <div class="col-md-2 mb-4">
+                <h6>Cooler Condition</h6>
+                <canvas id="chart_cooler_condition"></canvas>
+            </div>
+            <div class="col-md-2 mb-4">
+                <h6>Valve Condition</h6>
+                <canvas id="chart_valve_condition"></canvas>
+            </div>
+            <div class="col-md-2 mb-4">
+                <h6>Pump Leakage</h6>
+                <canvas id="chart_pump_leakage"></canvas>
+            </div>
+            <div class="col-md-2 mb-4">
+                <h6>Accumulator Pressure</h6>
+                <canvas id="chart_accumulator_pressure"></canvas>
+            </div>
+            <div class="col-md-2 mb-4">
+                <h6>Stable Flag</h6>
+                <canvas id="chart_stable_flag"></canvas>
             </div>
         </div>
+    </div>
+
     </div>
 
 </div>

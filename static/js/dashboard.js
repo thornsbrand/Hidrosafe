@@ -170,7 +170,6 @@ document.addEventListener('DOMContentLoaded', function () {
     cargarHistorial(); // Cargar historial al cargar la página
 });
 
-
 // Llamar a la función para cargar el historial al ingresar a la sección de Historial
 function mostrarHistorial() {
     cargarHistorial();  // Cargar los datos del historial

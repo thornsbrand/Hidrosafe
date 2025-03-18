@@ -72,93 +72,99 @@ function showSection(sectionId) {
 // Llamar a la API para obtener los datos históricos
 async function cargarHistorial() {
     try {
+        // Obtener los datos históricos de la API
         const response = await fetch('/api/history_data');
-        const historyData = await response.json();
-        
-        // Verificar si recibimos datos válidos
-        if (historyData.length > 0) {
-            console.log("📥 Datos recibidos de history_data:", historyData);
+        const data = await response.json();
 
-            // Insertar los datos en la tabla
-            let historyTable = '';
-            historyData.forEach(item => {
-                historyTable += `
-                    <tr>
-                        <td>${item.cycle}</td>
-                        <td>${item.cooler_condition}</td>
-                        <td>${item.valve_condition}</td>
-                        <td>${item.pump_leakage}</td>
-                        <td>${item.accumulator_pressure}</td>
-                        <td>${item.stable ? "Sí" : "No"}</td>
-                    </tr>
-                `;
-            });
-            document.getElementById('historyData').innerHTML = historyTable;
-
-            // Preparar los datos para el gráfico
-            const labels = historyData.map(item => `Ciclo ${item.cycle}`);
-            const coolerCondition = historyData.map(item => item.cooler_condition);
-            const valveCondition = historyData.map(item => item.valve_condition);
-            const pumpLeakage = historyData.map(item => item.pump_leakage);
-            const accumulatorPressure = historyData.map(item => item.accumulator_pressure);
-            const stableFlag = historyData.map(item => item.stable ? 1 : 0);
-
-            // Crear el gráfico de líneas con Chart.js
-            const ctx = document.getElementById('chart_history').getContext('2d');
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [
-                        {
-                            label: 'Cooler Condition',
-                            data: coolerCondition,
-                            borderColor: 'rgba(0, 123, 255, 1)',
-                            fill: false
-                        },
-                        {
-                            label: 'Valve Condition',
-                            data: valveCondition,
-                            borderColor: 'rgba(255, 99, 132, 1)',
-                            fill: false
-                        },
-                        {
-                            label: 'Pump Leakage',
-                            data: pumpLeakage,
-                            borderColor: 'rgba(75, 192, 192, 1)',
-                            fill: false
-                        },
-                        {
-                            label: 'Accumulator Pressure',
-                            data: accumulatorPressure,
-                            borderColor: 'rgba(153, 102, 255, 1)',
-                            fill: false
-                        },
-                        {
-                            label: 'Stable Flag',
-                            data: stableFlag,
-                            borderColor: 'rgba(255, 159, 64, 1)',
-                            fill: false
-                        }
-                    ]
-                },
-                options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    }
-                }
-            });
-
-        } else {
-            console.log("⚠ No se encontraron datos para los últimos 15 días.");
+        if (data.error) {
+            console.error("No se encontraron datos en el historial");
+            return;
         }
+
+        // Crear gráficos usando Chart.js
+        const labels = data.map(item => new Date(item.timestamp).toLocaleString());  // Extrae fechas de los datos
+        const coolerData = data.map(item => item.cooler_condition);
+        const valveData = data.map(item => item.valve_condition);
+        const pumpLeakageData = data.map(item => item.pump_leakage);
+        const accumulatorPressureData = data.map(item => item.accumulator_pressure);
+        const stableData = data.map(item => item.stable ? 'Stable' : 'Unstable');
+
+        // Configuración para cada gráfico
+        new Chart(document.getElementById('chart_cooler_condition'), {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Cooler Condition',
+                    data: coolerData,
+                    fill: false,
+                    borderColor: 'blue',
+                    tension: 0.1
+                }]
+            }
+        });
+
+        new Chart(document.getElementById('chart_valve_condition'), {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Valve Condition',
+                    data: valveData,
+                    fill: false,
+                    borderColor: 'green',
+                    tension: 0.1
+                }]
+            }
+        });
+
+        new Chart(document.getElementById('chart_pump_leakage'), {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Pump Leakage',
+                    data: pumpLeakageData,
+                    fill: false,
+                    borderColor: 'red',
+                    tension: 0.1
+                }]
+            }
+        });
+
+        new Chart(document.getElementById('chart_accumulator_pressure'), {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Accumulator Pressure',
+                    data: accumulatorPressureData,
+                    fill: false,
+                    borderColor: 'purple',
+                    tension: 0.1
+                }]
+            }
+        });
+
+        new Chart(document.getElementById('chart_stable'), {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Stability',
+                    data: stableData.map(status => status === 'Stable' ? 1 : 0),
+                    backgroundColor: stableData.map(status => status === 'Stable' ? 'green' : 'red')
+                }]
+            }
+        });
 
     } catch (error) {
         console.error("Error cargando historial de datos:", error);
     }
 }
+
+cargarHistorial();
+
 
 // Llamar a la función para cargar el historial al ingresar a la sección de Historial
 function mostrarHistorial() {

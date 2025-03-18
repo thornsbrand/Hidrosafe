@@ -69,6 +69,7 @@ function showSection(sectionId) {
     document.getElementById("historySection").style.display = (sectionId === 'history') ? 'block' : 'none';
 }
 
+// Función para cargar y actualizar los datos filtrados por fechas
 async function cargarHistorialConFiltro(startDate, endDate) {
     try {
         const response = await fetch(`/api/history_data?startDate=${startDate}&endDate=${endDate}`);
@@ -109,7 +110,6 @@ async function cargarHistorialConFiltro(startDate, endDate) {
         console.error('Error cargando historial filtrado:', error);
     }
 }
-
 
 // Función genérica para generar gráficos
 function generarGrafico(canvasId, data, label, getData) {
@@ -191,12 +191,31 @@ function mostrarHistorial() {
     document.getElementById('historySection').style.display = 'block';  // Mostrar la sección de Historial
 }
 
+// Al cargar la página, configurar fechas predeterminadas si no se seleccionan
 document.addEventListener('DOMContentLoaded', function () {
-    // No es necesario llamar a cargarHistorial aquí si solo la mostramos cuando el usuario navega a la sección de Historial.
-    cargarHistorial(); // Cargar historial al cargar la página
+    // Establecer fechas predeterminadas si no se seleccionan
+    const startDate = document.getElementById('startDate').value;
+    const endDate = document.getElementById('endDate').value;
+
+    // Si no se seleccionan fechas, usar las fechas predeterminadas (últimos 15 días)
+    if (!startDate || !endDate) {
+        const today = new Date();
+        const fifteenDaysAgo = new Date();
+        fifteenDaysAgo.setDate(today.getDate() - 15);
+
+        const defaultStartDate = fifteenDaysAgo.toISOString().split('T')[0];  
+        const defaultEndDate = today.toISOString().split('T')[0];  
+
+        document.getElementById('startDate').value = defaultStartDate;
+        document.getElementById('endDate').value = defaultEndDate;
+
+        cargarHistorialConFiltro(defaultStartDate, defaultEndDate);  // Llamar a cargarHistorial con las fechas predeterminadas
+    } else {
+        cargarHistorialConFiltro(startDate, endDate);
+    }
+
     console.log("Página cargada. Esperando la acción de mostrar historial...");
 });
 
 setInterval(actualizarDatos, 5000); // Actualiza los datos cada 5 segundos
 actualizarDatos();  // Llamada inicial para cargar los datos en tiempo real
-

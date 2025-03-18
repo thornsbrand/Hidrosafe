@@ -8,21 +8,37 @@
         border: 2px solid #ddd;  /* Borde suave alrededor de los gráficos */
         padding: 15px;  /* Espacio entre el borde y el contenido */
         border-radius: 10px;  /* Bordes redondeados */
-        background-color: #ffffff;  /* Fondo suave */
+        background-color: #f9f9f9;  /* Fondo suave */
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);  /* Sombra sutil */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
     }
 
     canvas {
         max-width: 100%;  /* Asegurarse de que el gráfico no se desborde */
-        height: 300px;  /* Altura consistente para los gráficos */
+        height: 250px;  /* Altura consistente para los gráficos */
+        margin-bottom: 20px;  /* Espacio entre los gráficos */
     }
 
     h6 {
-        color: #fcfafa;  /* Color más oscuro para los títulos */
+        color: #333;  /* Color más oscuro para los títulos */
         font-weight: bold;
+        margin-bottom: 10px;  /* Espacio entre el título y el gráfico */
+    }
+
+    .row {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-around;
+        gap: 20px;  /* Separación entre los gráficos */
+    }
+
+    .col-md-3 {
+        width: 100%;
+        max-width: 400px;
     }
 </style>
-
 
 <div class="container mt-4">
     <h2 class="text-center">Dashboard de Monitoreo</h2>
@@ -61,10 +77,10 @@
 
     <!-- Sección de Historial -->
     <div id="historySection" style="display: none;">
-        <h3>Historial de Datos</h3>
+        <h3 class="text-center">Historial de Datos</h3>
 
         <!-- Sección de Gráficos de Historial -->
-        <h3 class="mt-4">Tendencias de Variables</h3>
+        <h3 class="mt-4 text-center">Tendencias de Variables</h3>
         <div class="row">
             <div class="col-md-3 mb-4 chart-container">
                 <h6>Cooler Condition</h6>
@@ -89,6 +105,7 @@
         </div>
 
         <!-- Tabla de Datos del Historial -->
+        <h3 class="mt-4 text-center">Datos Históricos</h3>
         <table class="table table-dark table-striped">
             <thead>
                 <tr>
@@ -104,7 +121,6 @@
                 <!-- Los datos del historial serán insertados aquí dinámicamente -->
             </tbody>
         </table>
-
     </div>
 </div>
 

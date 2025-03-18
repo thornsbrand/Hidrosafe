@@ -119,11 +119,11 @@ function generarGrafico(canvasId, data, label, getData) {
                 datasets: [{
                     label: label,
                     data: data.map(getData),
-                    borderColor: 'rgba(75, 192, 192, 1)',  // Color de la línea
+                    borderColor: '#4bc0c0',  // Color de la línea
                     backgroundColor: 'rgba(75, 192, 192, 0.2)',  // Color de fondo de la línea
                     borderWidth: 2,  // Grosor de la línea
-                    pointRadius: 5,  // Tamaño de los puntos
-                    pointBackgroundColor: 'rgba(75, 192, 192, 1)',  // Color de los puntos
+                    pointRadius: 6,  // Tamaño de los puntos
+                    pointBackgroundColor: '#4bc0c0',  // Color de los puntos
                     fill: false,  // No llenar el área bajo la línea
                 }]
             },
@@ -162,6 +162,7 @@ function generarGrafico(canvasId, data, label, getData) {
         });
     }
 }
+
 
 
 // Cargar historial cuando la página cargue

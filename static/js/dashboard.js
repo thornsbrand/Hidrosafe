@@ -95,9 +95,13 @@ async function cargarHistorial() {
             tbody.appendChild(row);
         });
 
+        // Verifica si los datos de 'cooler_condition' están siendo procesados correctamente
+        console.log("Datos para gráfico de Cooler Condition:", data.map(item => item.cooler_condition));
+
         // Crear gráfico de Cooler Condition
         const ctxCooler = document.getElementById('chart_cooler_condition');
         if (ctxCooler) {
+            console.log("Generando gráfico de Cooler Condition...");
             new Chart(ctxCooler, {
                 type: 'line',
                 data: {
@@ -130,12 +134,15 @@ async function cargarHistorial() {
                     }
                 }
             });
+        } else {
+            console.log("❌ No se encontró el elemento canvas para el gráfico de Cooler Condition.");
         }
 
     } catch (error) {
         console.error('Error cargando historial de datos:', error);
     }
 }
+
 
 // Cargar historial cuando la página cargue
 document.addEventListener('DOMContentLoaded', function () {

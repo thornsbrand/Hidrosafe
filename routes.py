@@ -222,7 +222,8 @@ def get_system_status():
 
     return jsonify({"error": "No hay datos en condiciones"}), 404
 
-@app.route('/api/history_data', methods=['GET'])
+# Ruta para obtener el historial de los últimos 15 días
+@main.route('/api/history_data', methods=['GET'])
 def get_history_data():
     """Devuelve datos del historial de los últimos 15 días"""
     

@@ -69,24 +69,26 @@ function showSection(sectionId) {
     document.getElementById("historySection").style.display = (sectionId === 'history') ? 'block' : 'none';
 }
 
-async function cargarHistorial() {
+async function cargarHistorialConFiltro(startDate, endDate) {
     try {
-        const response = await fetch('/api/history_data');
+        const response = await fetch(`/api/history_data?startDate=${startDate}&endDate=${endDate}`);
         const data = await response.json();
 
         if (data.length === 0) {
-            console.log("⚠️ No se encontraron datos en el historial.");
+            console.log("⚠️ No se encontraron datos en el historial para el rango seleccionado.");
             return;
         }
 
-        // Llenar la tabla de historial con los datos
+        // Limpiar la tabla y los gráficos
         const tbody = document.getElementById('historyData');
-        tbody.innerHTML = ''; // Limpiar tabla antes de agregar los nuevos datos
+        tbody.innerHTML = '';
+
+        // Llenar la tabla de historial con los datos filtrados
         data.forEach(item => {
             const localTimestamp = new Date(item.timestamp).toLocaleString();  // Convertir UTC a hora local
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td>${localTimestamp}</td>  <!-- Mostrar la hora en formato local -->
+                <td>${localTimestamp}</td>
                 <td>${item.cooler_condition}</td>
                 <td>${item.valve_condition}</td>
                 <td>${item.pump_leakage}</td>
@@ -96,7 +98,7 @@ async function cargarHistorial() {
             tbody.appendChild(row);
         });
 
-        // Generar los gráficos de las variables
+        // Generar los gráficos de las variables filtradas
         generarGrafico('chart_cooler_condition', data, 'Cooler Condition', item => item.cooler_condition);
         generarGrafico('chart_valve_condition', data, 'Valve Condition', item => item.valve_condition);
         generarGrafico('chart_pump_leakage', data, 'Pump Leakage', item => item.pump_leakage);
@@ -104,9 +106,10 @@ async function cargarHistorial() {
         generarGrafico('chart_stable_flag', data, 'Stable Flag', item => item.stable);
 
     } catch (error) {
-        console.error('Error cargando historial de datos:', error);
+        console.error('Error cargando historial filtrado:', error);
     }
 }
+
 
 // Función genérica para generar gráficos
 function generarGrafico(canvasId, data, label, getData) {
@@ -163,6 +166,17 @@ function generarGrafico(canvasId, data, label, getData) {
     }
 }
 
+function aplicarFiltro() {
+    const startDate = document.getElementById('startDate').value;
+    const endDate = document.getElementById('endDate').value;
+
+    // Asegurarse de que ambas fechas estén presentes
+    if (startDate && endDate) {
+        cargarHistorialConFiltro(startDate, endDate);
+    } else {
+        alert("Por favor, selecciona ambas fechas.");
+    }
+}
 
 
 // Cargar historial cuando la página cargue

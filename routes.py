@@ -226,13 +226,26 @@ def get_system_status():
 # Ruta para obtener el historial de los últimos 15 días
 @main.route('/api/history_data', methods=['GET'])
 def get_history_data():
-    """Devuelve los datos del historial de los últimos 15 días"""
+    """Devuelve los datos del historial filtrados por las fechas proporcionadas"""
     
-    # Calcular la fecha 15 días atrás
-    fifteen_days_ago = datetime.utcnow() - timedelta(days=15)
+    # Obtener las fechas de inicio y fin desde los parámetros de la solicitud
+    start_date = request.args.get('startDate')
+    end_date = request.args.get('endDate')
+
+    # Si no se reciben fechas, calculamos el rango de los últimos 15 días
+    if not start_date or not end_date:
+        end_date = datetime.utcnow()
+        start_date = end_date - timedelta(days=15)
     
+    # Convertir las fechas a formato datetime
+    try:
+        start_date = datetime.strptime(start_date, '%Y-%m-%d')
+        end_date = datetime.strptime(end_date, '%Y-%m-%d')
+    except ValueError:
+        return jsonify({"error": "Formato de fecha incorrecto, debe ser YYYY-MM-DD"}), 400
+
     # Consulta de los datos desde Firestore, filtrando por fecha
-    history_ref = db.collection("condiciones").where("timestamp", ">=", fifteen_days_ago)
+    history_ref = db.collection("condiciones").where("timestamp", ">=", start_date).where("timestamp", "<=", end_date)
     history = history_ref.stream()
 
     # Almacenar los datos recibidos
@@ -244,7 +257,7 @@ def get_history_data():
 
     # Si no se encuentran datos, retornar un error
     if not data:
-        return jsonify({"error": "No se encontraron datos en el historial"}), 404
+        return jsonify({"error": "No se encontraron datos en el historial para el rango seleccionado"}), 404
 
     # Devolver los datos en formato JSON
     return jsonify(data)

@@ -116,8 +116,8 @@ async function cargarHistorial() {
                         x: {
                             type: 'time',  // Usar escala de tiempo
                             time: {
-                                unit: 'minute',
-                                tooltipFormat: 'll HH:mm',
+                                unit: 'minute',  // Escala temporal por minuto
+                                tooltipFormat: 'll HH:mm', // Formato del tooltip para fechas
                             },
                             title: {
                                 display: true,
@@ -132,50 +132,15 @@ async function cargarHistorial() {
             });
         }
 
-        // Crear gráfico de Valve Condition
-        const ctxValve = document.getElementById('chart_valve_condition');
-        if (ctxValve) {
-            new Chart(ctxValve, {
-                type: 'line',
-                data: {
-                    labels: data.map(item => new Date(item.timestamp).getTime()),
-                    datasets: [{
-                        label: 'Valve Condition',
-                        data: data.map(item => item.valve_condition),
-                        borderColor: 'rgba(153, 102, 255, 1)',
-                        backgroundColor: 'rgba(153, 102, 255, 0.2)',
-                        fill: false,
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    scales: {
-                        x: {
-                            type: 'time',
-                            time: {
-                                unit: 'minute',
-                                tooltipFormat: 'll HH:mm',
-                            },
-                            title: {
-                                display: true,
-                                text: 'Timestamp'
-                            }
-                        },
-                        y: {
-                            beginAtZero: true
-                        }
-                    }
-                }
-            });
-        }
-
-        // Repite lo mismo para los otros gráficos (Pump Leakage, Accumulator Pressure, Stable Flag)
-        
     } catch (error) {
         console.error('Error cargando historial de datos:', error);
     }
 }
 
+// Cargar historial cuando la página cargue
+document.addEventListener('DOMContentLoaded', function () {
+    cargarHistorial(); // Cargar historial al cargar la página
+});
 
 
 // Llamar a la función para cargar el historial al ingresar a la sección de Historial
@@ -186,9 +151,10 @@ function mostrarHistorial() {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
-    cargarHistorial(); // Cargar historial cuando la página cargue
+    // No es necesario llamar a cargarHistorial aquí si solo la mostramos cuando el usuario navega a la sección de Historial.
+    console.log("Página cargada. Esperando la acción de mostrar historial...");
 });
 
-setInterval(actualizarDatos, 5000);
+setInterval(actualizarDatos, 5000); // Actualiza los datos cada 5 segundos
+actualizarDatos();  // Llamada inicial para cargar los datos en tiempo real
 
-actualizarDatos();

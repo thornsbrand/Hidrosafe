@@ -72,106 +72,93 @@ function showSection(sectionId) {
 // Llamar a la API para obtener los datos históricos
 async function cargarHistorial() {
     try {
-        // Obtener los datos históricos de la API
         const response = await fetch('/api/history_data');
         const data = await response.json();
-
-        if (data.error) {
-            console.error("No se encontraron datos en el historial");
+        
+        if (data.length === 0) {
+            console.log("⚠️ No se encontraron datos en el historial.");
             return;
         }
+        
+        // Llenar la tabla con los datos del historial
+        const historyData = document.getElementById('historyData');
+        historyData.innerHTML = ''; // Limpiar la tabla antes de agregar datos
+        data.forEach((entry, index) => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${index + 1}</td>
+                <td>${entry.cooler_condition}</td>
+                <td>${entry.valve_condition}</td>
+                <td>${entry.pump_leakage}</td>
+                <td>${entry.accumulator_pressure}</td>
+                <td>${entry.stable}</td>
+            `;
+            historyData.appendChild(row);
+        });
 
-        // Crear gráficos usando Chart.js
-        const labels = data.map(item => new Date(item.timestamp).toLocaleString());  // Extrae fechas de los datos
-        const coolerData = data.map(item => item.cooler_condition);
-        const valveData = data.map(item => item.valve_condition);
-        const pumpLeakageData = data.map(item => item.pump_leakage);
-        const accumulatorPressureData = data.map(item => item.accumulator_pressure);
-        const stableData = data.map(item => item.stable ? 'Stable' : 'Unstable');
+        // Crear gráfico
+        const ctx = document.getElementById('chart_history').getContext('2d');
+        const chartData = {
+            labels: data.map(entry => new Date(entry.timestamp).toLocaleString()),
+            datasets: [{
+                label: 'Cooler Condition',
+                data: data.map(entry => entry.cooler_condition),
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 1,
+                fill: false
+            }, {
+                label: 'Valve Condition',
+                data: data.map(entry => entry.valve_condition),
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1,
+                fill: false
+            }, {
+                label: 'Pump Leakage',
+                data: data.map(entry => entry.pump_leakage),
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1,
+                fill: false
+            }]
+        };
 
-        // Configuración para cada gráfico
-        new Chart(document.getElementById('chart_cooler_condition'), {
+        const chartOptions = {
+            responsive: true,
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Fecha'
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Valor'
+                    }
+                }
+            }
+        };
+
+        const chart = new Chart(ctx, {
             type: 'line',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Cooler Condition',
-                    data: coolerData,
-                    fill: false,
-                    borderColor: 'blue',
-                    tension: 0.1
-                }]
-            }
+            data: chartData,
+            options: chartOptions
         });
-
-        new Chart(document.getElementById('chart_valve_condition'), {
-            type: 'line',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Valve Condition',
-                    data: valveData,
-                    fill: false,
-                    borderColor: 'green',
-                    tension: 0.1
-                }]
-            }
-        });
-
-        new Chart(document.getElementById('chart_pump_leakage'), {
-            type: 'line',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Pump Leakage',
-                    data: pumpLeakageData,
-                    fill: false,
-                    borderColor: 'red',
-                    tension: 0.1
-                }]
-            }
-        });
-
-        new Chart(document.getElementById('chart_accumulator_pressure'), {
-            type: 'line',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Accumulator Pressure',
-                    data: accumulatorPressureData,
-                    fill: false,
-                    borderColor: 'purple',
-                    tension: 0.1
-                }]
-            }
-        });
-
-        new Chart(document.getElementById('chart_stable'), {
-            type: 'bar',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Stability',
-                    data: stableData.map(status => status === 'Stable' ? 1 : 0),
-                    backgroundColor: stableData.map(status => status === 'Stable' ? 'green' : 'red')
-                }]
-            }
-        });
-
     } catch (error) {
-        console.error("Error cargando historial de datos:", error);
+        console.error('Error cargando historial de datos:', error);
     }
 }
 
-cargarHistorial();
-
-
 // Llamar a la función para cargar el historial al ingresar a la sección de Historial
 function mostrarHistorial() {
-    cargarHistorial();
-    document.getElementById('realTimeSection').style.display = 'none';
-    document.getElementById('historySection').style.display = 'block';
+    cargarHistorial();  // Cargar los datos del historial
+    document.getElementById('realTimeSection').style.display = 'none';  // Ocultar la sección de Tiempo Real
+    document.getElementById('historySection').style.display = 'block';  // Mostrar la sección de Historial
 }
+
+document.addEventListener('DOMContentLoaded', function () {
+    cargarHistorial(); // Cargar historial cuando la página cargue
+});
 
 setInterval(actualizarDatos, 5000);
 

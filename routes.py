@@ -3,6 +3,7 @@ from flask import Blueprint, render_template, redirect, url_for, abort, current_
 import firebase_admin
 from firebase_admin import firestore, auth
 from datetime import datetime, timedelta
+from google.protobuf.timestamp_pb2 import Timestamp
 
 # 🔹 Verificar si Firebase ya está inicializado
 if not firebase_admin._apps:
@@ -231,10 +232,11 @@ def get_history_data():
     fifteen_days_ago = datetime.utcnow() - timedelta(days=15)
     
     # Convertir la fecha a un formato Timestamp compatible con Firestore
-    fifteen_days_ago_timestamp = firestore.Timestamp.from_datetime(fifteen_days_ago)
+    timestamp = Timestamp()
+    timestamp.FromDatetime(fifteen_days_ago)
     
     # Consulta de los datos desde Firestore, filtrando por fecha
-    history_ref = db.collection("condiciones").where("timestamp", ">=", fifteen_days_ago_timestamp)
+    history_ref = db.collection("condiciones").where("timestamp", ">=", timestamp)
     history = history_ref.stream()
 
     # Almacenar los datos recibidos

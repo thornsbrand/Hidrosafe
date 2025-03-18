@@ -18,8 +18,52 @@
         <button class="btn btn-secondary" onclick="showSection('history')">Historial</button>
     </div>
 
+    <!-- Sección de Tiempo Real -->
+    <div id="realTimeSection">
+        <h3>Datos en Tiempo Real</h3>
+        <div class="row" id="sensorData">
+            {% for sensor in ["PS1", "PS2", "PS3", "PS4", "PS5", "PS6", "EPS1", "FS1", "FS2", "TS1", "TS2", "TS3", "TS4", "VS1", "CE", "CP", "SE"] %}
+            <div class="col-md-4 mb-3">
+                <div class="sensor-card p-3 border rounded">
+                    <h6>{{ sensor }}</h6>
+                    <p id="{{ sensor }}" class="sensor-value">--</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <h3 class="mt-4">Estado del Sistema</h3>
+        <div class="row" id="systemStatus">
+            {% for status in ["Cooler", "Valve", "Pump Leakage", "Accumulator Pressure", "Stability"] %}
+            <div class="col-md-4 mb-3">
+                <div class="status-card p-3 border rounded">
+                    <h6>{{ status }}</h6>
+                    <p id="{{ status|lower|replace(' ', '_') }}" class="status-value">--</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
     <!-- Sección de Historial -->
     <div id="historySection" style="display: none;">
+        <h3>Historial de Datos</h3>
+        <!-- Tabla de Datos del Historial -->
+        <table class="table table-dark table-striped">
+            <thead>
+                <tr>
+                    <th>Ciclo</th>
+                    <th>Cooler Condition</th>
+                    <th>Valve Condition</th>
+                    <th>Pump Leakage</th>
+                    <th>Accumulator Pressure</th>
+                    <th>Stable Flag</th>
+                </tr>
+            </thead>
+            <tbody id="historyData">
+                <!-- Los datos del historial serán insertados aquí dinámicamente -->
+            </tbody>
+        </table>
+
         <!-- Sección de Gráficos de Historial -->
         <h3 class="mt-4">Tendencias de Variables</h3>
         <div class="row">
@@ -44,24 +88,6 @@
                 <canvas id="chart_stable_flag" width="500" height="400"></canvas>
             </div>
         </div>
-
-        <!-- Tabla de Datos del Historial -->
-        <h3>Historial de Datos</h3>
-        <table class="table table-dark table-striped">
-            <thead>
-                <tr>
-                    <th>Ciclo</th>
-                    <th>Cooler Condition</th>
-                    <th>Valve Condition</th>
-                    <th>Pump Leakage</th>
-                    <th>Accumulator Pressure</th>
-                    <th>Stable Flag</th>
-                </tr>
-            </thead>
-            <tbody id="historyData">
-                <!-- Los datos del historial serán insertados aquí dinámicamente -->
-            </tbody>
-        </table>
     </div>
 </div>
 

@@ -167,16 +167,23 @@ function generarGrafico(canvasId, data, label, getData) {
 }
 
 function aplicarFiltro() {
-    const startDate = document.getElementById('startDate').value;
-    const endDate = document.getElementById('endDate').value;
+    let startDate = document.getElementById('startDate').value;
+    let endDate = document.getElementById('endDate').value;
 
-    // Asegurarse de que ambas fechas estén presentes
-    if (startDate && endDate) {
-        cargarHistorialConFiltro(startDate, endDate);
-    } else {
-        alert("Por favor, selecciona ambas fechas.");
+    // Si no se seleccionan fechas, establecer valores predeterminados (últimos 15 días)
+    if (!startDate || !endDate) {
+        const today = new Date();
+        const fifteenDaysAgo = new Date();
+        fifteenDaysAgo.setDate(today.getDate() - 15);
+
+        startDate = fifteenDaysAgo.toISOString().split('T')[0];  // Convertir a formato YYYY-MM-DD
+        endDate = today.toISOString().split('T')[0];  // Fecha actual
     }
+
+    // Cargar el historial con las fechas seleccionadas (o las predeterminadas)
+    cargarHistorialConFiltro(startDate, endDate);
 }
+
 
 
 // Cargar historial cuando la página cargue

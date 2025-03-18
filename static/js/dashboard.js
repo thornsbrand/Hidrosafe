@@ -79,74 +79,54 @@ async function cargarHistorial() {
             return;
         }
 
-        // Llenar la tabla de historial con los datos
-        const tbody = document.getElementById('historyData');
-        tbody.innerHTML = ''; // Limpiar tabla antes de agregar los nuevos datos
-        data.forEach(item => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${item.timestamp}</td>
-                <td>${item.cooler_condition}</td>
-                <td>${item.valve_condition}</td>
-                <td>${item.pump_leakage}</td>
-                <td>${item.accumulator_pressure}</td>
-                <td>${item.stable}</td>
-            `;
-            tbody.appendChild(row);
-        });
+        // Verificar que el canvas se está encontrando correctamente
+        const ctxCooler = document.getElementById('chart_cooler_condition');
+        console.log("ctxCooler: ", ctxCooler);  // Verifica si el canvas está siendo encontrado
 
-        // Esperar a que el DOM esté completamente listo y el canvas visible
-        setTimeout(() => {
-            const ctxCooler = document.getElementById('chart_cooler_condition');
-            console.log("ctxCooler: ", ctxCooler);  // Verifica si el canvas está siendo encontrado
+        if (ctxCooler) {
+            console.log("Generando gráfico de Cooler Condition...");
 
-            if (ctxCooler) {
-                console.log("Generando gráfico de Cooler Condition...");
-
-                // Generar el gráfico de Cooler Condition
-                new Chart(ctxCooler, {
-                    type: 'line',
-                    data: {
-                        labels: data.map(item => new Date(item.timestamp).getTime()),  // Convertir timestamp a milisegundos
-                        datasets: [{
-                            label: 'Cooler Condition',
-                            data: data.map(item => item.cooler_condition),
-                            borderColor: 'rgba(75, 192, 192, 1)',
-                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                            fill: false,
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        scales: {
-                            x: {
-                                type: 'time',  // Usar escala de tiempo
-                                time: {
-                                    unit: 'minute',  // Escala temporal por minuto
-                                    tooltipFormat: 'll HH:mm', // Formato del tooltip para fechas
-                                },
-                                title: {
-                                    display: true,
-                                    text: 'Timestamp'
-                                }
+            // Generar el gráfico de Cooler Condition
+            new Chart(ctxCooler, {
+                type: 'line',
+                data: {
+                    labels: data.map(item => new Date(item.timestamp).getTime()),  // Convertir timestamp a milisegundos
+                    datasets: [{
+                        label: 'Cooler Condition',
+                        data: data.map(item => item.cooler_condition),
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        fill: false,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            type: 'time',  // Usar escala de tiempo
+                            time: {
+                                unit: 'minute',  // Escala temporal por minuto
+                                tooltipFormat: 'll HH:mm', // Formato del tooltip para fechas
                             },
-                            y: {
-                                beginAtZero: true
+                            title: {
+                                display: true,
+                                text: 'Timestamp'
                             }
+                        },
+                        y: {
+                            beginAtZero: true
                         }
                     }
-                });
-            } else {
-                console.log("❌ No se encontró el canvas para el gráfico de Cooler Condition.");
-            }
-        }, 100); // Espera 100ms antes de ejecutar el gráfico para asegurarse de que el canvas tenga tamaño
+                }
+            });
+        } else {
+            console.log("❌ No se encontró el canvas para el gráfico de Cooler Condition.");
+        }
 
     } catch (error) {
         console.error('Error cargando historial de datos:', error);
     }
 }
-
-
 
 
 // Cargar historial cuando la página cargue

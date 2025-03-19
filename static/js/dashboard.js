@@ -212,13 +212,14 @@ function aplicarFiltro() {
     const adjustedEndDate = new Date(endDate);
     adjustedEndDate.setHours(23, 59, 59, 999);  // Configura la hora de finalización a las 23:59:59
 
-    // Convertir las fechas ajustadas a formato ISO, pero solo con la fecha sin zona horaria
-    const startDateISO = adjustedStartDate.toISOString().split('T')[0];  // Solo fecha (YYYY-MM-DD)
-    const endDateISO = adjustedEndDate.toISOString().split('T')[0];  // Solo fecha (YYYY-MM-DD)
+    // Convertir las fechas ajustadas a formato ISO (yyyy-MM-ddTHH:mm:ss.sssZ)
+    const startDateISO = adjustedStartDate.toISOString();
+    const endDateISO = adjustedEndDate.toISOString();
 
     // Cargar el historial con las fechas ajustadas
     cargarHistorialConFiltro(startDateISO, endDateISO);
 }
+
 
 
 // Llamar a la función para cargar el historial al ingresar a la sección de Historial

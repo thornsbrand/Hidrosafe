@@ -201,8 +201,8 @@ function aplicarFiltro() {
         const fifteenDaysAgo = new Date();
         fifteenDaysAgo.setDate(today.getDate() - 15);
 
-        startDate = fifteenDaysAgo.toISOString().split('T')[0]-1;  // Convertir a formato YYYY-MM-DD
-        endDate = today.toISOString().split('T')[0]-1;  // Fecha actual
+        startDate = fifteenDaysAgo.toISOString().split('T')[0];  // Convertir a formato YYYY-MM-DD
+        endDate = today.toISOString().split('T')[0];  // Fecha actual
     }
 
     // Cargar el historial con las fechas seleccionadas (o las predeterminadas)

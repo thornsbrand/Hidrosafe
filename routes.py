@@ -223,24 +223,22 @@ def get_system_status():
 
     return jsonify({"error": "No hay datos en condiciones"}), 404
 
-# Ruta para obtener el historial de los últimos 15 días
 @main.route('/api/history_data', methods=['GET'])
 def get_history_data():
     """Devuelve los datos del historial filtrados por las fechas proporcionadas"""
-    
+
     # Obtener las fechas de inicio y fin desde los parámetros de la solicitud
     start_date = request.args.get('startDate')
     end_date = request.args.get('endDate')
 
-    # Si no se reciben fechas, calculamos el rango de los últimos 15 días
-    if not start_date or not end_date:
-        end_date = datetime.utcnow()
-        start_date = end_date - timedelta(days=15)
-    
-    # Convertir las fechas a formato datetime
+    # Si las fechas vienen como una cadena, conviértelas en un objeto datetime
     try:
-        start_date = datetime.strptime(start_date, '%Y-%m-%d')
-        end_date = datetime.strptime(end_date, '%Y-%m-%d')
+        # Asegúrate de que las fechas recibidas sean cadenas en formato 'YYYY-MM-DD'
+        if isinstance(start_date, str):
+            start_date = datetime.strptime(start_date, '%Y-%m-%d')
+        if isinstance(end_date, str):
+            end_date = datetime.strptime(end_date, '%Y-%m-%d')
+
     except ValueError:
         return jsonify({"error": "Formato de fecha incorrecto, debe ser YYYY-MM-DD"}), 400
 
@@ -261,3 +259,4 @@ def get_history_data():
 
     # Devolver los datos en formato JSON
     return jsonify(data)
+

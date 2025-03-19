@@ -201,23 +201,13 @@ function aplicarFiltro() {
         const fifteenDaysAgo = new Date();
         fifteenDaysAgo.setDate(today.getDate() - 15);
 
-        startDate = fifteenDaysAgo.toISOString().split('T')[0];  // Convertir a formato YYYY-MM-DD
-        endDate = today.toISOString().split('T')[0];  // Fecha actual
-    } else {
-        // Convertir endDate a un objeto Date
-        let selectedEndDate = new Date(endDate);
-        
-        // Restar un día
-        selectedEndDate.setDate(selectedEndDate.getDate() - 1);
-
-        // Convertir la nueva fecha a formato YYYY-MM-DD
-        endDate = selectedEndDate.toISOString().split('T')[0];
+        startDate = fifteenDaysAgo.toISOString().split('T')[0]-1;  // Convertir a formato YYYY-MM-DD
+        endDate = today.toISOString().split('T')[0]-1;  // Fecha actual
     }
 
     // Cargar el historial con las fechas seleccionadas (o las predeterminadas)
     cargarHistorialConFiltro(startDate, endDate);
 }
-
 
 // Llamar a la función para cargar el historial al ingresar a la sección de Historial
 function mostrarHistorial() {

@@ -73,7 +73,19 @@ function showSection(sectionId) {
 async function cargarHistorialConFiltro(startDate, endDate) {
     try {
         const response = await fetch(`/api/history_data?startDate=${startDate}&endDate=${endDate}`);
+        
+        // Verificar si la respuesta es válida (si el servidor devuelve un 404 o error)
+        if (!response.ok) {
+            // Si no es OK (404, 500, etc.), mostrar un mensaje específico
+            throw new Error(`Error ${response.status}: No se encontraron datos para las fechas seleccionadas.`);
+        }
+
         const data = await response.json();
+
+        // Verificar que los datos sean un array antes de intentar procesarlos
+        if (!Array.isArray(data)) {
+            throw new Error("Error: Los datos recibidos no son un arreglo.");
+        }
 
         if (data.length === 0) {
             console.log("⚠️ No se encontraron datos en el historial para el rango seleccionado.");
@@ -82,7 +94,7 @@ async function cargarHistorialConFiltro(startDate, endDate) {
 
         // Limpiar la tabla y los gráficos
         const tbody = document.getElementById('historyData');
-        tbody.innerHTML = '';
+        tbody.innerHTML = '';  // Limpiar tabla
 
         // Llenar la tabla de historial con los datos filtrados
         data.forEach(item => {
@@ -108,8 +120,10 @@ async function cargarHistorialConFiltro(startDate, endDate) {
 
     } catch (error) {
         console.error('Error cargando historial filtrado:', error);
+        alert("Hubo un problema al cargar los datos. Asegúrate de que el rango de fechas sea válido y que haya datos disponibles.");
     }
 }
+
 
 // Objeto global para almacenar los gráficos
 const charts = {};

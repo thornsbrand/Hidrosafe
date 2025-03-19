@@ -191,8 +191,6 @@ function generarGrafico(canvasId, data, label, getData) {
     }
 }
 
-
-
 function aplicarFiltro() {
     let startDate = document.getElementById('startDate').value;
     let endDate = document.getElementById('endDate').value;
@@ -207,8 +205,19 @@ function aplicarFiltro() {
         endDate = today.toISOString().split('T')[0];  // Fecha actual
     }
 
-    // Cargar el historial con las fechas seleccionadas (o las predeterminadas)
-    cargarHistorialConFiltro(startDate, endDate);
+    // Ajustar las fechas para incluir todo el día de la fecha seleccionada
+    const adjustedStartDate = new Date(startDate);
+    adjustedStartDate.setHours(0, 0, 0, 0);  // Configura la hora de inicio a las 00:00:00
+
+    const adjustedEndDate = new Date(endDate);
+    adjustedEndDate.setHours(23, 59, 59, 999);  // Configura la hora de finalización a las 23:59:59
+
+    // Convertir las fechas ajustadas a formato ISO (YYYY-MM-DDTHH:mm:ss.sssZ)
+    const startDateISO = adjustedStartDate.toISOString();
+    const endDateISO = adjustedEndDate.toISOString();
+
+    // Cargar el historial con las fechas ajustadas
+    cargarHistorialConFiltro(startDateISO, endDateISO);
 }
 
 // Llamar a la función para cargar el historial al ingresar a la sección de Historial

@@ -9,57 +9,22 @@
     <div class="row">
         <div class="col-md-3">
             <div class="list-group">
-                <a href="#sensors" class="list-group-item list-group-item-action">Datos de Sensores</a>
-                <a href="#predictive_maintenance" class="list-group-item list-group-item-action">Mantenimiento Predictivo</a>
                 <a href="#general_info" class="list-group-item list-group-item-action">Información General</a>
                 <a href="#funcion_objetivo" class="list-group-item list-group-item-action">Función Objetivo</a>
+                <a href="#predictive_maintenance" class="list-group-item list-group-item-action">Mantenimiento Predictivo</a>
+                <a href="#sensors" class="list-group-item list-group-item-action">Datos de Sensores</a>
             </div>
         </div>
 
         <div class="col-md-9">
-            <section id="sensors" class="mb-5">
-                <h2>Datos de Sensores</h2>
-                <p>El sistema recopila datos en tiempo real de múltiples sensores con distintas unidades y frecuencias de muestreo.</p>
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Sensor</th>
-                            <th>Cantidad Física</th>
-                            <th>Unidad</th>
-                            <th>Frecuencia de Muestreo</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr><td>PS1 - PS6</td><td>Presión</td><td>bar</td><td>100 Hz</td></tr>
-                        <tr><td>EPS1</td><td>Potencia del motor</td><td>W</td><td>100 Hz</td></tr>
-                        <tr><td>FS1 - FS2</td><td>Flujo de volumen</td><td>l/min</td><td>10 Hz</td></tr>
-                        <tr><td>TS1 - TS4</td><td>Temperatura</td><td>°C</td><td>1 Hz</td></tr>
-                        <tr><td>VS1</td><td>Vibración</td><td>mm/s</td><td>1 Hz</td></tr>
-                        <tr><td>CE</td><td>Eficiencia de enfriamiento</td><td>%</td><td>1 Hz</td></tr>
-                        <tr><td>CP</td><td>Potencia de enfriamiento</td><td>kW</td><td>1 Hz</td></tr>
-                        <tr><td>SE</td><td>Factor de eficiencia</td><td>%</td><td>1 Hz</td></tr>
-                    </tbody>
-                </table>
-            </section>
-
-            <section id="predictive_maintenance" class="mb-5">
-                <h2>Mantenimiento Predictivo</h2>
-                <p>El mantenimiento predictivo permite detectar fallas antes de que ocurran, utilizando datos de sensores para anticipar problemas en el sistema.</p>
-                <p>El sistema evalúa condiciones críticas como:</p>
-                <ul>
-                    <li><strong>Condición del Enfriador:</strong> Evaluación de eficiencia y posibles fallas.</li>
-                    <li><strong>Válvulas:</strong> Identificación de retrasos o comportamientos anómalos.</li>
-                    <li><strong>Fugas Internas de Bomba:</strong> Detección de niveles de fuga.</li>
-                    <li><strong>Presión del Acumulador:</strong> Seguimiento del rendimiento del sistema hidráulico.</li>
-                </ul>
-            </section>
-
+            <!-- Información General -->
             <section id="general_info" class="mb-5">
                 <h2>Información General</h2>
                 <p>Hydrosafe es una plataforma integral para el monitoreo y mantenimiento predictivo de sistemas hidráulicos.</p>
                 <p>Utiliza sensores en tiempo real y modelos de análisis de datos para mejorar la eficiencia operativa y reducir el tiempo de inactividad del sistema.</p>
             </section>
 
+            <!-- Función Objetivo -->
             <section id="funcion_objetivo" class="mb-5">
                 <h2>Función Objetivo</h2>
                 <p>El sistema optimiza el monitoreo y mantenimiento predictivo de los sistemas hidráulicos, enfocándose en la correcta interpretación de los datos de sensores para detectar anomalías y anticipar fallas en componentes clave como enfriadores, válvulas, bombas y acumuladores. Además, busca maximizar la eficiencia energética, reduciendo el consumo y mejorando el rendimiento general. La plataforma permite tomar decisiones rápidas y fundamentadas, asegurando la continuidad operativa y reduciendo costos.</p>
@@ -91,6 +56,45 @@
                     <li><strong>Maximización de la Vida Útil de Componentes:</strong> Prolongar la vida útil de componentes clave mediante monitoreo constante.</li>
                 </ul>
                 <p><strong>Beneficios:</strong> Disminución de costos a largo plazo al evitar mantenimiento innecesario.</p>
+            </section>
+
+            <!-- Mantenimiento Predictivo -->
+            <section id="predictive_maintenance" class="mb-5">
+                <h2>Mantenimiento Predictivo</h2>
+                <p>El mantenimiento predictivo permite detectar fallas antes de que ocurran, utilizando datos de sensores para anticipar problemas en el sistema.</p>
+                <p>El sistema evalúa condiciones críticas como:</p>
+                <ul>
+                    <li><strong>Condición del Enfriador:</strong> Evaluación de eficiencia y posibles fallas.</li>
+                    <li><strong>Válvulas:</strong> Identificación de retrasos o comportamientos anómalos.</li>
+                    <li><strong>Fugas Internas de Bomba:</strong> Detección de niveles de fuga.</li>
+                    <li><strong>Presión del Acumulador:</strong> Seguimiento del rendimiento del sistema hidráulico.</li>
+                </ul>
+            </section>
+
+            <!-- Datos de Sensores -->
+            <section id="sensors" class="mb-5">
+                <h2>Datos de Sensores</h2>
+                <p>El sistema recopila datos en tiempo real de múltiples sensores con distintas unidades y frecuencias de muestreo.</p>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Sensor</th>
+                            <th>Cantidad Física</th>
+                            <th>Unidad</th>
+                            <th>Frecuencia de Muestreo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>PS1 - PS6</td><td>Presión</td><td>bar</td><td>100 Hz</td></tr>
+                        <tr><td>EPS1</td><td>Potencia del motor</td><td>W</td><td>100 Hz</td></tr>
+                        <tr><td>FS1 - FS2</td><td>Flujo de volumen</td><td>l/min</td><td>10 Hz</td></tr>
+                        <tr><td>TS1 - TS4</td><td>Temperatura</td><td>°C</td><td>1 Hz</td></tr>
+                        <tr><td>VS1</td><td>Vibración</td><td>mm/s</td><td>1 Hz</td></tr>
+                        <tr><td>CE</td><td>Eficiencia de enfriamiento</td><td>%</td><td>1 Hz</td></tr>
+                        <tr><td>CP</td><td>Potencia de enfriamiento</td><td>kW</td><td>1 Hz</td></tr>
+                        <tr><td>SE</td><td>Factor de eficiencia</td><td>%</td><td>1 Hz</td></tr>
+                    </tbody>
+                </table>
             </section>
         </div>
     </div>

@@ -3,7 +3,45 @@ import { getFirestore, collection, query, where, orderBy, limit, onSnapshot } fr
 // Obtener la referencia de Firestore
 const db = getFirestore();
 
-// Función para escuchar cambios en los datos de sensores
+// Función para cargar el último dato de los sensores cuando se carga la página
+async function cargarUltimosDatosSensores() {
+    const uid = sessionStorage.getItem("uid");  // Obtén el uid del usuario logueado
+    if (!uid) {
+        console.error("No hay usuario logueado");
+        return;
+    }
+
+    const sensoresRef = collection(db, "sensores");
+    const q = query(sensoresRef, where("usuario_id", "==", uid), orderBy("timestamp", "desc"), limit(1));
+
+    // Obtener los últimos datos (más recientes) de sensores
+    const querySnapshot = await getDocs(q);
+    if (querySnapshot.empty) {
+        console.log("No hay datos de sensores.");
+        return;
+    }
+
+    // Obtener el primer documento (más reciente)
+    const doc = querySnapshot.docs[0];
+    const sensorData = doc.data();
+
+    // Actualizar los datos en el frontend
+    Object.keys(sensorData).forEach(sensor => {
+        const element = document.getElementById(sensor);
+        if (element) {
+            element.textContent = `${sensorData[sensor]} ${sensor.includes('PS') ? 'bar' :
+                sensor.includes('EPS') ? 'W' :
+                sensor.includes('FS') ? 'l/min' :
+                sensor.includes('TS') ? '°C' :
+                sensor.includes('VS') ? 'mm/s' :
+                sensor.includes('CE') ? '%' :
+                sensor.includes('CP') ? 'kW' :
+                sensor.includes('SE') ? '%' : ''}`;
+        }
+    });
+}
+
+// Función para escuchar cambios en los datos de sensores en tiempo real
 function escucharDatosSensores() {
     const uid = sessionStorage.getItem("uid");  // Obtén el uid del usuario logueado
     if (!uid) {

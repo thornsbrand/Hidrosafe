@@ -4,7 +4,7 @@ import { getFirestore, collection, query, where, orderBy, limit, onSnapshot } fr
 const db = getFirestore();
 
 // Función para cargar el último dato de los sensores cuando se carga la página
-async function cargarUltimosDatosSensores() {
+function cargarUltimosDatosSensores() {
     const uid = sessionStorage.getItem("uid");  // Obtén el uid del usuario logueado
     if (!uid) {
         console.error("No hay usuario logueado");
@@ -15,29 +15,30 @@ async function cargarUltimosDatosSensores() {
     const q = query(sensoresRef, where("usuario_id", "==", uid), orderBy("timestamp", "desc"), limit(1));
 
     // Obtener los últimos datos (más recientes) de sensores
-    const querySnapshot = await getDocs(q);
-    if (querySnapshot.empty) {
-        console.log("No hay datos de sensores.");
-        return;
-    }
-
-    // Obtener el primer documento (más reciente)
-    const doc = querySnapshot.docs[0];
-    const sensorData = doc.data();
-
-    // Actualizar los datos en el frontend
-    Object.keys(sensorData).forEach(sensor => {
-        const element = document.getElementById(sensor);
-        if (element) {
-            element.textContent = `${sensorData[sensor]} ${sensor.includes('PS') ? 'bar' :
-                sensor.includes('EPS') ? 'W' :
-                sensor.includes('FS') ? 'l/min' :
-                sensor.includes('TS') ? '°C' :
-                sensor.includes('VS') ? 'mm/s' :
-                sensor.includes('CE') ? '%' :
-                sensor.includes('CP') ? 'kW' :
-                sensor.includes('SE') ? '%' : ''}`;
+    onSnapshot(q, (querySnapshot) => {
+        if (querySnapshot.empty) {
+            console.log("No hay datos de sensores.");
+            return;
         }
+
+        // Obtener el primer documento (más reciente)
+        const doc = querySnapshot.docs[0];
+        const sensorData = doc.data();
+
+        // Actualizar los datos en el frontend
+        Object.keys(sensorData).forEach(sensor => {
+            const element = document.getElementById(sensor);
+            if (element) {
+                element.textContent = `${sensorData[sensor]} ${sensor.includes('PS') ? 'bar' :
+                    sensor.includes('EPS') ? 'W' :
+                    sensor.includes('FS') ? 'l/min' :
+                    sensor.includes('TS') ? '°C' :
+                    sensor.includes('VS') ? 'mm/s' :
+                    sensor.includes('CE') ? '%' :
+                    sensor.includes('CP') ? 'kW' :
+                    sensor.includes('SE') ? '%' : ''}`;
+            }
+        });
     });
 }
 
@@ -282,11 +283,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     console.log("Página cargada. Esperando la acción de mostrar historial...");
-});
 
-
-// Al cargar la página, inicializamos las funciones
-document.addEventListener('DOMContentLoaded', function () {
     // Cargar los datos más recientes cuando el usuario entra
     cargarUltimosDatosSensores();
     escucharDatosSensores();

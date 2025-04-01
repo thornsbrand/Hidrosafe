@@ -1,5 +1,11 @@
 import { getFirestore, collection, query, where, orderBy, limit, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+// Función para mostrar las secciones según el botón presionado
+function showSection(sectionId) {
+    document.getElementById("realTimeSection").style.display = (sectionId === 'realTime') ? 'block' : 'none';
+    document.getElementById("historySection").style.display = (sectionId === 'history') ? 'block' : 'none';
+}
+
 // Obtener la referencia de Firestore
 const db = getFirestore();
 

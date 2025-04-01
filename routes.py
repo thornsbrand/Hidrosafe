@@ -198,12 +198,19 @@ def user_requests():
 
     return render_template("user_requests.html", solicitudes=solicitudes)
 
+# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 @main.route('/api/sensor_data', methods=['GET'])
 def get_sensor_data():
-    """Obtiene el último conjunto de datos de sensores desde Firestore"""
-    sensores_ref = db.collection("sensores").order_by("timestamp", direction=firestore.Query.DESCENDING).limit(1)
+    """Obtiene el último conjunto de datos de sensores desde Firestore para el usuario logueado"""
+    user = session.get("user")
+    if not user:
+        return jsonify({"error": "Usuario no autenticado"}), 401
+
+    uid = user["uid"]
+    sensores_ref = db.collection("sensores").where('usuario_id', '==', uid).order_by("timestamp", direction=firestore.Query.DESCENDING).limit(1)
     sensores_docs = sensores_ref.stream()
-    
+
     # Si Firestore tiene datos, devolver el más reciente
     for doc in sensores_docs:
         return jsonify(doc.to_dict())
@@ -213,8 +220,13 @@ def get_sensor_data():
 
 @main.route('/api/system_status', methods=['GET'])
 def get_system_status():
-    """Obtiene el último estado del sistema desde la colección 'condiciones' en Firestore"""
-    condiciones_ref = db.collection("condiciones").order_by("timestamp", direction=firestore.Query.DESCENDING).limit(1)
+    """Obtiene el último estado del sistema desde la colección 'condiciones' en Firestore para el usuario logueado"""
+    user = session.get("user")
+    if not user:
+        return jsonify({"error": "Usuario no autenticado"}), 401
+
+    uid = user["uid"]
+    condiciones_ref = db.collection("condiciones").where('usuario_id', '==', uid).order_by("timestamp", direction=firestore.Query.DESCENDING).limit(1)
     condiciones_docs = condiciones_ref.stream()
 
     for doc in condiciones_docs:
@@ -226,13 +238,16 @@ def get_system_status():
 # Ruta para obtener el historial de los últimos 15 días
 @main.route('/api/history_data', methods=['GET'])
 def get_history_data():
-    """Devuelve los datos del historial filtrados por las fechas proporcionadas"""
-    
-    # Obtener las fechas de inicio y fin desde los parámetros de la solicitud
+    """Devuelve los datos del historial filtrados por las fechas y por el UID del usuario logueado"""
+    user = session.get("user")
+    if not user:
+        return jsonify({"error": "Usuario no autenticado"}), 401
+
+    uid = user["uid"]
     start_date = request.args.get('startDate')
     end_date = request.args.get('endDate')
 
-    # Si no se reciben fechas, calculamos el rango de los últimos 15 días
+    # Validación de fechas
     if not start_date or not end_date:
         end_date = datetime.utcnow()
         start_date = end_date - timedelta(days=15)
@@ -244,20 +259,18 @@ def get_history_data():
     except ValueError:
         return jsonify({"error": "Formato de fecha incorrecto, debe ser YYYY-MM-DD"}), 400
 
-    # Consulta de los datos desde Firestore, filtrando por fecha
-    history_ref = db.collection("condiciones").where("timestamp", ">=", start_date).where("timestamp", "<=", end_date)
+    # Consulta de los datos desde Firestore, filtrando por fecha y usuario_id
+    history_ref = db.collection("condiciones").where("usuario_id", "==", uid).where("timestamp", ">=", start_date).where("timestamp", "<=", end_date)
     history = history_ref.stream()
 
-    # Almacenar los datos recibidos
     data = []
     for doc in history:
         doc_data = doc.to_dict()
         doc_data["timestamp"] = doc_data["timestamp"].isoformat()  # Asegurarse de que la fecha sea serializable
         data.append(doc_data)
 
-    # Si no se encuentran datos, retornar un error
     if not data:
         return jsonify({"error": "No se encontraron datos en el historial para el rango seleccionado"}), 404
 
-    # Devolver los datos en formato JSON
     return jsonify(data)
+

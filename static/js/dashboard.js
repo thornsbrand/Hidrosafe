@@ -2,10 +2,9 @@ async function cargarDatosSensores() {
     try {
         const response = await fetch('/api/sensor_data');
         const data = await response.json();
-        console.log("📥 Datos recibidos de sensor_data:", data);
-
+        
         if (!data) {
-            console.error("❌ No se recibieron datos de sensor_data.");
+            console.error("No se recibieron datos.");
             return;
         }
 
@@ -23,9 +22,10 @@ async function cargarDatosSensores() {
             }
         });
     } catch (error) {
-        console.error("⚠️ Error cargando datos en tiempo real:", error);
+        console.error("Error cargando datos:", error);
     }
 }
+
 
 async function cargarEstadoSistema() {
     try {

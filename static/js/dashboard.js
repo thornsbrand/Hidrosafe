@@ -1,35 +1,17 @@
-import { getFirestore, collection, query, where, orderBy, limit, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-// Obtener la referencia de Firestore
-const db = getFirestore();
-
-// Función para cargar el último dato de los sensores cuando se carga la página
-function cargarUltimosDatosSensores() {
-    const uid = sessionStorage.getItem("uid");  // Obtén el uid del usuario logueado
-    if (!uid) {
-        console.error("No hay usuario logueado");
-        return;
-    }
-
-    const sensoresRef = collection(db, "sensores");
-    const q = query(sensoresRef, where("usuario_id", "==", uid), orderBy("timestamp", "desc"), limit(1));
-
-    // Obtener los últimos datos (más recientes) de sensores
-    onSnapshot(q, (querySnapshot) => {
-        if (querySnapshot.empty) {
-            console.log("No hay datos de sensores.");
+async function cargarDatosSensores() {
+    try {
+        const response = await fetch('/api/sensor_data');
+        const data = await response.json();
+        
+        if (!data) {
+            console.error("No se recibieron datos.");
             return;
         }
 
-        // Obtener el primer documento (más reciente)
-        const doc = querySnapshot.docs[0];
-        const sensorData = doc.data();
-
-        // Actualizar los datos en el frontend
-        Object.keys(sensorData).forEach(sensor => {
+        Object.keys(data).forEach(sensor => {
             const element = document.getElementById(sensor);
             if (element) {
-                element.textContent = `${sensorData[sensor]} ${sensor.includes('PS') ? 'bar' :
+                element.textContent = `${data[sensor]} ${sensor.includes('PS') ? 'bar' :
                     sensor.includes('EPS') ? 'W' :
                     sensor.includes('FS') ? 'l/min' :
                     sensor.includes('TS') ? '°C' :
@@ -39,78 +21,52 @@ function cargarUltimosDatosSensores() {
                     sensor.includes('SE') ? '%' : ''}`;
             }
         });
-    });
+    } catch (error) {
+        console.error("Error cargando datos:", error);
+    }
 }
 
-// Función para escuchar cambios en los datos de sensores en tiempo real
-function escucharDatosSensores() {
-    const uid = sessionStorage.getItem("uid");  // Obtén el uid del usuario logueado
-    if (!uid) {
-        console.error("No hay usuario logueado");
-        return;
-    }
 
-    const sensoresRef = collection(db, "sensores");
-    const q = query(sensoresRef, where("usuario_id", "==", uid), orderBy("timestamp", "desc"), limit(1));
+async function cargarEstadoSistema() {
+    try {
+        const response = await fetch('/api/system_status');
+        const data = await response.json();
+        console.log("📥 Datos recibidos de system_status:", data);
 
-    // Escuchar los cambios en tiempo real
-    onSnapshot(q, (querySnapshot) => {
-        if (querySnapshot.empty) {
-            console.log("No hay datos de sensores.");
+        if (!data) {
+            console.error("❌ No se recibieron datos de system_status.");
             return;
         }
 
-        // Obtener el primer documento (más reciente)
-        const doc = querySnapshot.docs[0];
-        const sensorData = doc.data();
+        const mapeo = {
+            cooler_condition: "Cooler",
+            valve_condition: "Valve",
+            pump_leakage: "Pump Leakage",
+            accumulator_pressure: "Accumulator Pressure",
+            stable: "Stability"
+        };
 
-        // Actualizar los datos en el frontend
-        Object.keys(sensorData).forEach(sensor => {
-            const element = document.getElementById(sensor);
+        Object.keys(mapeo).forEach(key => {
+            const element = document.getElementById(mapeo[key].toLowerCase().replace(/ /g, '_'));
             if (element) {
-                element.textContent = `${sensorData[sensor]} ${sensor.includes('PS') ? 'bar' :
-                    sensor.includes('EPS') ? 'W' :
-                    sensor.includes('FS') ? 'l/min' :
-                    sensor.includes('TS') ? '°C' :
-                    sensor.includes('VS') ? 'mm/s' :
-                    sensor.includes('CE') ? '%' :
-                    sensor.includes('CP') ? 'kW' :
-                    sensor.includes('SE') ? '%' : ''}`;
+                element.textContent = data[key];
+            } else {
+                console.warn(`⚠️ No se encontró '${key}' en los datos recibidos.`);
             }
         });
-    });
+    } catch (error) {
+        console.error("⚠️ Error cargando estado del sistema:", error);
+    }
 }
 
-// Función para escuchar cambios en el estado del sistema (colección `condiciones`)
-function escucharEstadoSistema() {
-    const uid = sessionStorage.getItem("uid");  // Obtén el uid del usuario logueado
-    if (!uid) {
-        console.error("No hay usuario logueado");
-        return;
-    }
+async function actualizarDatos() {
+    await cargarDatosSensores();
+    await cargarEstadoSistema();
+}
 
-    const condicionesRef = collection(db, "condiciones");
-    const q = query(condicionesRef, where("usuario_id", "==", uid), orderBy("timestamp", "desc"), limit(1));
-
-    // Escuchar los cambios en tiempo real
-    onSnapshot(q, (querySnapshot) => {
-        if (querySnapshot.empty) {
-            console.log("No hay datos de condiciones.");
-            return;
-        }
-
-        // Obtener el primer documento (más reciente)
-        const doc = querySnapshot.docs[0];
-        const condicionesData = doc.data();
-
-        const estados = ["cooler_condition", "valve_condition", "pump_leakage", "accumulator_pressure", "stable"];
-        estados.forEach(state => {
-            const element = document.getElementById(state);
-            if (element) {
-                element.textContent = condicionesData[state];
-            }
-        });
-    });
+function showSection(sectionId) {
+    document.getElementById("realTimeSection").style.display = (sectionId === 'realTime') ? 'block' : 'none';
+    document.getElementById("historySection").style.display = (sectionId === 'history') ? 'block' : 'none';
 }
 
 // Función para cargar y actualizar los datos filtrados por fechas
@@ -167,6 +123,7 @@ async function cargarHistorialConFiltro(startDate, endDate) {
         alert("Hubo un problema al cargar los datos. Asegúrate de que el rango de fechas sea válido y que haya datos disponibles.");
     }
 }
+
 
 // Objeto global para almacenar los gráficos
 const charts = {};
@@ -283,9 +240,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     console.log("Página cargada. Esperando la acción de mostrar historial...");
-
-    // Cargar los datos más recientes cuando el usuario entra
-    cargarUltimosDatosSensores();
-    escucharDatosSensores();
-    escucharEstadoSistema();
 });
+
+setInterval(actualizarDatos, 5000); // Actualiza los datos cada 5 segundos
+actualizarDatos();  // Llamada inicial para cargar los datos en tiempo real

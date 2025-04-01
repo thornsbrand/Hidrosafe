@@ -273,4 +273,3 @@ def get_history_data():
         return jsonify({"error": "No se encontraron datos en el historial para el rango seleccionado"}), 404
 
     return jsonify(data)
-

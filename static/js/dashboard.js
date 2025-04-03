@@ -224,7 +224,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Si no se seleccionan fechas, usar las fechas predeterminadas (últimos 15 días)
     if (!startDate || !endDate) {
-        const today = new Date() + 1;
+        const today = new Date();
         const fifteenDaysAgo = new Date();
         fifteenDaysAgo.setDate(today.getDate() - 15);
 

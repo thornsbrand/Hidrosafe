@@ -138,53 +138,62 @@ function generarGrafico(canvasId, data, label, getData) {
 
     // Crear el gráfico nuevo
     if (ctx) {
-        // Crear el gráfico y almacenarlo en el objeto global
         charts[canvasId] = new Chart(ctx, {
             type: 'line',
             data: {
-                labels: data.map(item => new Date(item.timestamp).toLocaleString()),  // Convertir el timestamp a fecha local
+                labels: data.map(item => new Date(item.timestamp).toLocaleString('es-ES', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                })),  // Convertir a formato corto
                 datasets: [{
-                    label: label,  // Este es el label que quieres eliminar
+                    label: label,
                     data: data.map(getData),
-                    borderColor: '#4bc0c0',  // Color de la línea
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',  // Color de fondo de la línea
-                    borderWidth: 2,  // Grosor de la línea
-                    pointRadius: 6,  // Tamaño de los puntos
-                    pointBackgroundColor: '#4bc0c0',  // Color de los puntos
-                    fill: false,  // No llenar el área bajo la línea
+                    borderColor: '#4bc0c0',  
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)', 
+                    borderWidth: 2,  
+                    pointRadius: 6,  
+                    pointBackgroundColor: '#4bc0c0',
+                    fill: false,  
                 }]
             },
             options: {
                 responsive: true,
                 scales: {
                     x: {
-                        type: 'category',  // Usar 'category' si el tipo de tiempo está causando problemas
+                        type: 'category',  
                         title: {
                             display: true,
                             text: 'Fecha y Hora'
+                        },
+                        ticks: {
+                            maxRotation: 45,  // Rotar las etiquetas a 45 grados
+                            minRotation: 45   // Rotar las etiquetas a 45 grados
                         }
                     },
                     y: {
                         beginAtZero: true,
                         ticks: {
-                            color: '#666',  // Color de los ticks en el eje Y
+                            color: '#666',  
                         },
                         title: {
                             display: true,
                             text: label,
-                            color: '#666',  // Color del título del eje Y
+                            color: '#666',
                         }
                     }
                 },
                 plugins: {
                     legend: {
-                        display: false,  // Aquí desactivamos la leyenda para que no se muestre
+                        display: false,  // Desactivar la leyenda
                     }
                 }
             }
         });
     }
 }
+
 
 function aplicarFiltro() {
     let startDate = document.getElementById('startDate').value;

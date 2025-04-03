@@ -53,7 +53,7 @@
     <div id="realTimeSection">
         <h3>Datos en Tiempo Real</h3>
         <div class="row" id="sensorData">
-            {% for sensor in ["PS1", "PS2", "PS3", "PS4", "PS5", "PS6", "EPS1", "FS1", "FS2", "TS1", "TS2", "TS3", "TS4", "VS1", "CE", "CP", "SE"] %}
+            {% for sensor in ["PS1x", "PS2", "PS3", "PS4", "PS5", "PS6", "EPS1", "FS1", "FS2", "TS1", "TS2", "TS3", "TS4", "VS1", "CE", "CP", "SE"] %}
             <div class="col-md-4 mb-3">
                 <div class="sensor-card p-3 border rounded">
                     <h6>{{ sensor }}</h6>
@@ -64,7 +64,7 @@
         </div>
         <h3 class="mt-4">Estado del Sistema</h3>
         <div class="row" id="systemStatus">
-            {% for status in ["Cooler", "Valve", "Pump Leakage", "Accumulator Pressure", "Stability"] %}
+            {% for status in ["Coolerx", "Valve", "Pump Leakage", "Accumulator Pressure", "Stability"] %}
             <div class="col-md-4 mb-3">
                 <div class="status-card p-3 border rounded">
                     <h6>{{ status }}</h6>
@@ -103,23 +103,23 @@
         <h3 class="mt-4 text-center">Tendencias de Variables</h3>
         <div class="row">
             <div class="col-md-3 mb-4 chart-container">
-                <h6>Cooler Condition</h6>
+                <h6>Condición del Enfriador</h6>
                 <canvas id="chart_cooler_condition" width="500" height="400"></canvas>
             </div>
             <div class="col-md-3 mb-4 chart-container">
-                <h6>Valve Condition</h6>
+                <h6>Condición de la Válvula</h6>
                 <canvas id="chart_valve_condition" width="500" height="400"></canvas>
             </div>
             <div class="col-md-3 mb-4 chart-container">
-                <h6>Pump Leakage</h6>
+                <h6>Fugas de la Bomba</h6>
                 <canvas id="chart_pump_leakage" width="500" height="400"></canvas>
             </div>
             <div class="col-md-3 mb-4 chart-container">
-                <h6>Accumulator Pressure</h6>
+                <h6>Presión del Acumulador</h6>
                 <canvas id="chart_accumulator_pressure" width="500" height="400"></canvas>
             </div>
             <div class="col-md-3 mb-4 chart-container">
-                <h6>Stable Flag</h6>
+                <h6>Indicador de Estabilidad</h6>
                 <canvas id="chart_stable_flag" width="500" height="400"></canvas>
             </div>
         </div>
@@ -130,11 +130,11 @@
             <thead>
                 <tr>
                     <th>Ciclo</th>
-                    <th>Cooler Condition</th>
-                    <th>Valve Condition</th>
-                    <th>Pump Leakage</th>
-                    <th>Accumulator Pressure</th>
-                    <th>Stable Flag</th>
+                    <th>Condición del Enfriador</th>
+                    <th>Condición de la Válvula</th>
+                    <th>Fugas de la Bomba</th>
+                    <th>Presión del Acumulador</th>
+                    <th>Indicador de Estabilidad</th>                    
                 </tr>
             </thead>
             <tbody id="historyData">

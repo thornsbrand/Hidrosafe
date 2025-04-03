@@ -64,13 +64,19 @@
         </div>
         <h3 class="mt-4">Estado del Sistema</h3>
         <div class="row" id="systemStatus">
-            {% for status in ["Coolerx", "Valve", "Pump Leakage", "Accumulator Pressure", "Stability"] %}
-            <div class="col-md-4 mb-3">
-                <div class="status-card p-3 border rounded">
-                    <h6>{{ status }}</h6>
-                    <p id="{{ status|lower|replace(' ', '_') }}" class="status-value">--</p>
+            {% for status, label in [
+                ("Cooler", "Condición del enfriador"),
+                ("Valve", "Condición de la válvula"),
+                ("Pump Leakage", "Fugas de la bomba"),
+                ("Accumulator Pressure", "Presión del acumulador"),
+                ("Stability", "Estabilidad")
+            ] %}
+                <div class="col-md-4 mb-3">
+                    <div class="status-card p-3 border rounded">
+                        <h6>{{ label }}</h6> <!-- Usar la etiqueta traducida -->
+                        <p id="{{ status|lower|replace(' ', '_') }}" class="status-value">--</p> <!-- El id se genera de manera que sea compatible con los datos -->
+                    </div>
                 </div>
-            </div>
             {% endfor %}
         </div>
     </div>

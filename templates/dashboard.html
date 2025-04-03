@@ -53,7 +53,7 @@
     <div id="realTimeSection">
         <h3>Datos en Tiempo Real</h3>
         <div class="row" id="sensorData">
-            {% for sensor in ["PS1 (Presión 1)", "PS2 (Presión 2)", "PS3 (Presión 3)", "PS4 (Presión 4)", "PS5 (Presión 5)", "PS6 (Presión 6)", "EPS1 (Potencia del motor)", "FS1 (Flujo volumétrico 1)", "FS2 (Flujo volumétrico 2)", "TS1 (Temperatura 1)", "TS2 (Temperatura 2)", "TS3 (Temperatura 3)", "TS4 (Temperatura 4)", "VS1 (Vibración 1)", "CE (Eficiencia de enfriamiento)", "CP (Potencia de enfriamiento)", "SE (Factor de eficiencia)"] %}
+            {% for sensor in ["PS1x", "PS2", "PS3", "PS4", "PS5", "PS6", "EPS1", "FS1", "FS2", "TS1", "TS2", "TS3", "TS4", "VS1", "CE", "CP", "SE"] %}
             <div class="col-md-4 mb-3">
                 <div class="sensor-card p-3 border rounded">
                     <h6>{{ sensor }}</h6>
@@ -64,7 +64,7 @@
         </div>
         <h3 class="mt-4">Estado del Sistema</h3>
         <div class="row" id="systemStatus">
-            {% for status in ["Enfriador", "Válvula", "Fugas de la Bomba", "Presión del Acumulador", "Estabilidad"] %}
+            {% for status in ["Coolerx", "Valve", "Pump Leakage", "Accumulator Pressure", "Stability"] %}
             <div class="col-md-4 mb-3">
                 <div class="status-card p-3 border rounded">
                     <h6>{{ status }}</h6>
@@ -75,7 +75,7 @@
         </div>
     </div>
 
-    <!-- Sección de Historial --> 
+    <!-- Sección de Historial -->
     <div id="historySection" style="display: none;">
         <h3 class="text-center">Historial de Datos</h3>
 
@@ -96,6 +96,8 @@
                 </div>
             </div>
         </div>
+
+
 
         <!-- Sección de Gráficos de Historial -->
         <h3 class="mt-4 text-center">Tendencias de Variables</h3>

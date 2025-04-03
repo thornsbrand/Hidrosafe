@@ -124,7 +124,6 @@ async function cargarHistorialConFiltro(startDate, endDate) {
     }
 }
 
-
 // Objeto global para almacenar los gráficos
 const charts = {};
 
@@ -145,7 +144,7 @@ function generarGrafico(canvasId, data, label, getData) {
             data: {
                 labels: data.map(item => new Date(item.timestamp).toLocaleString()),  // Convertir el timestamp a fecha local
                 datasets: [{
-                    label: label,
+                    label: label,  // Este es el label que quieres eliminar
                     data: data.map(getData),
                     borderColor: '#4bc0c0',  // Color de la línea
                     backgroundColor: 'rgba(75, 192, 192, 0.2)',  // Color de fondo de la línea
@@ -179,11 +178,7 @@ function generarGrafico(canvasId, data, label, getData) {
                 },
                 plugins: {
                     legend: {
-                        display: true,
-                        position: 'top',
-                        labels: {
-                            color: '#333',  // Color de las etiquetas de la leyenda
-                        }
+                        display: false,  // Aquí desactivamos la leyenda para que no se muestre
                     }
                 }
             }

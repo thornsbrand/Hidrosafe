@@ -27,6 +27,9 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('main.documentation') }}">Documentación</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('main.contact') }}">Contáctanos</a> <!-- Enlace a la página de contacto -->
+                    </li>
                     {% if current_user %}
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('main.dashboard') }}">Dashboard</a>

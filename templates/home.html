@@ -84,7 +84,7 @@
         <p class="lead text-light mb-4">
             Utilizamos inteligencia artificial, Internet de las Cosas (IoT) y análisis en la nube para procesar grandes volúmenes de datos en tiempo real, optimizando la toma de decisiones y la gestión del mantenimiento.
         </p>
-        <a href="contact.html" class="btn btn-light btn-lg shadow-lg">Contáctanos</a>
+        <a href="{{ url_for('main.contact') }}" class="btn btn-light btn-lg shadow-lg">Contáctanos</a>
     </div>
 </section>
 
@@ -127,7 +127,8 @@
 <!-- FOOTER SECTION -->
 <footer class="bg-dark text-white text-center py-4">
     <p>&copy; 2025 Hydrosafe. Todos los derechos reservados.</p>
-    <a href="#about" class="text-white">Acerca de</a> | <a href="contact.html" class="text-white">Contáctanos</a>
+    <a href="#about" class="text-white">Acerca de</a> | <a href="{{ url_for('main.contact') }}" class="text-white">Contáctanos</a>
+
 </footer>
 
 {% endblock %}

@@ -13,7 +13,6 @@
                 <a href="#funcion_objetivo" class="list-group-item list-group-item-action">Función Objetivo</a>
                 <a href="#predictive_maintenance" class="list-group-item list-group-item-action">Mantenimiento Predictivo</a>
                 <a href="#sensors" class="list-group-item list-group-item-action">Datos de Sensores</a>
-                
             </div>
         </div>
 
@@ -130,47 +129,6 @@
                 <p><strong>Ubicación típica:</strong> Sistema de enfriamiento.</p>
             </section>
 
-            <!-- Relación de Sensores con las Salidas -->
-            <section id="sensor_outputs" class="mb-5">
-                <h2>Relación de Sensores con las Salidas</h2>
-                <p>Los sensores del sistema se relacionan con las salidas del mismo para identificar posibles fallas y tomar acciones de mantenimiento predictivo. A continuación se muestra cómo se correlacionan los sensores con las salidas de condición del sistema.</p>
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Salida</th>
-                            <th>Sensores Relacionados</th>
-                            <th>Descripción</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Cooler condition / %</td>
-                            <td>CE (Cooling efficiency), CP (Cooling power), TS1 - TS4 (Temperatura)</td>
-                            <td>Evalúa la eficiencia del sistema de enfriamiento basado en la temperatura y potencia de enfriamiento. La eficiencia se ve afectada si la temperatura es alta o la potencia de enfriamiento es baja.</td>
-                        </tr>
-                        <tr>
-                            <td>Valve condition / %</td>
-                            <td>PS1 - PS6 (Presión), FS1, FS2 (Flujo)</td>
-                            <td>Detecta el comportamiento de las válvulas en base a fluctuaciones de presión y flujo. Si hay retrasos o fallos en las válvulas, se reflejará en estos valores.</td>
-                        </tr>
-                        <tr>
-                            <td>Internal pump leakage</td>
-                            <td>PS1 - PS6 (Presión), FS1, FS2 (Flujo)</td>
-                            <td>Detecta fugas internas en la bomba observando cambios en la presión y flujo. Una caída de presión o un flujo bajo puede indicar una fuga interna.</td>
-                        </tr>
-                        <tr>
-                            <td>Hydraulic accumulator / bar</td>
-                            <td>PS1 - PS6 (Presión), FS1, FS2 (Flujo)</td>
-                            <td>Monitorea el estado del acumulador hidráulico observando la presión y flujo. Si la presión disminuye de forma significativa, el acumulador no está funcionando correctamente.</td>
-                        </tr>
-                        <tr>
-                            <td>Stable flag</td>
-                            <td>VS1 (Vibración), TS1 - TS4 (Temperatura), PS1 - PS6 (Presión)</td>
-                            <td>Determina si las condiciones del sistema son estables observando las vibraciones y fluctuaciones de presión y temperatura. Si hay fluctuaciones o altas vibraciones, el sistema podría no estar estable.</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </section>
         </div>
     </div>
 </div>
